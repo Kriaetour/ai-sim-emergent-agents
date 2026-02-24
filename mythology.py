@@ -137,6 +137,34 @@ _STRICT = (
 )
 
 
+def _clean_multi(text: str, word_limit: int = 500) -> str:
+    """
+    Like _clean but preserves paragraph breaks (double newlines).
+    Used for multi-paragraph outputs such as the final summary.
+    """
+    if not text:
+        return text
+    # Collapse each paragraph individually, then re-join
+    paras = [p.strip() for p in text.split('\n\n') if p.strip()]
+    cleaned: list = []
+    for para in paras:
+        para = ' '.join(para.split('\n')).strip()
+        # Remove incomplete trailing sentence within the paragraph
+        if para and para[-1] not in '.!?':
+            last = max(para.rfind('.'), para.rfind('!'), para.rfind('?'))
+            para = para[:last + 1] if last > 0 else para + '.'
+        if para:
+            cleaned.append(para)
+    text = '\n\n'.join(cleaned)
+    # Global word cap
+    words = text.split()
+    if len(words) > word_limit:
+        capped = ' '.join(words[:word_limit])
+        last   = max(capped.rfind('.'), capped.rfind('!'), capped.rfind('?'))
+        text   = capped[:last + 1] if last > 0 else capped + '.'
+    return text.strip()
+
+
 # ══════════════════════════════════════════════════════════════════════════
 # Event-log helpers
 # ══════════════════════════════════════════════════════════════════════════
@@ -714,103 +742,172 @@ def mythology_tick(factions: list, all_dead: list,
 
 
 # ══════════════════════════════════════════════════════════════════════════
-# Final narrative summary — called from sim.py's finally block
+# Structured era summary builder (for final LLM prompt)
 # ══════════════════════════════════════════════════════════════════════════
 
-def mythology_final_summary(factions: list, all_dead: list,
-                             ticks: int, event_log: list) -> None:
-    """Generate and print the full epic history at end of simulation."""
-    if not config.MYTHOLOGY_ENABLED:
-        return
-    if not chronicles:
-        return
+_FALLEN_RE = re.compile(r'💀\s+(\w+)')
 
-    try:
-        import diplomacy as _dip
-    except ImportError:
-        _dip = None
+
+def _build_structured_summary(event_log: list, ticks: int,
+                               era_summaries: list) -> str:
+    """
+    Build a structured, era-by-era text summary for the final LLM prompt.
+    Never passes raw event_log; extracts named, specific facts per era.
+    """
     try:
         import combat as _cbt
     except ImportError:
         _cbt = None
 
+    lines: list = []
+    n_eras = max(1, (ticks + 99) // 100)
+
+    for era_n in range(1, n_eras + 1):
+        start_t = (era_n - 1) * 100 + 1
+        end_t   = min(era_n * 100, ticks)
+        entries = _events_in_window(event_log, start_t, end_t)
+
+        archived = next((s for s in era_summaries if s['start_t'] == start_t), None)
+        era_lbl  = archived['name'] if archived else None
+
+        wars_n   = len(_filter(entries, ('WAR DECLARED',)))
+        battle_n = len(_filter(entries, ('fell in battle',)))
+        starve_n = len(_filter(entries, ('starved',)))
+        schism_n = len(_filter(entries, ('SCHISM',)))
+        merge_n  = len(_filter(entries, ('FACTION MERGE',)))
+        forming  = len(_filter(entries, ('FACTION FORMED',)))
+        disrupt  = _filter(entries, ('GREAT MIGRATION', 'PLAGUE SWEEPS',
+                                     'CIVIL WAR', 'PROMISED LAND', 'PROPHET',
+                                     'WORLD EVENT'))
+
+        tech_entries = _filter(entries, ('TECH DISCOVERED',))
+        tech_names   = [e.split('TECH DISCOVERED:')[-1].strip()
+                        for e in tech_entries][:2]
+
+        fallen_names: list = []
+        for e in _filter(entries, ('fell in battle', 'starved', 'wasted away'))[:6]:
+            m = _FALLEN_RE.search(e) or re.search(r'(\w+)\s+starved', e)
+            if m and m.group(1) not in fallen_names:
+                fallen_names.append(m.group(1))
+                if len(fallen_names) >= 4:
+                    break
+
+        war_names: list = []
+        if _cbt:
+            for w in _cbt.war_history:
+                if start_t <= w.started_tick <= end_t:
+                    lbl = {'surrender_d': 'victory', 'surrender_a': 'repelled',
+                           'ceasefire': 'ceasefire', 'exhaustion': 'stalemate'}
+                    war_names.append(f'{w.attacker.name} vs {w.defender.name}'
+                                     f' ({lbl.get(w.outcome, "ongoing")})')
+
+        disrupt_lbl = ''
+        if disrupt:
+            disrupt_lbl = disrupt[0].split('\u2014')[-1].strip().rstrip(')')[:60]
+
+        if not era_lbl:
+            joined = ' '.join(entries)
+            if 'PLAGUE' in joined:          era_lbl = 'Age of Sickness'
+            elif wars_n >= 3 or battle_n >= 8: era_lbl = 'Crimson Years'
+            elif wars_n >= 1:               era_lbl = 'Age of Conflict'
+            elif starve_n >= 5:             era_lbl = 'Great Famine'
+            elif len(tech_names) >= 2:      era_lbl = 'Age of Discovery'
+            else:                           era_lbl = 'Long Peace'
+
+        parts = [f'Era {era_n} (ticks {start_t}-{end_t}, {era_lbl}):']
+        if forming:
+            parts.append(f'{forming} faction(s) founded.')
+        if war_names:
+            parts.append('Wars: ' + '; '.join(war_names[:2]) + '.')
+        elif wars_n:
+            parts.append(f'{wars_n} war(s).')
+        total_dead = battle_n + starve_n
+        if total_dead:
+            fell = (', '.join(fallen_names[:3]) + ' and others' if len(fallen_names) > 3
+                    else ', '.join(fallen_names))
+            parts.append(f'{total_dead} dead' + (f' ({fell})' if fell else '') + '.')
+        if schism_n:
+            parts.append(f'{schism_n} schism(s).')
+        if merge_n:
+            parts.append(f'{merge_n} merger(s).')
+        if tech_names:
+            parts.append(f'Discovered: {", ".join(tech_names)}.')
+        if disrupt_lbl:
+            parts.append(disrupt_lbl + '.')
+        if len(parts) == 1:
+            parts.append('Quiet age -- no wars, no deaths.')
+
+        lines.append(' '.join(parts))
+
+    return '\n'.join(lines)
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# Final narrative summary — called from sim.py's finally block
+# ══════════════════════════════════════════════════════════════════════════
+
+def mythology_final_summary(factions: list, all_dead: list,
+                             ticks: int, event_log: list,
+                             era_summaries: list = None) -> None:
+    """Generate and print the full epic history at end of simulation."""
+    if not config.MYTHOLOGY_ENABLED:
+        return
+    if era_summaries is None:
+        era_summaries = []
+
+    try:
+        import combat as _cbt
+        war_count = len(_cbt.war_history)
+    except Exception:
+        _cbt = None
+        war_count = 0
+
     active  = [f for f in factions if f.members]
     defunct = [f for f in factions if not f.members]
 
-    # Build a tight bullet-point brief — no prose, no padding
-    brief_lines: list = []
+    # ── Build structured era summary — never feed raw event_log to LLM ──────
+    era_text  = _build_structured_summary(event_log, ticks, era_summaries)
+    survivors = ', '.join(f'{f.name} ({len(f.members)})' for f in active) or 'none'
+    collapsed = ', '.join(f.name for f in defunct[:6]) or 'none'
+    tot_dead  = len(all_dead)
 
-    # First factions
-    first_f = sorted(factions, key=lambda x: getattr(x, 'founded_tick',
-                     getattr(x, 'founded', 0)))
-    if first_f:
-        brief_lines.append(
-            f'- First factions: {first_f[0].name}'
-            + (f', {first_f[1].name}' if len(first_f) > 1 else '')
-        )
-
-    # Wars
-    if _cbt:
-        outcome_map = {
-            'surrender_d': 'conquered',
-            'surrender_a': 'repelled',
-            'ceasefire':   'ceasefire',
-            'exhaustion':  'stalemate',
-        }
-        for w in _cbt.war_history[:4]:
-            brief_lines.append(
-                f'- War: {w.attacker.name} vs {w.defender.name} '
-                f'({outcome_map.get(w.outcome, w.outcome)})'
-            )
-
-    # Key fallen
     leg_names = [f'{lg["name"]} of {f.name}'
                  for f in factions for lg in f.legends][:6]
-    if leg_names:
-        brief_lines.append(f'- Fallen: {chr(44).join(leg_names[:4])}')
-
-    # Survivors
-    survivors = [f'{f.name} ({len(f.members)})' for f in active]
-    brief_lines.append(f'- Survivors: {chr(44).join(survivors) or "none"}')
-    if defunct:
-        brief_lines.append(f'- Collapsed: {chr(44).join(f.name for f in defunct[:4])}')
-
-    # Reputation highlight
-    if _dip:
-        best = max(factions, key=lambda x: _dip.get_rep(x.name), default=None)
-        worst = min(factions, key=lambda x: _dip.get_rep(x.name), default=None)
-        if best:
-            brief_lines.append(f'- Most honoured: {best.name}')
-        if worst and worst != best:
-            brief_lines.append(f'- Most reviled: {worst.name}')
-
-    brief = '\n'.join(brief_lines)
 
     prompt = (
-        f"Historian. {ticks}-tick civilization. Records:\n{brief}\n\n"
-        "Write exactly 4 sentences — one per era:\n"
-        "Sentence 1: founding. Sentence 2: wars. "
-        "Sentence 3: collapse. Sentence 4: who endures.\n"
-        "Name specific factions. Epic style. Under 120 words.\n"
+        f"THE HISTORY OF {ticks} TICKS:\n"
+        f"{era_text}\n\n"
+        f"SURVIVORS: {survivors}\n"
+        f"COLLAPSED FACTIONS: {collapsed}\n"
+        f"TOTAL DEAD: {tot_dead}   TOTAL WARS: {war_count}\n"
+        + (f"FALLEN WARRIORS: {', '.join(leg_names)}\n" if leg_names else '')
+        + "\n"
+        "Using ONLY the era summaries above, write a 4-paragraph epic history.\n"
+        "One paragraph per major era. Name specific factions and fallen warriors.\n"
+        "Write like Tolkien's Silmarillion — grand, tragic, ancient in voice.\n"
+        "EVERY sentence must reference a specific era, faction, or named event.\n"
+        "Do not write generic filler. 4 paragraphs. Under 500 words.\n"
         + _STRICT
     )
 
-    text = _clean(_ollama(prompt, max_tokens=160), word_limit=120)
+    text = _clean_multi(_ollama(prompt, max_tokens=500), word_limit=450)
+
     if not text:
-        living   = ', '.join(f.name for f in active)
-        fallen_w = ', '.join(leg_names[:3])
-        wars_sum = '; '.join(
-            f'{w.attacker.name} vs {w.defender.name}'
-            for w in (_cbt.war_history[:2] if _cbt else [])
-        ) or 'none'
-        text = (
-            f"Thus ended {ticks} ticks of mortal struggle across these lands. "
-            f"From chaos, factions arose: {living or 'all now gone'}. "
-            + (f"Great wars were fought — {wars_sum}. " if _cbt and _cbt.war_history else '')
-            + (f"Among the fallen were {fallen_w}. " if fallen_w else '')
-            + f"{len(all_dead)} souls perished in total. "
-            f"{len(active)} faction(s) stood at the last."
+        # Code-built fallback: 4 paragraphs stitched from era blocks
+        era_lines = era_text.strip().split('\n')
+        chunk     = max(1, len(era_lines) // 4)
+        paras: list = []
+        for i in range(4):
+            block = ' | '.join(era_lines[i * chunk:(i + 1) * chunk])
+            if block:
+                paras.append(f'In those days it was recorded: {block}')
+        if not paras:
+            paras = [f'Thus passed {ticks} ticks of mortal struggle.']
+        paras.append(
+            f'{tot_dead} souls perished in total. '
+            f'{len(active)} faction(s) stood at the last: {survivors}.'
         )
+        text = '\n\n'.join(paras[:4])
 
     _box(f'THE GREAT HISTORY — A Chronicle of {ticks} Ticks', text, width=76)
 

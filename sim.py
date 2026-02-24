@@ -26,7 +26,7 @@ from world       import world, tick as _world_tick, GRID, BIOME_MAX
 from inhabitants import (Inhabitant, do_tick, is_winter, regen_rate,
                          NAMES, WINTER_START, CYCLE_LEN)
 from beliefs     import assign_beliefs, share_beliefs, add_belief
-from factions    import check_faction_formation, faction_tick
+from factions    import check_faction_formation, faction_tick, Faction, _faction_name as _gen_faction_name
 import economy
 import combat
 import technology
@@ -41,8 +41,9 @@ people:         list = []
 factions:       list = []
 all_dead:       list = []
 event_log:      list = []
-era_summaries:  list = []   # {'start_t', 'end_t', 'name', 'text'} — archived 100-tick windows
-_dead_factions: list = []   # defunct factions kept for reference
+era_summaries:   list = []   # {'start_t', 'end_t', 'name', 'text'} — archived 100-tick windows
+_dead_factions:  list = []   # defunct factions kept for reference
+_last_dynamic_t: int  = 0   # last tick with war / schism / faction-formation
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -70,6 +71,9 @@ class _LogTee:
         'shares food', 'Council vote',
         # World events & era signals
         'WORLD EVENT', 'NEW ERA DAWNS', 'ERA SUMMARY',
+        # Disruption events
+        'GREAT MIGRATION', 'PLAGUE SWEEPS', 'CIVIL WAR', 'PROMISED LAND',
+        'PROPHET', 'wasted away',
     })
 
     passthrough: bool = False   # True → show everything (used for final report)
@@ -325,10 +329,8 @@ def world_event_layer(t: int) -> None:
 
 def era_shift_layer(t: int) -> None:
     """Era shift every 500 ticks: halve tensions, inject food, announce new era."""
-    # Halve all inter-faction tensions
     for key in list(combat.RIVALRIES.keys()):
         combat.RIVALRIES[key] = combat.RIVALRIES[key] // 2
-    # Food windfall: restore 1/3 of each chunk's food cap
     for row in world:
         for chunk in row:
             cap = BIOME_MAX[chunk['biome']]['food']
@@ -338,6 +340,172 @@ def era_shift_layer(t: int) -> None:
     msg = f'Tick {t:04d}: ══ A NEW ERA DAWNS ══  (tensions halved, lands refreshed)'
     event_log.append(msg)
     print(msg)
+
+
+def disruption_event_layer(t: int) -> None:
+    """Forced disruption event when civilisation stagnates for > 40 ticks."""
+    hab    = [(r, c) for r in range(GRID) for c in range(GRID) if world[r][c]['habitable']]
+    active = [f for f in factions if f.members]
+
+    # Weight CIVIL WAR out if no large enough faction
+    cw_w   = 20 if any(len(f.members) >= 3 for f in active) else 0
+    choice = random.choices(
+        ['GREAT MIGRATION', 'PLAGUE', 'CIVIL WAR', 'PROMISED LAND', 'PROPHET'],
+        weights=[25, 20, cw_w, 15, 20],
+    )[0]
+
+    # ── a) GREAT MIGRATION ─────────────────────────────────────────────────
+    if choice == 'GREAT MIGRATION':
+        used_names   = {p.name for p in people}
+        beliefs_pool = ['community_sustains'] * 5 + ['self_reliance'] * 5
+        random.shuffle(beliefs_pool)
+        newcomers: list = []
+        for bel in beliefs_pool:
+            nm = _make_traveler_name(used_names)
+            if not nm or not hab:
+                break
+            used_names.add(nm)
+            r, c = random.choice(hab)
+            inh  = Inhabitant(nm, r, c)
+            inh.faction           = None
+            inh.inventory['food'] = 30
+            add_belief(inh, bel)
+            people.append(inh)
+            newcomers.append(inh)
+        # Form 2 competing factions immediately from the wave
+        existing_names = {f.name for f in factions}
+        for bel_key in ['community_sustains', 'self_reliance']:
+            grp = [n for n in newcomers if any(bel_key in b for b in n.beliefs)]
+            if len(grp) >= 2:
+                new_name  = _gen_faction_name({bel_key}, existing_names)
+                territory = list({(m.r, m.c) for m in grp})
+                new_f     = Faction(new_name, list(grp), [bel_key], territory, t)
+                factions.append(new_f)
+                for m in grp:
+                    m.faction = new_name
+                existing_names.add(new_name)
+        # Seed hostility: new factions vs each other + vs biggest existing faction
+        mig_new_factions = factions[-2:] if len(factions) >= 2 else []
+        pre_existing = [f for f in factions if f not in mig_new_factions and f.members]
+        biggest = max(pre_existing, key=lambda f: len(f.members), default=None)
+        for _nf in mig_new_factions:
+            for _of in mig_new_factions:
+                if _nf is not _of:
+                    _k = tuple(sorted([_nf.name, _of.name]))
+                    combat.RIVALRIES[_k] = min(combat.RIVALRIES.get(_k, 0) + 120, 195)
+            if biggest:
+                _k = tuple(sorted([_nf.name, biggest.name]))
+                combat.RIVALRIES[_k] = min(combat.RIVALRIES.get(_k, 0) + 80, 195)
+        msg = (f'Tick {t:04d}: ══ GREAT MIGRATION — New peoples flood the land ══'
+               f' ({len(newcomers)} newcomers, 2 competing factions)')
+
+    # ── b) PLAGUE ──────────────────────────────────────────────────────────
+    elif choice == 'PLAGUE':
+        for p in people:
+            p.health = max(0, p.health - 30)
+        for row in world:
+            for chunk in row:
+                chunk['resources']['food'] = chunk['resources']['food'] // 2
+        f_by_name = {f.name: f for f in factions}
+        for p in list(people):
+            sf = f_by_name.get(p.faction) if p.faction else None
+            if sf and len(sf.members) == 1 and p.health < 30:
+                people.remove(p)
+                all_dead.append(p)
+                sf.members = []
+                dmsg = f'Tick {t:04d}: 💀 {p.name} ({p.faction}) succumbed to the Plague alone'
+                event_log.append(dmsg)
+                print(dmsg)
+        msg = (f'Tick {t:04d}: ══ PLAGUE SWEEPS THE LAND ══'
+               f' ({len(people)} survivors, food halved)')
+
+    # ── c) CIVIL WAR ───────────────────────────────────────────────────────
+    elif choice == 'CIVIL WAR':
+        big = [f for f in active if len(f.members) >= 3]
+        if big:
+            target = max(big, key=lambda f: len(f.members))
+            half   = max(1, len(target.members) // 2)
+            split  = random.sample(target.members, half)
+            existing_names = {f.name for f in factions}
+            seed_bels = {b for m in split for b in m.beliefs[:2]}
+            new_name  = _gen_faction_name(seed_bels, existing_names)
+            territory = list({(m.r, m.c) for m in split})
+            new_f     = Faction(new_name, list(split), list(seed_bels)[:2], territory, t)
+            factions.append(new_f)
+            gone = {m.name for m in split}
+            target.members = [m for m in target.members if m.name not in gone]
+            for m in split:
+                m.faction = new_name
+            key = tuple(sorted([target.name, new_name]))
+            combat.RIVALRIES[key] = min(combat.RIVALRIES.get(key, 0) + 150, 195)
+            msg = (f'Tick {t:04d}: ══ CIVIL WAR — {target.name} tears itself apart ══'
+                   f' ({new_name} breaks away in open rebellion)')
+        else:
+            # Fallback: send extra travellers instead
+            msg = f'Tick {t:04d}: ══ CIVIL WAR — unrest spreads, wanderers flood the land ══'
+            used_names = {p.name for p in people}
+            for _ in range(5):
+                nm = _make_traveler_name(used_names)
+                if not nm or not hab:
+                    break
+                used_names.add(nm)
+                r, c = random.choice(hab)
+                inh  = Inhabitant(nm, r, c)
+                inh.faction = None
+                inh.inventory['food'] = 30
+                people.append(inh)
+
+    # ── d) PROMISED LAND ───────────────────────────────────────────────────
+    elif choice == 'PROMISED LAND':
+        all_cells = [(r, c) for r in range(GRID) for c in range(GRID)]
+        barren    = [(r, c) for r, c in all_cells if not world[r][c]['habitable']]
+        pick_pool = barren if barren else all_cells
+        r, c      = random.choice(pick_pool)
+        chunk     = world[r][c]
+        for k in chunk['resources']:
+            chunk['resources'][k] = BIOME_MAX[chunk['biome']][k]
+        chunk['habitable'] = True
+        active_pairs = [(fa, fb) for i, fa in enumerate(active)
+                        for fb in active[i + 1:]]
+        for fa, fb in active_pairs:
+            key = tuple(sorted([fa.name, fb.name]))
+            combat.RIVALRIES[key] = combat.RIVALRIES.get(key, 0) + 20
+        msg = (f'Tick {t:04d}: ══ A PROMISED LAND discovered at ({r},{c}) ══'
+               f' ({len(active_pairs)} faction pairs gain +20 tension)')
+
+    # ── e) PROPHET ─────────────────────────────────────────────────────────
+    else:
+        if not hab:
+            msg = f'Tick {t:04d}: ══ A PROPHET cries in the wilderness ══'
+        else:
+            # Pick the rarest current belief (or a contrarian one)
+            belief_counts: dict = {}
+            for p in people:
+                for b in p.beliefs:
+                    belief_counts[b] = belief_counts.get(b, 0) + 1
+            all_beliefs = list(belief_counts)
+            prophet_bel = (min(all_beliefs, key=lambda b: belief_counts[b])
+                           if all_beliefs else 'desert_forges_the_worthy')
+            used_names = {p.name for p in people}
+            nm = _make_traveler_name(used_names)
+            if nm:
+                r, c = random.choice(hab)
+                inh  = Inhabitant(nm, r, c)
+                inh.faction           = None
+                inh.inventory['food'] = 30
+                inh.health            = 100
+                for bel in ['self_reliance', 'community_sustains', prophet_bel]:
+                    add_belief(inh, bel)
+                people.append(inh)
+                msg = (f'Tick {t:04d}: ══ A PROPHET arrives, preaching new truths ══'
+                       f' ({nm} spreads: {prophet_bel})')
+            else:
+                msg = f'Tick {t:04d}: ══ A PROPHET arrives but bears no name ══'
+
+    event_log.append(msg)
+    print(msg)
+
+
 # ══════════════════════════════════════════════════════════════════════════
 
 def init_world() -> list:
@@ -406,12 +574,14 @@ def run() -> None:
     init_inhabitants(habitable)
 
     # ── Per-run tracking ────────────────────────────────────────────────────
-    _tick_times:  list = []
-    _print_every: int  = 10 if TICKS > 500 else 1
+    _tick_times:     list = []
+    _print_every:    int  = 10 if TICKS > 500 else 1
+    _last_dynamic_t: int  = 0     # last tick a war / schism / faction-formation occurred
 
     try:
         for t in range(1, TICKS + 1):
             _t0               = time.time()
+            _log_len_before   = len(event_log)
             winter            = is_winter(t)
             prev_winter       = is_winter(t - 1) if t > 1 else False
             winter_just_ended = prev_winter and not winter
@@ -426,6 +596,31 @@ def run() -> None:
             diplomacy_layer(t)
             mythology_layer(t)
             world_layer(t, winter_just_ended)
+
+            # ── Track dynamic activity for stagnation detection ─────────────
+            _new_entries = event_log[_log_len_before:]
+            if any(kw in e for e in _new_entries
+                   for kw in ('WAR DECLARED', 'SCHISM', 'FACTION FORMED',
+                              'GREAT MIGRATION', 'CIVIL WAR',
+                              'WORLD EVENT', 'PLAGUE SWEEPS', 'PROMISED LAND',
+                              'PROPHET')):
+                _last_dynamic_t = t
+
+            # ── Solo-faction fragility: despair + plague vulnerability ───────
+            _f_by_name = {f.name: f for f in factions}
+            for _sp in list(people):
+                _sf = _f_by_name.get(_sp.faction) if _sp.faction else None
+                if _sf and len(_sf.members) == 1:
+                    if t % 20 == 0:                    # loneliness despair
+                        _sp.health = max(0, _sp.health - 5)
+                    if _sp.health <= 0:
+                        people.remove(_sp)
+                        all_dead.append(_sp)
+                        _sf.members = []
+                        _dmsg = (f'Tick {t:04d}: 💀 {_sp.name} ({_sp.faction}) '
+                                 f'wasted away alone')
+                        event_log.append(_dmsg)
+                        print(_dmsg)
 
             # ── World event every 200 ticks ─────────────────────────────────
             if t % 200 == 0:
@@ -443,31 +638,38 @@ def run() -> None:
                     if len(p.memory) > 10:
                         p.memory = p.memory[-10:]
 
-            # ── Population recovery: travelers every 40 ticks if < 15 pop ──
-            if t % 40 == 0 and len(people) < 15:
-                hab_now    = [(r, c) for r in range(GRID) for c in range(GRID)
-                              if world[r][c]['habitable']]
-                used_names = {p.name for p in people}
-                spawned: list = []
-                for _ in range(5):
-                    nm = _make_traveler_name(used_names)
-                    if not nm or not hab_now:
-                        break
-                    used_names.add(nm)
-                    r, c = random.choice(hab_now)
-                    inh  = Inhabitant(nm, r, c)
-                    inh.faction         = None
-                    inh.inventory['food'] = 5
-                    belief = _BIOME_BELIEF.get(world[r][c]['biome'])
-                    if belief:
-                        add_belief(inh, belief)
-                    people.append(inh)
-                    spawned.append(nm)
-                if spawned:
-                    msg = (f"Tick {t:04d}: 🧳 Travelers from beyond the known "
-                           f"lands arrive ({', '.join(spawned)})")
-                    event_log.append(msg)
-                    print(msg)
+            # ── Population recovery: travelers every 40 ticks ───────────────
+            if t % 40 == 0:
+                _active_fac_n = sum(1 for f in factions if f.members)
+                _spawn_n      = 0
+                if len(people) < 20:
+                    _spawn_n = max(_spawn_n, 5)
+                if _active_fac_n < 3:
+                    _spawn_n = max(_spawn_n, 8)
+                if _spawn_n:
+                    hab_now    = [(r, c) for r in range(GRID) for c in range(GRID)
+                                  if world[r][c]['habitable']]
+                    used_names = {p.name for p in people}
+                    spawned: list = []
+                    for _ in range(_spawn_n):
+                        nm = _make_traveler_name(used_names)
+                        if not nm or not hab_now:
+                            break
+                        used_names.add(nm)
+                        r, c = random.choice(hab_now)
+                        inh  = Inhabitant(nm, r, c)
+                        inh.faction           = None
+                        inh.inventory['food'] = 30   # 30-tick survival ration
+                        belief = _BIOME_BELIEF.get(world[r][c]['biome'])
+                        if belief:
+                            add_belief(inh, belief)
+                        people.append(inh)
+                        spawned.append(nm)
+                    if spawned:
+                        msg = (f"Tick {t:04d}: 🧳 Travelers from beyond the known "
+                               f"lands arrive ({', '.join(spawned)})")
+                        event_log.append(msg)
+                        print(msg)
 
             # ── Tick timing ─────────────────────────────────────────────────
             _elapsed = time.time() - _t0
@@ -487,6 +689,13 @@ def run() -> None:
                             f'Factions:{facts}  Wars:{wars}  Techs:{techno}  '
                             f'Treaties:{treaties}\n')
                 _real.flush()
+
+            # ── Stagnation check every 50 ticks ──────────────────────────
+            if t % 50 == 0:
+                _stagnation = t - _last_dynamic_t
+                if _stagnation > 40:
+                    disruption_event_layer(t)
+                    _last_dynamic_t = t
 
             # ── Mini-summary every 100 ticks ────────────────────────────────
             if t % 100 == 0:
@@ -523,7 +732,7 @@ def run() -> None:
         _real.write('\n')
         _tee.passthrough = True
         display.final_report(people, all_dead, factions, event_log, TICKS)
-        mythology.mythology_final_summary(factions, all_dead, TICKS, event_log)
+        mythology.mythology_final_summary(factions, all_dead, TICKS, event_log, era_summaries)
         sys.stdout = _real
         _log_fh.close()
         print(f"\nFull log saved → {_log_path}")
