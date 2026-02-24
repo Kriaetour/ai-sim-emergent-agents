@@ -6,7 +6,7 @@ config.py — Shared configuration constants for the civilization simulation.
 GAME_MODEL       = "phi3:3.8b-mini-4k-instruct-q4_0"      # Fast, for agent decisions
 NARRATIVE_MODEL  = "llama3.1:8b-instruct-q4_K_M"          # Quality, for mythology only
 OLLAMA_URL       = "http://localhost:11434/api/generate"
-OLLAMA_TIMEOUT   = 90           # seconds per LLM call
+OLLAMA_TIMEOUT   = 180           # seconds per LLM call
 MYTHOLOGY_ENABLED = True        # set False to disable LLM layer entirely
 
 # ── LLM generation parameters ────────────────────────────────────────────

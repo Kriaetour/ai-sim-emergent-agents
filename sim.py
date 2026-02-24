@@ -34,7 +34,7 @@ import diplomacy
 import mythology
 import display
 
-TICKS = 1000
+TICKS = 100
 
 # ── Shared simulation state ────────────────────────────────────────────────
 people:         list = []
@@ -508,6 +508,54 @@ def disruption_event_layer(t: int) -> None:
 
 # ══════════════════════════════════════════════════════════════════════════
 
+def _force_spawn_factions(t: int) -> None:
+    """Directly spawn 2 new factions (3 members each) when civilisation is near-extinct."""
+    hab = [(r, c) for r in range(GRID) for c in range(GRID) if world[r][c]['habitable']]
+    if not hab:
+        return
+    used_names     = {p.name for p in people}
+    existing_names = {f.name for f in factions}
+    # Two ideologically opposed groups
+    belief_sets = [
+        ['community_sustains', 'the_forest_shelters'],
+        ['self_reliance',      'desert_forges_the_worthy'],
+    ]
+    new_fac_names: list = []
+    for bels in belief_sets:
+        members: list = []
+        for _ in range(3):
+            nm = _make_traveler_name(used_names)
+            if not nm:
+                break
+            used_names.add(nm)
+            r, c = random.choice(hab)
+            inh  = Inhabitant(nm, r, c)
+            inh.faction           = None
+            inh.inventory['food'] = 30
+            inh.health            = 100
+            for bel in bels:
+                add_belief(inh, bel)
+            people.append(inh)
+            members.append(inh)
+        if len(members) >= 2:
+            new_name = _gen_faction_name(set(bels), existing_names)
+            territory = list({(m.r, m.c) for m in members})
+            new_f = Faction(new_name, list(members), list(bels), territory, t)
+            factions.append(new_f)
+            for m in members:
+                m.faction = new_name
+            existing_names.add(new_name)
+            new_fac_names.append(new_name)
+    # Seed immediate rivalry so they go to war within ~10 ticks
+    if len(new_fac_names) == 2:
+        _k = tuple(sorted(new_fac_names))
+        combat.RIVALRIES[_k] = min(combat.RIVALRIES.get(_k, 0) + 140, 195)
+    msg = (f'Tick {t:04d}: ══ FROM THE WILDERNESS, new peoples emerge ══'
+           f' ({chr(44).join(new_fac_names)})')
+    event_log.append(msg)
+    print(msg)
+
+
 def init_world() -> list:
     """Seed chunk food and return the list of habitable (r, c) positions."""
     habitable = [(r, c) for r in range(GRID) for c in range(GRID)
@@ -574,9 +622,11 @@ def run() -> None:
     init_inhabitants(habitable)
 
     # ── Per-run tracking ────────────────────────────────────────────────────
-    _tick_times:     list = []
-    _print_every:    int  = 10 if TICKS > 500 else 1
-    _last_dynamic_t: int  = 0     # last tick a war / schism / faction-formation occurred
+    _tick_times:        list = []
+    _print_every:       int  = 10 if TICKS > 500 else 1
+    _last_dynamic_t:    int  = 0   # last tick a war / schism / faction-formation occurred
+    _low_faction_since: int  = 0   # tick when active factions first dropped below 3 (0=OK)
+    _peace_applied:     set  = set()  # peace milestone thresholds fired since last war
 
     try:
         for t in range(1, TICKS + 1):
@@ -603,16 +653,18 @@ def run() -> None:
                    for kw in ('WAR DECLARED', 'SCHISM', 'FACTION FORMED',
                               'GREAT MIGRATION', 'CIVIL WAR',
                               'WORLD EVENT', 'PLAGUE SWEEPS', 'PROMISED LAND',
-                              'PROPHET')):
-                _last_dynamic_t = t
+                              'PROPHET', 'WILDERNESS', 'INCIDENT')):
+                _last_dynamic_t   = t
+                _peace_applied    = set()
+                _low_faction_since = 0
 
-            # ── Solo-faction fragility: despair + plague vulnerability ───────
+            # ── Solo-faction fragility: die in ~100 ticks of isolation ────────
             _f_by_name = {f.name: f for f in factions}
             for _sp in list(people):
                 _sf = _f_by_name.get(_sp.faction) if _sp.faction else None
                 if _sf and len(_sf.members) == 1:
-                    if t % 20 == 0:                    # loneliness despair
-                        _sp.health = max(0, _sp.health - 5)
+                    if t % 10 == 0:                    # despair: -10 hp every 10 ticks → ~100 tick lifespan
+                        _sp.health = max(0, _sp.health - 10)
                     if _sp.health <= 0:
                         people.remove(_sp)
                         all_dead.append(_sp)
@@ -645,7 +697,7 @@ def run() -> None:
                 if len(people) < 20:
                     _spawn_n = max(_spawn_n, 5)
                 if _active_fac_n < 3:
-                    _spawn_n = max(_spawn_n, 8)
+                    _spawn_n = max(_spawn_n, 10)  # bigger wave when critically low
                 if _spawn_n:
                     hab_now    = [(r, c) for r in range(GRID) for c in range(GRID)
                                   if world[r][c]['habitable']]
@@ -659,7 +711,7 @@ def run() -> None:
                         r, c = random.choice(hab_now)
                         inh  = Inhabitant(nm, r, c)
                         inh.faction           = None
-                        inh.inventory['food'] = 30   # 30-tick survival ration
+                        inh.inventory['food'] = 30
                         belief = _BIOME_BELIEF.get(world[r][c]['biome'])
                         if belief:
                             add_belief(inh, belief)
@@ -670,6 +722,85 @@ def run() -> None:
                                f"lands arrive ({', '.join(spawned)})")
                         event_log.append(msg)
                         print(msg)
+
+            # ── Faction-collapse prevention (every 25 ticks) ─────────────────
+            if t % 25 == 0:
+                _active_now = sum(1 for f in factions if f.members)
+
+                # Track consecutive ticks below 3 factions
+                if _active_now < 3:
+                    if _low_faction_since == 0:
+                        _low_faction_since = t
+                    elif t - _low_faction_since >= 50:
+                        _force_spawn_factions(t)
+                        _last_dynamic_t    = t
+                        _low_faction_since = 0
+                        _peace_applied     = set()
+                else:
+                    _low_faction_since = 0
+
+                # Aggressive GREAT MIGRATION if < 4 factions after early game
+                if t > 100 and _active_now < 4 and t % 30 == 0:
+                    disruption_event_layer(t)
+                    _last_dynamic_t = t
+                    _peace_applied  = set()
+
+                # Stagnation fallback (40+ ticks with no dynamic event)
+                _stagnation = t - _last_dynamic_t
+                if _stagnation > 40:
+                    disruption_event_layer(t)
+                    _last_dynamic_t = t
+                    _peace_applied  = set()
+
+                # ── Peace escalation milestones ──────────────────────────────
+                _peace_ticks = t - _last_dynamic_t
+                _act_facs    = [f for f in factions if f.members]
+
+                # 50 ticks of peace → +10 global tension, suspicion banner
+                if _peace_ticks >= 50 and 50 not in _peace_applied:
+                    _peace_applied.add(50)
+                    for _fi in _act_facs:
+                        for _fj in _act_facs:
+                            if _fi is not _fj:
+                                _k = tuple(sorted([_fi.name, _fj.name]))
+                                combat.RIVALRIES[_k] = min(
+                                    combat.RIVALRIES.get(_k, 0) + 10, 190)
+                    _pmsg = f'Tick {t:04d}: Suspicion grows across the land... (all tensions +10)'
+                    event_log.append(_pmsg)
+                    print(_pmsg)
+
+                # 75 ticks of peace → one pair gets +30, resource-envy banner
+                if _peace_ticks >= 75 and 75 not in _peace_applied and len(_act_facs) >= 2:
+                    _peace_applied.add(75)
+                    _fa, _fb = random.sample(_act_facs, 2)
+                    _k = tuple(sorted([_fa.name, _fb.name]))
+                    combat.RIVALRIES[_k] = min(combat.RIVALRIES.get(_k, 0) + 30, 195)
+                    _res = random.choice(['food', 'wood', 'ore', 'stone'])
+                    _pmsg = (f'Tick {t:04d}: The {_fa.name} eyes '
+                             f'{_fb.name}\'s rich {_res} lands with hunger')
+                    event_log.append(_pmsg)
+                    print(_pmsg)
+
+                # 100 ticks of peace → INCIDENT forces war pressure
+                if _peace_ticks >= 100 and 100 not in _peace_applied and len(people) >= 2 and len(_act_facs) >= 2:
+                    _peace_applied.add(100)
+                    _victim     = random.choice(people)
+                    _rival_pool = [f for f in _act_facs if f.name != _victim.faction]
+                    if not _rival_pool:
+                        _rival_pool = _act_facs
+                    _rival = random.choice(_rival_pool)
+                    _k = tuple(sorted([_victim.faction or _rival.name, _rival.name]))
+                    combat.RIVALRIES[_k] = min(combat.RIVALRIES.get(_k, 0) + 50, 198)
+                    _im1 = (f'Tick {t:04d}: ══ INCIDENT — {_victim.name} found dead '
+                            f'in {_rival.name} lands ══')
+                    _im2 = (f'Tick {t:04d}: Was it murder? '
+                            f'{_victim.faction or "The wanderers"} demands answers.')
+                    event_log.append(_im1)
+                    event_log.append(_im2)
+                    print(_im1)
+                    print(_im2)
+                    _last_dynamic_t = t
+                    _peace_applied  = set()
 
             # ── Tick timing ─────────────────────────────────────────────────
             _elapsed = time.time() - _t0
@@ -689,13 +820,6 @@ def run() -> None:
                             f'Factions:{facts}  Wars:{wars}  Techs:{techno}  '
                             f'Treaties:{treaties}\n')
                 _real.flush()
-
-            # ── Stagnation check every 50 ticks ──────────────────────────
-            if t % 50 == 0:
-                _stagnation = t - _last_dynamic_t
-                if _stagnation > 40:
-                    disruption_event_layer(t)
-                    _last_dynamic_t = t
 
             # ── Mini-summary every 100 ticks ────────────────────────────────
             if t % 100 == 0:

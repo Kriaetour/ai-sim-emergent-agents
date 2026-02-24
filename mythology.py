@@ -874,23 +874,61 @@ def mythology_final_summary(factions: list, all_dead: list,
     leg_names = [f'{lg["name"]} of {f.name}'
                  for f in factions for lg in f.legends][:6]
 
-    prompt = (
-        f"THE HISTORY OF {ticks} TICKS:\n"
-        f"{era_text}\n\n"
-        f"SURVIVORS: {survivors}\n"
-        f"COLLAPSED FACTIONS: {collapsed}\n"
-        f"TOTAL DEAD: {tot_dead}   TOTAL WARS: {war_count}\n"
-        + (f"FALLEN WARRIORS: {', '.join(leg_names)}\n" if leg_names else '')
-        + "\n"
-        "Using ONLY the era summaries above, write a 4-paragraph epic history.\n"
-        "One paragraph per major era. Name specific factions and fallen warriors.\n"
-        "Write like Tolkien's Silmarillion — grand, tragic, ancient in voice.\n"
-        "EVERY sentence must reference a specific era, faction, or named event.\n"
-        "Do not write generic filler. 4 paragraphs. Under 500 words.\n"
-        + _STRICT
-    )
+    _leg_str = ', '.join(leg_names) if leg_names else 'none'
+
+    prompt = f"""Write a 4-paragraph epic history of a fallen civilization.
+
+STYLE: Write like Tolkien's Silmarillion — grand, tragic, poetic.
+VOICE: You are the last historian, writing by candlelight as the world ends.
+
+STRICT FORMAT RULES:
+- Exactly 4 paragraphs
+- Each paragraph: 3-5 sentences
+- Paragraph 1 starts with: "Before the first winter..."
+- Paragraph 2 starts with: "Yet peace is a fragile thing..."
+- Paragraph 3 starts with: "The great wars came..."
+- Paragraph 4 starts with: "Now only..."
+- NEVER say "it was recorded" or "in those days"
+- NEVER list events with bullets or dashes
+- Every sentence must name a specific faction or person
+- End every paragraph with a period
+
+SOURCE MATERIAL (weave these facts into your narrative):
+{era_text}
+
+FACTIONS THAT ENDURED: {survivors}
+FACTIONS THAT FELL: {collapsed}
+LEGENDS (fallen warriors): {_leg_str}
+TOTAL DEAD: {tot_dead}  TOTAL WARS: {war_count}
+
+Remember: flowing prose, not a list. Dramatic, not mechanical.
+Begin:"""
 
     text = _clean_multi(_ollama(prompt, max_tokens=500), word_limit=450)
+
+    # ── Post-processing: sanitise LLM output ────────────────────────────
+    if text:
+        _lines: list = []
+        for _ln in text.splitlines():
+            _stripped = _ln.strip()
+            # Drop forbidden openers
+            if _stripped.lower().startswith('in those days'):
+                continue
+            if _stripped.lower().startswith('it was recorded'):
+                continue
+            # Strip leading bullet / dash characters
+            _stripped = re.sub(r'^[\-\*\•·]+\s*', '', _stripped)
+            _lines.append(_stripped)
+        text = '\n'.join(_lines).strip()
+        # Re-merge paragraph breaks from consecutive blank lines
+        text = re.sub(r'\n{3,}', '\n\n', text)
+        # Trim to 500 words (preserve paragraph boundaries where possible)
+        _words = text.split()
+        if len(_words) > 500:
+            text = ' '.join(_words[:500])
+        # Thin output warning
+        if len(text.split()) < 100:
+            text = '[The chronicler\'s vision was unclear. The ages spoke thus:]\n\n' + text
 
     if not text:
         # Code-built fallback: 4 paragraphs stitched from era blocks
