@@ -17,7 +17,7 @@ Layer architecture
   Display               — per-tick render + periodic summaries
 """
 
-import sys, time, random, pathlib
+import sys, time, re, random, pathlib
 from datetime import datetime
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -34,13 +34,15 @@ import diplomacy
 import mythology
 import display
 
-TICKS = 300
+TICKS = 1000
 
 # ── Shared simulation state ────────────────────────────────────────────────
-people:    list = []
-factions:  list = []
-all_dead:  list = []
-event_log: list = []
+people:         list = []
+factions:       list = []
+all_dead:       list = []
+event_log:      list = []
+era_summaries:  list = []   # {'start_t', 'end_t', 'name', 'text'} — archived 100-tick windows
+_dead_factions: list = []   # defunct factions kept for reference
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -55,7 +57,7 @@ class _LogTee:
         # Combat events
         'WAR DECLARED', 'WAR ENDS', 'fell in battle',
         'ALLIANCE', 'call to arms', 'answers', 'absorbed', 'fled to',
-        'fray', 'vengeance', 'conquest',   # attacker-side ally recruitment
+        'fray', 'vengeance', 'conquest',
         # Faction / population events
         'FACTION FORMED', 'FACTION MERGE', 'SCHISM',
         'starved', 'Travelers',
@@ -66,6 +68,8 @@ class _LogTee:
         # Diplomacy events
         'TREATY', 'SURRENDER TERMS', 'broke treaty', 'MUTUAL DEFENSE',
         'shares food', 'Council vote',
+        # World events & era signals
+        'WORLD EVENT', 'NEW ERA DAWNS', 'ERA SUMMARY',
     })
 
     passthrough: bool = False   # True → show everything (used for final report)
@@ -162,7 +166,178 @@ def mythology_layer(t: int) -> None:
 
 
 # ══════════════════════════════════════════════════════════════════════════
-# Initialisation
+# Long-run support: world events, era shifts, memory pruning, era naming
+# ══════════════════════════════════════════════════════════════════════════
+
+_TICK_EXTRACT = re.compile(r'^Tick\s+(\d+)')
+
+
+def _era_name(entries: list) -> str:
+    """Classify a 100-tick window into a named age based on dominant events."""
+    wars    = sum(1 for e in entries if 'WAR DECLARED' in e)
+    battled = sum(1 for e in entries if 'fell in battle' in e)
+    starved = sum(1 for e in entries if 'starved' in e)
+    tech    = sum(1 for e in entries if 'TECH DISCOVERED' in e)
+    plague  = any('PLAGUE' in e for e in entries)
+    golden  = any('GOLDEN AGE' in e for e in entries)
+    quake   = any('EARTHQUAKE' in e for e in entries)
+    if plague:              return 'The Age of Sickness'
+    if golden:              return 'The Golden Age'
+    if quake:               return 'The Age of Ruin'
+    if wars >= 3 or battled >= 8: return 'The Crimson Years'
+    if wars >= 1 or battled >= 3: return 'The Age of Conflict'
+    if starved >= 5:        return 'The Great Famine'
+    if tech >= 4:           return 'The Age of Iron'
+    if tech >= 2:           return 'The Age of Enlightenment'
+    return                         'The Long Peace'
+
+
+def _prune_event_log(t: int) -> None:
+    """Keep only the last 200 events in memory; archive older ticks into era_summaries."""
+    if len(event_log) <= 200:
+        return
+    archive      = event_log[:-200]
+    event_log[:] = event_log[-200:]
+    # Bucket archived entries by 100-tick era
+    buckets: dict = {}
+    for entry in archive:
+        m = _TICK_EXTRACT.match(entry)
+        if m:
+            era_key = (int(m.group(1)) - 1) // 100 * 100 + 1
+            buckets.setdefault(era_key, []).append(entry)
+    for era_start in sorted(buckets):
+        if any(s['start_t'] == era_start for s in era_summaries):
+            continue   # already summarised
+        entries  = buckets[era_start]
+        era_end  = era_start + 99
+        era_lbl  = _era_name(entries)
+        text     = (
+            f'Era {era_start}–{era_end} ― {era_lbl}: '
+            f'{sum(1 for e in entries if "WAR DECLARED" in e)} wars, '
+            f'{sum(1 for e in entries if "fell in battle" in e or "starved" in e)} deaths, '
+            f'{sum(1 for e in entries if "TECH DISCOVERED" in e)} discoveries, '
+            f'{sum(1 for e in entries if "TREATY" in e)} treaties.'
+        )
+        era_summaries.append({'start_t': era_start, 'end_t': era_end,
+                               'name': era_lbl, 'text': text})
+        event_log.append(f'Tick {era_end:04d}: [ERA SUMMARY] {text}')
+
+
+def _archive_dead_factions() -> None:
+    """Record defunct factions (no members) in _dead_factions for mythology reference."""
+    for f in factions:
+        if not f.members and f not in _dead_factions:
+            _dead_factions.append(f)
+
+
+def _make_traveler_name(used: set) -> str | None:
+    """Return an unused inhabitant name, appending a generation suffix if all base names taken."""
+    for n in NAMES:
+        if n not in used:
+            return n
+    for gen in range(2, 10):
+        for n in NAMES:
+            candidate = f'{n}{gen}'
+            if candidate not in used:
+                return candidate
+    return None
+
+
+def world_event_layer(t: int) -> None:
+    """Major world event every 200 ticks — shakes up stagnant civilizations."""
+    hab = [(r, c) for r in range(GRID) for c in range(GRID)
+           if world[r][c]['habitable']]
+    # Weighted random pick
+    choice = random.choices(
+        ['PLAGUE', 'GOLDEN AGE', 'MIGRATION', 'EARTHQUAKE', 'DISCOVERY'],
+        weights=[25, 20, 25, 15, 15],
+    )[0]
+
+    if choice == 'PLAGUE':
+        for p in people:
+            p.health = max(1, p.health - 20)
+        msg = (f'Tick {t:04d}: 🐀 WORLD EVENT — THE GREAT PLAGUE '
+               f'({len(people)} inhabitants lose 20 health)')
+
+    elif choice == 'GOLDEN AGE':
+        for row in world:
+            for chunk in row:
+                maxes = BIOME_MAX[chunk['biome']]
+                for k in chunk['resources']:
+                    chunk['resources'][k] = maxes[k]
+                chunk['habitable'] = (chunk['resources']['water'] > 0
+                                      and chunk['resources']['food']  > 0)
+        msg = f'Tick {t:04d}: ✨ WORLD EVENT — GOLDEN AGE (all resources restored to maximum)'
+
+    elif choice == 'MIGRATION':
+        used_names = {p.name for p in people}
+        spawned: list = []
+        for _ in range(8):
+            nm = _make_traveler_name(used_names)
+            if not nm or not hab:
+                break
+            used_names.add(nm)
+            r, c = random.choice(hab)
+            inh = Inhabitant(nm, r, c)
+            inh.faction = None
+            inh.inventory['food'] = 5
+            belief = _BIOME_BELIEF.get(world[r][c]['biome'])
+            if belief:
+                add_belief(inh, belief)
+            people.append(inh)
+            spawned.append(nm)
+        msg = (f'Tick {t:04d}: 🌊 WORLD EVENT — MIGRATION WAVE '
+               f'({len(spawned)} newcomers: {chr(44).join(spawned)})')
+
+    elif choice == 'EARTHQUAKE':
+        targets = random.sample(hab, min(2, len(hab)))
+        for r, c in targets:
+            world[r][c]['resources']['water'] = 0
+            world[r][c]['resources']['food']  = 0
+            world[r][c]['habitable']          = False
+        msg = (f'Tick {t:04d}: 🌋 WORLD EVENT — EARTHQUAKE '
+               f'({len(targets)} chunk(s) rendered uninhabitable)')
+
+    else:   # DISCOVERY
+        active = [f for f in factions if f.members]
+        msg    = f'Tick {t:04d}: 🎁 WORLD EVENT — FREE DISCOVERY (no eligible faction)'
+        if active:
+            target    = random.choice(active)
+            f_techs   = getattr(target, 'techs', set())
+            available = [
+                tech for tech, data in technology.TECH_TREE.items()
+                if tech not in f_techs
+                and all(r in f_techs for r in data.get('requires', []))
+            ]
+            if not available:   # give any missing tech
+                available = [tech for tech in technology.TECH_TREE if tech not in f_techs]
+            if available:
+                gift = random.choice(available)
+                if not hasattr(target, 'techs'):
+                    target.techs = set()
+                target.techs.add(gift)
+                msg = (f'Tick {t:04d}: 🎁 WORLD EVENT — FREE DISCOVERY '
+                       f'({target.name} receives {gift.upper()})')
+
+    event_log.append(msg)
+    print(msg)
+
+
+def era_shift_layer(t: int) -> None:
+    """Era shift every 500 ticks: halve tensions, inject food, announce new era."""
+    # Halve all inter-faction tensions
+    for key in list(combat.RIVALRIES.keys()):
+        combat.RIVALRIES[key] = combat.RIVALRIES[key] // 2
+    # Food windfall: restore 1/3 of each chunk's food cap
+    for row in world:
+        for chunk in row:
+            cap = BIOME_MAX[chunk['biome']]['food']
+            chunk['resources']['food'] = min(cap, chunk['resources']['food'] + cap // 3)
+            chunk['habitable'] = (chunk['resources']['water'] > 0
+                                  and chunk['resources']['food']  > 0)
+    msg = f'Tick {t:04d}: ══ A NEW ERA DAWNS ══  (tensions halved, lands refreshed)'
+    event_log.append(msg)
+    print(msg)
 # ══════════════════════════════════════════════════════════════════════════
 
 def init_world() -> list:
@@ -230,8 +405,13 @@ def run() -> None:
     habitable = init_world()
     init_inhabitants(habitable)
 
+    # ── Per-run tracking ────────────────────────────────────────────────────
+    _tick_times:  list = []
+    _print_every: int  = 10 if TICKS > 500 else 1
+
     try:
         for t in range(1, TICKS + 1):
+            _t0               = time.time()
             winter            = is_winter(t)
             prev_winter       = is_winter(t - 1) if t > 1 else False
             winter_just_ended = prev_winter and not winter
@@ -247,49 +427,92 @@ def run() -> None:
             mythology_layer(t)
             world_layer(t, winter_just_ended)
 
-            # ── Population recovery: travelers arrive every 40 ticks if < 15 pop ──
+            # ── World event every 200 ticks ─────────────────────────────────
+            if t % 200 == 0:
+                world_event_layer(t)
+
+            # ── Era shift every 500 ticks ───────────────────────────────────
+            if t % 500 == 0:
+                era_shift_layer(t)
+
+            # ── Memory housekeeping every 50 ticks ──────────────────────────
+            if t % 50 == 0:
+                _prune_event_log(t)
+                _archive_dead_factions()
+                for p in people:
+                    if len(p.memory) > 10:
+                        p.memory = p.memory[-10:]
+
+            # ── Population recovery: travelers every 40 ticks if < 15 pop ──
             if t % 40 == 0 and len(people) < 15:
-                hab_now   = [(r, c) for r in range(GRID) for c in range(GRID)
-                             if world[r][c]['habitable']]
+                hab_now    = [(r, c) for r in range(GRID) for c in range(GRID)
+                              if world[r][c]['habitable']]
                 used_names = {p.name for p in people}
-                available  = [n for n in NAMES if n not in used_names]
-                count = min(5, len(available), len(hab_now) if hab_now else 0)
-                if count > 0:
-                    newcomers = random.sample(available, count)
-                    for name in newcomers:
-                        r, c = random.choice(hab_now)
-                        inh = Inhabitant(name, r, c)
-                        inh.faction = None
-                        inh.inventory['food'] = 5
-                        biome  = world[r][c]['biome']
-                        belief = _BIOME_BELIEF.get(biome)
-                        if belief:
-                            add_belief(inh, belief)
-                        people.append(inh)
-                    msg = (f"Tick {t:03d}: 🧳 Travelers from beyond the known "
-                           f"lands arrive ({', '.join(newcomers)})")
+                spawned: list = []
+                for _ in range(5):
+                    nm = _make_traveler_name(used_names)
+                    if not nm or not hab_now:
+                        break
+                    used_names.add(nm)
+                    r, c = random.choice(hab_now)
+                    inh  = Inhabitant(nm, r, c)
+                    inh.faction         = None
+                    inh.inventory['food'] = 5
+                    belief = _BIOME_BELIEF.get(world[r][c]['biome'])
+                    if belief:
+                        add_belief(inh, belief)
+                    people.append(inh)
+                    spawned.append(nm)
+                if spawned:
+                    msg = (f"Tick {t:04d}: 🧳 Travelers from beyond the known "
+                           f"lands arrive ({', '.join(spawned)})")
                     event_log.append(msg)
                     print(msg)
 
-            # ── Terminal progress line (written directly — not filtered) ───
-            alive    = len(people)
-            facts    = sum(1 for f in factions if f.members)
-            wars     = len(combat.active_wars)
-            techno   = sum(len(getattr(f, 'techs', set())) for f in factions)
-            treaties = len(diplomacy._treaties)
-            _real.write(f"  [{t:3d}/{TICKS}]  Alive:{alive:2d}  "
-                        f"Factions:{facts}  Wars:{wars}  Techs:{techno}  "
-                        f"Treaties:{treaties}\n")
-            _real.flush()
+            # ── Tick timing ─────────────────────────────────────────────────
+            _elapsed = time.time() - _t0
+            _tick_times.append(_elapsed)
+            if _elapsed > 120:
+                _real.write(f'  ⚠ Tick {t} slow: {_elapsed:.1f}s\n')
+                _real.flush()
 
-            # ── Full tick render → log file only ──────────────────────────
+            # ── Progress line (every tick for short runs, every 10 for long) ─
+            if t % _print_every == 0:
+                alive    = len(people)
+                facts    = sum(1 for f in factions if f.members)
+                wars     = len(combat.active_wars)
+                techno   = sum(len(getattr(f, 'techs', set())) for f in factions)
+                treaties = len(diplomacy._treaties)
+                _real.write(f'  [{t:{len(str(TICKS))}d}/{TICKS}]  Alive:{alive:2d}  '
+                            f'Factions:{facts}  Wars:{wars}  Techs:{techno}  '
+                            f'Treaties:{treaties}\n')
+                _real.flush()
+
+            # ── Mini-summary every 100 ticks ────────────────────────────────
+            if t % 100 == 0:
+                window  = _tick_times[-100:]
+                avg_t   = sum(window) / len(window) if window else 0
+                last_t  = _tick_times[-1] if _tick_times else 0
+                peak    = max((v for v in combat.RIVALRIES.values()), default=0)
+                era_lbl = _era_name(event_log[-200:] if len(event_log) > 200 else event_log)
+                _real.write(
+                    f'\n  ══ Tick {t}: Alive:{len(people):2d}  '
+                    f'Factions:{sum(1 for f in factions if f.members)}  '
+                    f'Wars:{len(combat.active_wars)}  '
+                    f'Tension peak:{peak}  '
+                    f'{last_t:.1f}s last / {avg_t:.1f}s avg  '
+                    f'[{era_lbl}] ══\n\n'
+                )
+                _real.flush()
+
+            # ── Full tick render → log file only ────────────────────────────
             display.render(t, people, deaths, event_log,
                            winter, all_dead, factions)
             if t % 25 == 0:
                 display.faction_summary(factions, t)
 
             if not people:
-                print("All inhabitants have perished.")
+                print('All inhabitants have perished.')
                 break
 
     except KeyboardInterrupt:
