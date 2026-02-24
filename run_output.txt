@@ -1,0 +1,6 @@
+﻿
+FACTION FORMED: The Trading Few
+FACTION FORMED: The Enduring Canopy
+  Trade routes : 20
+
+

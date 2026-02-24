@@ -1,0 +1,80 @@
+﻿  Tick 288: ≡ƒñ¥ Trade: The Salted Current ΓåÆ The Green Canopy  4 stone  (tension now 0)
+  Tick 289: Sera joined The Sworn Gatherers
+  Tick 289: Jorn rejected from The Sworn Gatherers ΓÇö conflicting beliefs
+  Tick 289: Jorn rejected from The Green Canopy ΓÇö conflicting beliefs
+  Tick 289: ΓÜö RAID: The Wandering Wilds plundered The Woven Bond's territory ΓÇö seized 3 wood, 1 stone (+10 tension)
+  Tick 290: Jorn rejected from The Sworn Gatherers ΓÇö conflicting beliefs
+  Tick 290: Jorn rejected from The Green Canopy ΓÇö conflicting beliefs
+  Tick 290: The Wandering Wilds stone price: 8ΓåÆ2 (surplus)
+  Tick 290: The Woven Bond stone price: 2ΓåÆ4 (scarce)
+  Tick 290: The Sworn Gatherers stone price: 12ΓåÆ8 (surplus)
+  Tick 290: The Salted Current stone price: 8ΓåÆ4 (surplus)
+  Tick 290: The Green Canopy wood price: 3ΓåÆ2 (surplus)
+  Tick 290: The Green Canopy stone price: 8ΓåÆ2 (surplus)
+  Tick 291: Jorn rejected from The Sworn Gatherers ΓÇö conflicting beliefs
+  Tick 291: Jorn rejected from The Green Canopy ΓÇö conflicting beliefs
+  Tick 291: Tension rising between The Green Seekers and The Sworn Gatherers: 15
+  Tick 291: Tension rising between The Green Seekers and The Green Canopy: 5
+  Tick 291: ≡ƒñ¥ Trade: The Green Seekers ΓåÆ The Wandering Wilds  4 food  (tension now 0)
+  Tick 291: ≡ƒñ¥ Trade: The Green Seekers ΓåÆ The Woven Bond  4 food  (tension now 0)
+  Tick 291: ≡ƒñ¥ Trade: The Green Seekers ΓåÆ The Salted Current  4 food  (tension now 0)
+  Tick 291: ≡ƒñ¥ Trade: The Green Canopy ΓåÆ The Wandering Wilds  4 stone  (tension now 0)
+  Tick 291: ≡ƒñ¥ Trade: The Sworn Gatherers ΓåÆ The Green Canopy  4 food  (tension now 0)
+  Tick 292: Jorn rejected from The Sworn Gatherers ΓÇö conflicting beliefs
+  Tick 292: Jorn rejected from The Green Canopy ΓÇö conflicting beliefs
+  Tick 293: Γÿá Ursa starved at Coast(1,5)
+  Tick 293: Jorn rejected from The Sworn Gatherers ΓÇö conflicting beliefs
+  Tick 293: Jorn rejected from The Green Canopy ΓÇö conflicting beliefs
+  Tick 294: Jorn rejected from The Sworn Gatherers ΓÇö conflicting beliefs
+  Tick 294: Jorn rejected from The Green Canopy ΓÇö conflicting beliefs
+  Tick 294: Tension rising between The Wandering Wilds and The Sworn Gatherers: 35 (HOSTILE)
+  Tick 294: Tension rising between The Woven Bond and The Sworn Gatherers: 10
+  Tick 294: Tension rising between The Woven Bond and The Green Canopy: 10
+  Tick 294: ≡ƒñ¥ Trade: The Green Seekers ΓåÆ The Wandering Wilds  4 food  (tension now 0)
+  Tick 294: ≡ƒñ¥ Trade: The Green Seekers ΓåÆ The Woven Bond  4 food  (tension now 0)
+  Tick 294: ≡ƒñ¥ Trade: The Green Seekers ΓåÆ The Salted Current  4 food  (tension now 0)
+  Tick 294: ≡ƒñ¥ Trade: The Wandering Wilds ΓåÆ The Salted Current  4 stone  (tension now 13)
+  Tick 294: ≡ƒñ¥ Trade: The Salted Current ΓåÆ The Woven Bond  4 stone  (tension now 9)
+  Tick 294: ≡ƒñ¥ Trade: The Woven Bond ΓåÆ The Green Canopy  4 stone  (tension now 5)
+  Tick 294: ≡ƒñ¥ Trade: The Sworn Gatherers ΓåÆ The Green Canopy  4 food  (tension now 0)
+  Tick 294: ≡ƒñ¥ Trade: The Green Canopy ΓåÆ The Salted Current  4 stone  (tension now 0)
+  Tick 294: ΓÜö RAID: The Wandering Wilds plundered The Woven Bond's territory ΓÇö seized 3 wood, 1 stone (+10 tension)
+  Tick 295: Jorn rejected from The Sworn Gatherers ΓÇö conflicting beliefs
+  Tick 295: Jorn rejected from The Green Canopy ΓÇö conflicting beliefs
+  Tick 295: The Woven Bond stone price: 4ΓåÆ2 (surplus)
+  Tick 295: The Salted Current stone price: 4ΓåÆ2 (surplus)
+  Tick 295: ≡ƒôú Rumors of coming shortage spread through the land...
+  Tick 296: Γÿá Idra starved at Plains(2,1)
+  Tick 296: Jorn rejected from The Sworn Gatherers ΓÇö conflicting beliefs
+  Tick 296: Jorn rejected from The Green Canopy ΓÇö conflicting beliefs
+  Tick 297: Jorn rejected from The Sworn Gatherers ΓÇö conflicting beliefs
+  Tick 297: Jorn rejected from The Green Canopy ΓÇö conflicting beliefs
+  Tick 297: Tension rising between The Woven Bond and The Salted Current: 10
+  Tick 297: ≡ƒñ¥ Trade: The Green Seekers ΓåÆ The Wandering Wilds  4 food  (tension now 0)
+  Tick 297: ≡ƒñ¥ Trade: The Green Seekers ΓåÆ The Woven Bond  4 food  (tension now 0)
+  Tick 297: ≡ƒñ¥ Trade: The Wandering Wilds ΓåÆ The Salted Current  4 wood  (tension now 9)
+  Tick 297: ≡ƒñ¥ Trade: The Salted Current ΓåÆ The Woven Bond  4 stone  (tension now 5)
+  Tick 297: ≡ƒñ¥ Trade: The Woven Bond ΓåÆ The Green Canopy  4 stone  (tension now 1)
+  Tick 297: ≡ƒñ¥ Trade: The Sworn Gatherers ΓåÆ The Green Canopy  4 food  (tension now 0)
+  Tick 297: ≡ƒñ¥ Trade: The Green Canopy ΓåÆ The Salted Current  4 stone  (tension now 0)
+  Tick 298: Jorn rejected from The Sworn Gatherers ΓÇö conflicting beliefs
+  Tick 298: Jorn rejected from The Green Canopy ΓÇö conflicting beliefs
+  Tick 298: ΓÜö RAID: The Woven Bond plundered The Wandering Wilds's territory ΓÇö seized 3 wood, 1 stone (+10 tension)
+  Tick 299: Fenn shared 'loss teaches caution' with Orin
+  Tick 299: Jorn rejected from The Sworn Gatherers ΓÇö conflicting beliefs
+  Tick 299: Jorn rejected from The Green Canopy ΓÇö conflicting beliefs
+  Tick 300: Jorn rejected from The Sworn Gatherers ΓÇö conflicting beliefs
+  Tick 300: Jorn rejected from The Green Canopy ΓÇö conflicting beliefs
+  Tick 300: Tension rising between The Wandering Wilds and The Salted Current: 10
+  Tick 300: ≡ƒôë FOOD SHORTAGE ΓÇö food running low across the land
+  Tick 300: ≡ƒñ¥ Trade: The Green Seekers ΓåÆ The Wandering Wilds  4 food  (tension now 0)
+  Tick 300: ≡ƒñ¥ Trade: The Green Seekers ΓåÆ The Woven Bond  4 food  (tension now 0)
+  Tick 300: ≡ƒÜ½ Trade negotiations between The Green Seekers & The Sworn Gatherers failed (+3 tension)
+  Tick 300: ≡ƒñ¥ Trade: The Salted Current ΓåÆ The Wandering Wilds  4 stone  (tension now 5)
+  Tick 300: ≡ƒñ¥ Trade: The Wandering Wilds ΓåÆ The Green Canopy  4 stone  (tension now 0)
+  Tick 300: ≡ƒÜ½ Trade negotiations between The Woven Bond & The Sworn Gatherers failed (+3 tension)
+  Tick 300: ≡ƒñ¥ Trade: The Woven Bond ΓåÆ The Green Canopy  4 wood  (tension now 0)
+  Tick 300: ≡ƒñ¥ Trade: The Sworn Gatherers ΓåÆ The Salted Current  4 food  (tension now 0)
+  Tick 300: ≡ƒñ¥ Trade: The Sworn Gatherers ΓåÆ The Green Canopy  4 food  (tension now 0)
+  Tick 300: ≡ƒñ¥ Trade: The Green Canopy ΓåÆ The Salted Current  4 stone  (tension now 0)
+  Tick 300: ΓÜö RAID: The Woven Bond plundered The Wandering Wilds's territory ΓÇö seized 3 wood, 1 stone (+10 tension)

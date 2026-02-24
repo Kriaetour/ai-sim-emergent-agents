@@ -1,0 +1,1535 @@
+﻿
+Γöé  Tick 001/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:0  
+Unaligned:30Γöé
+Γöé  Tick 002/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:0  
+Unaligned:30Γöé
+Γöé  Tick 003/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:0  
+Unaligned:30Γöé
+Γöé  Tick 004/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:0  
+Unaligned:30Γöé
+Γöé  Tick 005/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:0  
+Unaligned:30Γöé
+Γöé  Tick 006/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:0  
+Unaligned:30Γöé
+Γöé  Tick 007/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:0  
+Unaligned:30Γöé
+Γöé  Tick 008/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:0  
+Unaligned:30Γöé
+Γöé  Tick 009/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:0  
+Unaligned:30Γöé
+FACTION FORMED: The Wild Rovers
+Γöé  Tick 010/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:27Γöé
+Γöé  Tick 10: FACTION ΓÇö The Wild Rovers formed (Dova, Neva, Gale)          
+Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 011/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:27Γöé
+Γöé  Tick 10: FACTION ΓÇö The Wild Rovers formed (Dova, Neva, Gale)          
+Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 012/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:27Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 013/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:27Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 014/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:27Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 015/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:27Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 016/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:27Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 017/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:26Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 018/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:26Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 019/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:26Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 020/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:26Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 021/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:26Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 022/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:26Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 023/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:26Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 024/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:26Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 025/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:26Γöé
+  Factions: [AA]=The Wild Rovers
+FACTION SUMMARY  ΓÇö Tick 025  (1 active)
+Γöé  Tick 026/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 027/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 028/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 029/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 030/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 031/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 032/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 033/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 034/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 035/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 036/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 037/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 038/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 039/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 040/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 041/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:25Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 042/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:24Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 043/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:24Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 044/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:24Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 045/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:24Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 046/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:24Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 047/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:24Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 048/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:24Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 049/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:1  
+Unaligned:24Γöé
+  Factions: [AA]=The Wild Rovers
+Γöé  Tick 050/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:24Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+FACTION SUMMARY  ΓÇö Tick 050  (2 active)
+    Beliefs  : self reliance, crowded lands breed conflict, endurance 
+rewarded, trust no group, trade builds bonds, community sustains, loyalty 
+above all
+Γöé  Tick 051/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:24Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 052/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:24Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 053/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:24Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 054/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:24Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 055/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:24Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 056/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 057/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 058/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 059/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 060/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 061/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 062/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 063/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 064/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 065/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 066/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 067/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 068/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 069/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 070/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 071/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 072/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 073/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 074/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 075/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+FACTION SUMMARY  ΓÇö Tick 075  (2 active)
+    Beliefs  : self reliance, crowded lands breed conflict, endurance 
+rewarded, trust no group, trade builds bonds, community sustains, loyalty 
+above all
+Γöé  Tick 076/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 077/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 078/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 079/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 080/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 081/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:22Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 082/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:22Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 083/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:22Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 084/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:22Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 085/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:22Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 086/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:22Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 087/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:22Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 088/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:22Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 089/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:21Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 090/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:20Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 091/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 092/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 093/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 094/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 095/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 096/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 097/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 098/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 099/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 100/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+FACTION SUMMARY  ΓÇö Tick 100  (2 active)
+    Beliefs  : self reliance, crowded lands breed conflict, endurance 
+rewarded, trust no group, trade builds bonds, community sustains, loyalty 
+above all
+Γöé  Tick 101/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 102/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 103/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 104/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 105/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 106/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 107/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 108/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 109/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 110/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 111/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 112/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 113/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 114/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 115/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 116/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 117/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 118/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 119/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 120/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 121/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 122/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 123/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 124/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 125/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+FACTION SUMMARY  ΓÇö Tick 125  (2 active)
+    Beliefs  : self reliance, crowded lands breed conflict, endurance 
+rewarded, trust no group, trade builds bonds, community sustains, loyalty 
+above all
+Γöé  Tick 126/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 127/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:27Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 128/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 129/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:20Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 130/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:19Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 131/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:19Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 132/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:19Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 133/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:19Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 134/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:19Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 135/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:19Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 136/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:19Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 137/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:19Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 138/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:19Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 139/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:19Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 140/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:19Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 141/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 142/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 143/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 144/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 145/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 146/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 147/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 148/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 149/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:2  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market
+Γöé  Tick 150/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+FACTION SUMMARY  ΓÇö Tick 150  (3 active)
+    Beliefs  : self reliance, crowded lands breed conflict, endurance 
+rewarded, trust no group, trade builds bonds, community sustains, loyalty 
+above all
+Γöé  Tick 151/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 152/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 153/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 154/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 155/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 156/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 157/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 158/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 159/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 160/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+Γöé  Tick 160: Brek shared 'endurance rewarded' with Dova                  Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 161/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+Γöé  Tick 160: Brek shared 'endurance rewarded' with Dova                  Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 162/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+Γöé  Tick 160: Brek shared 'endurance rewarded' with Dova                  Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 163/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+Γöé  Tick 160: Brek shared 'endurance rewarded' with Dova                  Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 164/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+Γöé  Tick 160: Brek shared 'endurance rewarded' with Dova                  Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 165/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 166/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 167/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 168/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 169/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 170/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 171/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 172/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 173/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 174/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange
+Γöé  Tick 175/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+FACTION SUMMARY  ΓÇö Tick 175  (3 active)
+    Beliefs  : self reliance, crowded lands breed conflict, endurance 
+rewarded, trust no group, trade builds bonds, community sustains, loyalty 
+above all
+Γöé  Tick 176/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 177/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 178/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 179/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 180/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 181/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 182/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 183/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:18Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 184/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 185/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 186/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 187/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 188/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 189/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 190/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 191/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 192/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 193/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 194/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 195/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 196/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 197/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 198/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 199/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:3  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 200/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:4  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+FACTION SUMMARY  ΓÇö Tick 200  (4 active)
+    Beliefs  : self reliance, crowded lands breed conflict, endurance 
+rewarded, trust no group, trade builds bonds, community sustains, loyalty 
+above all
+    Beliefs  : migration brings hope, endurance rewarded, trust no group, 
+trade builds bonds, the wilds provide, the forest shelters, loyalty above all
+Γöé  Tick 201/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:4  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 202/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:4  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 203/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:4  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 204/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:4  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 205/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:4  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 206/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:4  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 207/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:4  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 208/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:4  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 209/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:4  
+Unaligned:23Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+FACTION FORMED: The Steadfast Market
+Beliefs   : self reliance, endurance rewarded, trade builds bonds, the wilds 
+provide, loyalty above all
+Γöé  Tick 210/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:5  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 211/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:5  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 212/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:5  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 213/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:5  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 214/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:5  
+Unaligned:15Γöé
+Γöé  Tick 214: Coro shared 'endurance rewarded' with Lyse                  Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 215/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:5  
+Unaligned:15Γöé
+Γöé  Tick 214: Coro shared 'endurance rewarded' with Lyse                  Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 216/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:5  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 217/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:5  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 218/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:5  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 219/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:5  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 220/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:5  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 221/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:5  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 222/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:5  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 223/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:5  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 224/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:5  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 225/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:6  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+FACTION SUMMARY  ΓÇö Tick 225  (6 active)
+    Beliefs  : self reliance, crowded lands breed conflict, endurance 
+rewarded, trust no group, trade builds bonds, community sustains, loyalty 
+above all
+    Beliefs  : migration brings hope, endurance rewarded, trust no group, 
+trade builds bonds, the wilds provide, the forest shelters, loyalty above all
+    Beliefs  : self reliance, endurance rewarded, trade builds bonds, the 
+wilds provide, loyalty above all
+    Beliefs  : self reliance, migration brings hope, endurance rewarded, trust 
+no group, trade builds bonds, loyalty above all
+Γöé  Tick 226/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:6  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 227/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:6  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 228/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:6  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 229/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:6  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 230/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:6  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 231/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:6  
+Unaligned:15Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 232/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:6  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 233/300  Γ¥ä WINTER  Alive:30/30  Deaths: 0  Factions:6  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 234/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:6  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 235/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:6  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 236/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:6  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 237/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:6  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 238/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:6  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 239/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:6  
+Unaligned:14Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+FACTION FORMED: The Coastal Survivors
+Beliefs   : self reliance, the sea provides, endurance rewarded, trade builds 
+bonds, the wilds provide
+Tick 240: Hana rejected from The Coastal Survivors ΓÇö conflicting beliefs
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 1
+Tick 240: ≡ƒÆ░ The Coastal Survivors invents currency ΓÇö 'dried herbs' (each 
+member receives 10)
+Tick 240: The Coastal Survivors food price: 2ΓåÆ1 (surplus)
+Tick 240: The Coastal Survivors wood price: 3ΓåÆ6 (scarce)
+Tick 240: The Coastal Survivors ore price: 5ΓåÆ10 (scarce)
+Tick 240: The Coastal Survivors stone price: 4ΓåÆ8 (scarce)
+Γöé  Tick 240/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:7  
+Unaligned:11Γöé
+Γöé  Tick 240: ≡ƒñ¥ Trade: The Bound Pact ΓåÆ The Coastal Survivors  3 food  ( 
+ Γöé
+Γöé  Tick 240: ≡ƒñ¥ Trade: The Forest Canopy ΓåÆ The Coastal Survivors  3 food 
+ Γöé
+Γöé  Tick 240: ≡ƒñ¥ Trade: The Steadfast Market ΓåÆ The Coastal Survivors  3 f 
+ Γöé
+Γöé  Tick 240: ≡ƒñ¥ Trade: The Trading Sworn ΓåÆ The Coastal Survivors  3 food 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 241/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:7  
+Unaligned:11Γöé
+Γöé  Tick 240: ≡ƒñ¥ Trade: The Forest Canopy ΓåÆ The Coastal Survivors  3 food 
+ Γöé
+Γöé  Tick 240: ≡ƒñ¥ Trade: The Steadfast Market ΓåÆ The Coastal Survivors  3 f 
+ Γöé
+Γöé  Tick 240: ≡ƒñ¥ Trade: The Trading Sworn ΓåÆ The Coastal Survivors  3 food 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 242/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:7  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 2
+Γöé  Tick 243/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:7  
+Unaligned:10Γöé
+Γöé  Tick 243: ≡ƒñ¥ Trade: The Bound Pact ΓåÆ The Coastal Survivors  3 food  ( 
+ Γöé
+Γöé  Tick 243: ≡ƒñ¥ Trade: The Forest Canopy ΓåÆ The Coastal Survivors  3 food 
+ Γöé
+Γöé  Tick 243: ≡ƒñ¥ Trade: The Steadfast Market ΓåÆ The Coastal Survivors  3 f 
+ Γöé
+Γöé  Tick 243: ≡ƒñ¥ Trade: The Trading Sworn ΓåÆ The Coastal Survivors  3 food 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 244/300  ΓÿÇ Summer  Alive:30/30  Deaths: 0  Factions:7  
+Unaligned:10Γöé
+Γöé  Tick 243: ≡ƒñ¥ Trade: The Bound Pact ΓåÆ The Coastal Survivors  3 food  ( 
+ Γöé
+Γöé  Tick 243: ≡ƒñ¥ Trade: The Forest Canopy ΓåÆ The Coastal Survivors  3 food 
+ Γöé
+Γöé  Tick 243: ≡ƒñ¥ Trade: The Steadfast Market ΓåÆ The Coastal Survivors  3 f 
+ Γöé
+Γöé  Tick 243: ≡ƒñ¥ Trade: The Trading Sworn ΓåÆ The Coastal Survivors  3 food 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 245/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:7  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 3
+Tick 246: ≡ƒ¢ñ Trade route established: The Bound Pact Γåö The Coastal 
+Survivors (food)
+Tick 246: ≡ƒ¢ñ Trade route established: The Forest Canopy Γåö The Coastal 
+Survivors (food)
+Tick 246: ≡ƒ¢ñ Trade route established: The Steadfast Market Γåö The Coastal 
+Survivors (food)
+Γöé  Tick 246/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:7  
+Unaligned:10Γöé
+Γöé  Tick 246: ≡ƒñ¥ Trade: The Bound Pact ΓåÆ The Coastal Survivors  3 food  ( 
+ Γöé
+Γöé  Tick 246: ≡ƒñ¥ Trade: The Forest Canopy ΓåÆ The Coastal Survivors  3 food 
+ Γöé
+Γöé  Tick 246: ≡ƒñ¥ Trade: The Steadfast Market ΓåÆ The Coastal Survivors  3 f 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 247/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:7  
+Unaligned:10Γöé
+Γöé  Tick 246: ≡ƒñ¥ Trade: The Forest Canopy ΓåÆ The Coastal Survivors  3 food 
+ Γöé
+Γöé  Tick 246: ≡ƒñ¥ Trade: The Steadfast Market ΓåÆ The Coastal Survivors  3 f 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 248/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:7  
+Unaligned:10Γöé
+Γöé  Tick 246: ≡ƒñ¥ Trade: The Steadfast Market ΓåÆ The Coastal Survivors  3 f 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 1
+Γöé  Tick 249/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:7  
+Unaligned:10Γöé
+Γöé  Tick 249: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  3 food   
+ Γöé
+Γöé  Tick 249: ≡ƒñ¥ Trade: The Bound Pact ΓåÆ The Coastal Survivors  4 food  ( 
+ Γöé
+Γöé  Tick 249: ≡ƒñ¥ Trade: The Forest Canopy ΓåÆ The Coastal Survivors  4 food 
+ Γöé
+Γöé  Tick 249: ≡ƒñ¥ Trade: The Steadfast Market ΓåÆ The Coastal Survivors  4 f 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+  ΓÜí SCHISM  ΓÇö  The Coastal Survivors splits!
+Γöé  Tick 250/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+FACTION SUMMARY  ΓÇö Tick 250  (9 active)
+    Beliefs  : self reliance, crowded lands breed conflict, endurance 
+rewarded, trust no group, trade builds bonds, community sustains, loyalty 
+above all
+    Beliefs  : migration brings hope, endurance rewarded, trust no group, 
+trade builds bonds, the wilds provide, the forest shelters, loyalty above all
+    Beliefs  : self reliance, endurance rewarded, trade builds bonds, the 
+wilds provide, loyalty above all
+    Beliefs  : self reliance, migration brings hope, endurance rewarded, trust 
+no group, trade builds bonds, loyalty above all
+  The Coastal Survivors  (founded tick 240)
+    Beliefs  : self reliance, the sea provides, endurance rewarded, trade 
+builds bonds, the wilds provide
+    Beliefs  : self reliance, migration brings hope, crowded lands breed 
+conflict, endurance rewarded, community sustains, trade builds bonds, the 
+wilds provide, the forest shelters
+    Beliefs  : self reliance, migration brings hope, the sea provides, 
+endurance rewarded, the wise must lead, trade builds bonds, community 
+sustains, the wilds provide
+Γöé  Tick 251/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 1
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 1
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 21
+Tick 252: ≡ƒ¢ñ Trade route established: The Wild Market Γåö The Coastal 
+Survivors (food)
+Γöé  Tick 252/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+Γöé  Tick 252: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Forest Rovers  3 food 
+ Γöé
+Γöé  Tick 252: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Drifting Current  3 f 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 253/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+Γöé  Tick 252: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Forest Rovers  3 food 
+ Γöé
+Γöé  Tick 252: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Drifting Current  3 f 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 254/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+Γöé  Tick 252: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Forest Rovers  3 food 
+ Γöé
+Γöé  Tick 252: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Drifting Current  3 f 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 1
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 1
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 17
+Γöé  Tick 255/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+Γöé  Tick 255: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Forest Rovers  3 food 
+ Γöé
+Γöé  Tick 255: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Drifting Current  3 f 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 256/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+Γöé  Tick 255: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Forest Rovers  3 food 
+ Γöé
+Γöé  Tick 255: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Drifting Current  3 f 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 257/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+Γöé  Tick 255: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Drifting Current  3 f 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 1
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 1
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 13
+Tick 258: ≡ƒ¢ñ Trade route established: The Coastal Survivors Γåö The Drifting 
+Current (food)
+Γöé  Tick 258/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+Γöé  Tick 258: ≡ƒ¢ñ Trade route established: The Coastal Survivors Γåö The Dri 
+ Γöé
+Γöé  Tick 258: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Drifting Current  3 f 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 259/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+Γöé  Tick 258: ≡ƒ¢ñ Trade route established: The Coastal Survivors Γåö The Dri 
+ Γöé
+Γöé  Tick 258: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Drifting Current  3 f 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 260/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+Γöé  Tick 258: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Drifting Current  3 f 
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 1
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 2
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 9
+Γöé  Tick 261/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 262/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 263/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 1
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 3
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 10
+Γöé  Tick 264/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 265/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 266/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 1
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 4
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 11
+Γöé  Tick 267/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 268/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 269/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 1
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 5
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 12
+Γöé  Tick 270/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+Γöé  Tick 270: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  4 food   
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 271/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 272/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 1
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 6
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 13
+Γöé  Tick 273/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+Γöé  Tick 273: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  4 food   
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 274/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 275/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+FACTION SUMMARY  ΓÇö Tick 275  (9 active)
+    Beliefs  : self reliance, crowded lands breed conflict, endurance 
+rewarded, trust no group, trade builds bonds, community sustains, loyalty 
+above all
+    Beliefs  : migration brings hope, endurance rewarded, trust no group, 
+trade builds bonds, the wilds provide, the forest shelters, loyalty above all
+    Beliefs  : self reliance, endurance rewarded, trade builds bonds, the 
+wilds provide, loyalty above all
+    Beliefs  : self reliance, migration brings hope, endurance rewarded, trust 
+no group, trade builds bonds, loyalty above all
+  The Coastal Survivors  (founded tick 240)
+    Beliefs  : self reliance, the sea provides, endurance rewarded, trade 
+builds bonds, the wilds provide
+    Beliefs  : self reliance, migration brings hope, crowded lands breed 
+conflict, endurance rewarded, community sustains, trade builds bonds, the 
+wilds provide, the forest shelters
+    Beliefs  : self reliance, migration brings hope, the sea provides, 
+endurance rewarded, the wise must lead, trade builds bonds, community 
+sustains, the wilds provide
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 1
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 7
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 14
+Γöé  Tick 276/300  Γ¥ä WINTER  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+Γöé  Tick 276: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  4 food   
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 277/300  Γ¥ä WINTER  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 278/300  Γ¥ä WINTER  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:10Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 1
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 8
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 17
+Γöé  Tick 279/300  Γ¥ä WINTER  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+Γöé  Tick 279: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  4 food   
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 280/300  Γ¥ä WINTER  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 281/300  Γ¥ä WINTER  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 1
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 9
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 18
+Γöé  Tick 282/300  Γ¥ä WINTER  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+Γöé  Tick 282: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  4 food   
+ Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 283/300  Γ¥ä WINTER  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 284/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Rovers vs The Coastal Survivors ΓÇö tension: 1
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 1
+ΓÜö Rivalry: The Bound Pact vs The Coastal Survivors ΓÇö tension: 1
+ΓÜö Rivalry: The Steadfast Market vs The Coastal Survivors ΓÇö tension: 1
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 10
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 19
+Γöé  Tick 285/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 286/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 287/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Rovers vs The Coastal Survivors ΓÇö tension: 2
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 2
+ΓÜö Rivalry: The Bound Pact vs The Coastal Survivors ΓÇö tension: 2
+ΓÜö Rivalry: The Steadfast Market vs The Coastal Survivors ΓÇö tension: 2
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 11
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 20
+Γöé  Tick 288/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 289/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 290/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Rovers vs The Coastal Survivors ΓÇö tension: 3
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 3
+ΓÜö Rivalry: The Bound Pact vs The Coastal Survivors ΓÇö tension: 3
+ΓÜö Rivalry: The Steadfast Market vs The Coastal Survivors ΓÇö tension: 3
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 12
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 21
+Γöé  Tick 291/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 292/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 293/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Rovers vs The Coastal Survivors ΓÇö tension: 4
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 4
+ΓÜö Rivalry: The Bound Pact vs The Coastal Survivors ΓÇö tension: 4
+ΓÜö Rivalry: The Steadfast Market vs The Coastal Survivors ΓÇö tension: 4
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 13
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 22
+Γöé  Tick 294/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 295/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 296/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Rovers vs The Coastal Survivors ΓÇö tension: 5
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 8
+ΓÜö Rivalry: The Bound Pact vs The Coastal Survivors ΓÇö tension: 5
+ΓÜö Rivalry: The Steadfast Market vs The Coastal Survivors ΓÇö tension: 5
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 14
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 23
+Γöé  Tick 297/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 298/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+Γöé  Tick 299/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+ΓÜö Rivalry: The Wild Rovers vs The Coastal Survivors ΓÇö tension: 6
+ΓÜö Rivalry: The Wild Market vs The Coastal Survivors ΓÇö tension: 9
+ΓÜö Rivalry: The Bound Pact vs The Coastal Survivors ΓÇö tension: 6
+ΓÜö Rivalry: The Steadfast Market vs The Coastal Survivors ΓÇö tension: 6
+ΓÜö Rivalry: The Coastal Survivors vs The Forest Rovers ΓÇö tension: 15
+ΓÜö Rivalry: The Coastal Survivors vs The Drifting Current ΓÇö tension: 24
+Γöé  Tick 300/300  ΓÿÇ Summer  Alive:29/30  Deaths: 1  Factions:9  
+Unaligned:9Γöé
+  Factions: [AA]=The Wild Rovers  [BB]=The Wild Market  [CC]=The Forest 
+Exchange  [D
+FACTION SUMMARY  ΓÇö Tick 300  (9 active)
+    Beliefs  : self reliance, crowded lands breed conflict, endurance 
+rewarded, trust no group, trade builds bonds, community sustains, loyalty 
+above all
+    Beliefs  : migration brings hope, endurance rewarded, trust no group, 
+trade builds bonds, the wilds provide, the forest shelters, loyalty above all
+    Beliefs  : self reliance, endurance rewarded, trade builds bonds, the 
+wilds provide, loyalty above all
+    Beliefs  : self reliance, migration brings hope, endurance rewarded, trust 
+no group, trade builds bonds, loyalty above all
+  The Coastal Survivors  (founded tick 240)
+    Beliefs  : self reliance, the sea provides, endurance rewarded, trade 
+builds bonds, the wilds provide
+    Beliefs  : self reliance, migration brings hope, crowded lands breed 
+conflict, endurance rewarded, community sustains, trade builds bonds, the 
+wilds provide, the forest shelters
+    Beliefs  : self reliance, migration brings hope, the sea provides, 
+endurance rewarded, the wise must lead, trade builds bonds, community 
+sustains, the wilds provide
+Survivors : 29/30  |  Deaths: 1
+Most beliefs : Vael  (8:  migration brings hope, trade builds bonds, the wilds 
+provide, self reliance, community sustains, endurance rewarded, trust no 
+group, loyalty above all)
+Factions formed: 10  |  Active at end: 9
+FACTION SUMMARY  ΓÇö Tick 300  (9 active)
+    Beliefs  : self reliance, crowded lands breed conflict, endurance 
+rewarded, trust no group, trade builds bonds, community sustains, loyalty 
+above all
+    Beliefs  : migration brings hope, endurance rewarded, trust no group, 
+trade builds bonds, the wilds provide, the forest shelters, loyalty above all
+    Beliefs  : self reliance, endurance rewarded, trade builds bonds, the 
+wilds provide, loyalty above all
+    Beliefs  : self reliance, migration brings hope, endurance rewarded, trust 
+no group, trade builds bonds, loyalty above all
+  The Coastal Survivors  (founded tick 240)
+    Beliefs  : self reliance, the sea provides, endurance rewarded, trade 
+builds bonds, the wilds provide
+    Beliefs  : self reliance, migration brings hope, crowded lands breed 
+conflict, endurance rewarded, community sustains, trade builds bonds, the 
+wilds provide, the forest shelters
+    Beliefs  : self reliance, migration brings hope, the sea provides, 
+endurance rewarded, the wise must lead, trade builds bonds, community 
+sustains, the wilds provide
+    The Coastal Survivors           'dried herbs'  (0 in circulation)
+  Wealthiest faction : The Wild Rovers  (wealth 2081)
+  Poorest faction    : The Drifting Current  (wealth 470)
+    The Wild Rovers Γåö The Wild Market  (food, 74 trades)
+    The Wild Rovers Γåö The Forest Exchange  (food, 9 trades)
+    The Wild Market Γåö The Forest Exchange  (food, 9 trades)
+    The Wild Rovers Γåö The Bound Pact  (food, 42 trades)
+    The Wild Market Γåö The Bound Pact  (food, 14 trades)
+    The Wild Rovers Γåö The Forest Canopy  (food, 34 trades)
+    The Wild Market Γåö The Forest Canopy  (food, 15 trades)
+    The Bound Pact Γåö The Forest Canopy  (food, 5 trades)
+    The Wild Rovers Γåö The Steadfast Market  (food, 15 trades)
+    The Wild Market Γåö The Steadfast Market  (food, 12 trades)
+    The Bound Pact Γåö The Steadfast Market  (food, 4 trades)
+    The Wild Market Γåö The Trading Sworn  (food, 16 trades)
+    The Bound Pact Γåö The Trading Sworn  (food, 9 trades)
+    The Forest Canopy Γåö The Trading Sworn  (food, 6 trades)
+    The Steadfast Market Γåö The Trading Sworn  (food, 4 trades)
+    The Bound Pact Γåö The Coastal Survivors  (food, 8 trades)
+    The Forest Canopy Γåö The Coastal Survivors  (food, 6 trades)
+    The Steadfast Market Γåö The Coastal Survivors  (food, 7 trades)
+    The Wild Market Γåö The Coastal Survivors  (food, 13 trades)
+    The Wild Market Γåö The Forest Rovers  (food, 17 trades)
+    The Bound Pact Γåö The Forest Rovers  (food, 8 trades)
+    The Bound Pact Γåö The Drifting Current  (food, 10 trades)
+    The Forest Canopy Γåö The Forest Rovers  (food, 6 trades)
+    The Forest Canopy Γåö The Drifting Current  (food, 6 trades)
+    The Steadfast Market Γåö The Forest Rovers  (food, 6 trades)
+    The Steadfast Market Γåö The Drifting Current  (food, 7 trades)
+    The Trading Sworn Γåö The Forest Rovers  (food, 3 trades)
+    The Trading Sworn Γåö The Drifting Current  (food, 3 trades)
+    The Coastal Survivors Γåö The Drifting Current  (food, 3 trades)
+    The Wild Market Γåö The Drifting Current  (food, 11 trades)
+  Total raids  : 0
+    The Coastal Survivors           wood:3ΓåÆ6.0  ore:5ΓåÆ10.0  stone:4ΓåÆ8.0
+Combat history:
+  No wars declared.
+  Tick 10: FACTION ΓÇö The Wild Rovers formed (Dova, Neva, Gale)
+  Tick 160: Brek shared 'endurance rewarded' with Dova
+  Tick 175: Coro shared 'endurance rewarded' with Roan
+  Tick 210: FACTION ΓÇö The Steadfast Market formed (Nori, Finn, Roan)
+  Tick 214: Coro shared 'endurance rewarded' with Lyse
+  Tick 240: FACTION ΓÇö The Coastal Survivors formed (Reva, Pyra, Brek)
+  Tick 240: Hana rejected from The Coastal Survivors ΓÇö conflicting beliefs
+  Tick 240: ≡ƒÆ░ The Coastal Survivors invents currency ΓÇö 'dried herbs' 
+(each member receives 10)
+  Tick 240: The Coastal Survivors food price: 2ΓåÆ1 (surplus)
+  Tick 240: The Coastal Survivors wood price: 3ΓåÆ6 (scarce)
+  Tick 240: The Coastal Survivors ore price: 5ΓåÆ10 (scarce)
+  Tick 240: The Coastal Survivors stone price: 4ΓåÆ8 (scarce)
+  Tick 240: ≡ƒñ¥ Trade: The Bound Pact ΓåÆ The Coastal Survivors  3 food  
+(tension now 0)
+  Tick 240: ≡ƒñ¥ Trade: The Forest Canopy ΓåÆ The Coastal Survivors  3 food  
+(tension now 0)
+  Tick 240: ≡ƒñ¥ Trade: The Steadfast Market ΓåÆ The Coastal Survivors  3 food 
+ (tension now 0)
+  Tick 240: ≡ƒñ¥ Trade: The Trading Sworn ΓåÆ The Coastal Survivors  3 food  
+(tension now 0)
+  Tick 243: ≡ƒñ¥ Trade: The Bound Pact ΓåÆ The Coastal Survivors  3 food  
+(tension now 0)
+  Tick 243: ≡ƒñ¥ Trade: The Forest Canopy ΓåÆ The Coastal Survivors  3 food  
+(tension now 0)
+  Tick 243: ≡ƒñ¥ Trade: The Steadfast Market ΓåÆ The Coastal Survivors  3 food 
+ (tension now 0)
+  Tick 243: ≡ƒñ¥ Trade: The Trading Sworn ΓåÆ The Coastal Survivors  3 food  
+(tension now 0)
+  Tick 246: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  3 food  
+(tension now 0)
+  Tick 246: ≡ƒ¢ñ Trade route established: The Bound Pact Γåö The Coastal 
+Survivors (food)
+  Tick 246: ≡ƒñ¥ Trade: The Bound Pact ΓåÆ The Coastal Survivors  3 food  
+(tension now 0)
+  Tick 246: ≡ƒ¢ñ Trade route established: The Forest Canopy Γåö The Coastal 
+Survivors (food)
+  Tick 246: ≡ƒñ¥ Trade: The Forest Canopy ΓåÆ The Coastal Survivors  3 food  
+(tension now 0)
+  Tick 246: ≡ƒ¢ñ Trade route established: The Steadfast Market Γåö The Coastal 
+Survivors (food)
+  Tick 246: ≡ƒñ¥ Trade: The Steadfast Market ΓåÆ The Coastal Survivors  3 food 
+ (tension now 0)
+  Tick 249: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  3 food  
+(tension now 0)
+  Tick 249: ≡ƒñ¥ Trade: The Bound Pact ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 249: ≡ƒñ¥ Trade: The Forest Canopy ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 249: ≡ƒñ¥ Trade: The Steadfast Market ΓåÆ The Coastal Survivors  4 food 
+ (tension now 0)
+  Tick 250: ΓÜí SCHISM ΓÇö The Drifting Current breaks from The Coastal 
+Survivors (community_sustains vs self_reliance)
+  Tick 252: ≡ƒ¢ñ Trade route established: The Wild Market Γåö The Coastal 
+Survivors (food)
+  Tick 252: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  3 food  
+(tension now 0)
+  Tick 252: ≡ƒñ¥ Trade: The Bound Pact ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 252: ≡ƒñ¥ Trade: The Forest Canopy ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 252: ≡ƒñ¥ Trade: The Steadfast Market ΓåÆ The Coastal Survivors  4 food 
+ (tension now 0)
+  Tick 252: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Forest Rovers  3 food  
+(tension now 0)
+  Tick 252: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Drifting Current  3 food 
+ (tension now 16)
+  Tick 255: Lira shared 'endurance rewarded' with Vael
+  Tick 255: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 255: ≡ƒñ¥ Trade: The Bound Pact ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 255: ≡ƒñ¥ Trade: The Forest Canopy ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 255: ≡ƒñ¥ Trade: The Steadfast Market ΓåÆ The Coastal Survivors  4 food 
+ (tension now 0)
+  Tick 255: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Forest Rovers  3 food  
+(tension now 0)
+  Tick 255: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Drifting Current  3 food 
+ (tension now 12)
+  Tick 258: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 258: ≡ƒñ¥ Trade: The Bound Pact ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 258: ≡ƒÜ½ Trade negotiations between The Forest Canopy & The Coastal 
+Survivors failed (+3 tension)
+  Tick 258: ≡ƒñ¥ Trade: The Steadfast Market ΓåÆ The Coastal Survivors  4 food 
+ (tension now 0)
+  Tick 258: ≡ƒ¢ñ Trade route established: The Coastal Survivors Γåö The 
+Drifting Current (food)
+  Tick 258: ≡ƒñ¥ Trade: The Coastal Survivors ΓåÆ The Drifting Current  3 food 
+ (tension now 8)
+  Tick 261: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 261: ≡ƒñ¥ Trade: The Bound Pact ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 264: Tension rising between The Coastal Survivors and The Drifting 
+Current: 10
+  Tick 264: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 267: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 270: Tension rising between The Coastal Survivors and The Forest 
+Rovers: 5
+  Tick 270: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 273: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 276: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 276: ≡ƒÜ½ Trade negotiations between The Forest Canopy & The Coastal 
+Survivors failed (+3 tension)
+  Tick 279: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 282: ≡ƒñ¥ Trade: The Wild Market ΓåÆ The Coastal Survivors  4 food  
+(tension now 0)
+  Tick 285: Tension rising between The Coastal Survivors and The Forest 
+Rovers: 10
+  Tick 288: Tension rising between The Coastal Survivors and The Drifting 
+Current: 20
+  Tick 294: ≡ƒÜ½ Trade negotiations between The Wild Market & The Coastal 
+Survivors failed (+3 tension)
+  Tick 297: Tension rising between The Wild Rovers and The Coastal Survivors: 5
+  Tick 297: Tension rising between The Bound Pact and The Coastal Survivors: 5
+  Tick 297: Tension rising between The Steadfast Market and The Coastal 
+Survivors: 5
+  Tick 300: Tension rising between The Coastal Survivors and The Forest 
+Rovers: 15
+  Tick 300: ≡ƒÜ½ Trade negotiations between The Bound Pact & The Coastal 
+Survivors failed (+3 tension)
+
+
