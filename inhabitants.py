@@ -59,6 +59,8 @@ class Inhabitant:
         '_medicine_buffer', '_plague_resist', '_prev_hp_medicine',
         # set to True by technology.py when the faction owns Sailing
         '_can_sail',
+        # Religion object pointer and priesthood flag (managed by religion.py)
+        'religion', 'is_priest',
     )
 
     def __init__(self, name, r, c):
@@ -81,6 +83,8 @@ class Inhabitant:
         self.currency       = 0              # units of faction currency held
         self.is_procreating = False          # True while participating in a birth this tick
         self._can_sail      = False          # True when faction owns Sailing tech
+        self.religion       = None           # Religion object pointer (or None)
+        self.is_priest      = False          # True when designated as faction priest
 
     @property
     def total_trust(self):
@@ -316,8 +320,9 @@ def do_tick_body(inh, all_people, t, event_log_ref, dead_out,
                     and _dst_s.owner_faction != getattr(inh, 'faction', None)):
                 inh.hunger = min(120, inh.hunger + SETTLEMENT_MOVE_PENALTY)
 
-    # 4. Move if current chunk is nearly empty
-    if world[inh.r][inh.c]['resources']['food'] < FOOD_FLOOR:
+    # 4. Move if current chunk is nearly empty  (priests abstain — religion_tick moves them)
+    if (not getattr(inh, 'is_priest', False)
+            and world[inh.r][inh.c]['resources']['food'] < FOOD_FLOOR):
         nr, nc = best_neighbor(inh)
         if (nr, nc) != (inh.r, inh.c):
             grid_move(inh, nr, nc)   # keeps grid_occupants in sync
@@ -329,22 +334,23 @@ def do_tick_body(inh, all_people, t, event_log_ref, dead_out,
                     and _mv_s.owner_faction != getattr(inh, 'faction', None)):
                 inh.hunger = min(120, inh.hunger + SETTLEMENT_MOVE_PENALTY)
 
-    # 5. Gather 1 food from chunk — world write, requires lock
+    # 5. Gather 1 food from chunk — world write, requires lock  (priests abstain)
     _lock5 = world_lock if world_lock is not None else _NullLock()
     with _lock5:
-        res    = world[inh.r][inh.c]['resources']
-        gather = min(1, res['food'])
-        res['food']           -= gather
-        inh.inventory['food'] += gather
+        res = world[inh.r][inh.c]['resources']
+        if not getattr(inh, 'is_priest', False):
+            gather = min(1, res['food'])
+            res['food']           -= gather
+            inh.inventory['food'] += gather
 
-        # 5b. Gather 1 non-food resource (30% chance; weighted by chunk availability)
-        _NF  = ('wood', 'stone', 'ore')
-        _nfw = [max(0, res.get(k, 0)) for k in _NF]
-        _nft = sum(_nfw)
-        if _nft > 0 and random.random() < 0.30:
-            pick = random.choices(_NF, weights=_nfw, k=1)[0]
-            inh.inventory[pick] += 1
-            res[pick]           -= 1
+            # 5b. Gather 1 non-food resource (30% chance; weighted by chunk availability)
+            _NF  = ('wood', 'stone', 'ore')
+            _nfw = [max(0, res.get(k, 0)) for k in _NF]
+            _nft = sum(_nfw)
+            if _nft > 0 and random.random() < 0.30:
+                pick = random.choices(_NF, weights=_nfw, k=1)[0]
+                inh.inventory[pick] += 1
+                res[pick]           -= 1
 
     # 6. Social — trust (own dict, no lock needed) + trades (cross-inhabitant)
     # Use grid_neighbors to fetch only the 3x3 spatial neighbourhood; this

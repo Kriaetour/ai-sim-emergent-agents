@@ -11,21 +11,22 @@ Thirty nameless inhabitants are dropped onto a Perlin-noise-generated world. The
 
 None of it is scripted. Every war, betrayal, and alliance you see is unique — because the civilization that produced it was unique.
 
-An optional LLM mythology layer can write chronicles, myths, and epitaphs using a local model via Ollama — but the simulation runs fully standalone with no external dependencies beyond one Python package.
+An optional LLM mythology layer can write chronicles, myths, and epitaphs using a local model via Ollama — but the simulation runs fully standalone. A live Streamlit dashboard shows the world map, faction borders, and reputation graph updating in real time.
 
 Fully playable on a **$150 Intel N95 mini-PC with 16 GB RAM**. No GPU required.
 
 | Stat | Value |
 |------|-------|
 | Starting inhabitants | 30 |
-| Population cap | 200 (configurable) |
+| Population cap | 1,000 (configurable) |
 | Simulation layers | 9 (0–8) |
 | Ticks per run | 10,000 (configurable) |
-| Terrain generation | Perlin noise (height + moisture) |
+| Terrain generation | Perlin noise (height + moisture + depth) |
+| Biomes | 6 — forest, plains, mountains, desert, coast, sea |
 | LLM mythology | Optional — disabled by default |
 | External API calls | Zero |
 | Scripted events | Zero |
-| Python dependencies | `noise==1.2.2` |
+| Python dependencies | `noise`, `streamlit`, `plotly`, `numpy`, `streamlit-autorefresh` |
 
 ---
 
@@ -33,19 +34,46 @@ Fully playable on a **$150 Intel N95 mini-PC with 16 GB RAM**. No GPU required.
 
 ### World & Terrain
 
-- 🌍 **Perlin-noise terrain** — Dual noise fields (height + moisture) produce coherent biome layouts across an 8×8 grid: coast, forest, plains, desert, and mountains. No two worlds are alike.
+- 🌍 **Three-field Perlin terrain** — Height, moisture, and depth noise fields produce coherent biome layouts across a dynamically-scaled grid. Sea coverage is calibrated to 25% of the map via depth-noise percentile thresholding — guaranteed regardless of random seed.
 
-- 🌱 **Population-scaled food** — Resource regeneration scales with population pressure (`1.0 + 0.5 × pop/cap`). An extinction guard doubles food output when the population drops below 10% of the cap.
+- 🗺 **Six distinct biomes** — each with unique movement costs, resource caps, and survival characteristics:
+
+  | Biome | Move Cost | Notes |
+  |-------|-----------|-------|
+  | Plains | 5 (baseline) | Default food + ore |
+  | Coast | 5 | Port bias for settlements; fishing when Sailing researched |
+  | Forest | 10 (0.5× speed) | 2× food density (cap 28); dense but slow |
+  | Desert | 7 | Surface scrap ore (cap 30); sparse food |
+  | Mountains | 9 | High stone; rough terrain |
+  | Sea | 8 | Impassable without Sailing tech; 2× travel speed for sailors |
+
+- 🌊 **Navigable seas** — Sea tiles block movement until a faction researches Sailing (Industrial tier 2). Sailors traverse sea at 2× effective range. Coastal factions with Sailing earn passive fishing income (+1 food per member every 3 ticks on coast tiles). Settlements prefer coastlines (port bias).
+
+- 🧭 **Cost-adjusted pathfinding** — Inhabitants score neighbors by `food × (5 / move_cost)`: plains win over desert treks, forests are lucrative but slow, sailors exploit sea lanes. No A* needed — emergence from local greedy choice.
+
+- 📦 **Biome integer IDs** — Each tile stores a compact `biome_id` int for fast O(1) comparisons in hot loops. Sea tiles are skipped entirely during resource regeneration (~25% of tick work eliminated on N95 hardware).
+
+- 🌱 **Population-scaled food** — Resource regeneration scales with population pressure (`1.0 + 0.5 × pop/cap`). An extinction guard doubles food output when population drops below 10% of the cap.
 
 - ❄ **Seasons** — A 50-tick cycle with an 8-tick winter window. Winter halts food regeneration (reduced to 0.125×); spring restores it (0.25×). Five resource types: food, wood, ore, stone, water.
 
+- 🏙 **Dynamic map scaling** — The grid starts at 8×8 and expands every 25 ticks as population grows, generating new biome tiles while preserving existing terrain.
+
+### Settlements
+
+- 🏰 **Permanent towns** — Factions that remain stable in one location for long enough found a Settlement: a named town with housing capacity, storage (surplus food reserves), and optional walls.
+
+- 🛡 **Walled cities** — Settled factions can build walls; outsiders navigating walled tiles treat them as having 1/3 the food score (effective deterrent without hard barriers).
+
+- 📊 **Settlement index** — A spatial registry enables O(1) settlement lookup by tile coordinate, used during combat, procreation, and navigation.
+
 ### Inhabitants & Procreation
 
-- 👤 **Survivors, not agents** — Each inhabitant moves, gathers food, and builds individual trust scores with every person they meet. They starve, migrate, and die with no guidance. Memory-efficient `__slots__` (19 attributes) keeps RAM usage low even at 200 population.
+- 👤 **Survivors, not agents** — Each inhabitant moves, gathers food, and builds individual trust scores with every person they meet. They starve, migrate, and die with no guidance. Memory-efficient `__slots__` (20 attributes including `_can_sail`) keeps RAM low at 1,000 population.
 
-- 👶 **Generational procreation** — Pairs on the same tile with mutual trust > 15 and food > 10 each can produce a child. Children inherit 50% of their parents' combined beliefs, cost 5 food per parent, start with 10 food, and are born with trust of 30 toward each parent. One birth per tick maximum; no births during winter.
+- 👶 **Generational procreation** — Pairs on the same tile with mutual trust > 15 and food > 10 each can produce a child. Children inherit 50% of their parents' combined beliefs, cost 5 food per parent, start with 10 food, and are born with trust of 30 toward each parent. Settlement housing caps are respected. One birth per tick maximum; no births during winter.
 
-- 📛 **135 fantasy names** — Four name pools (Original, Norse, Celtic, Germanic) with 30–45 names each. When all base names are taken, `get_unique_name` appends Roman numeral suffixes (II–X) then numeric (11+) to guarantee uniqueness across generations.
+- 📛 **135 fantasy names** — Four name pools (Original, Norse, Celtic, Germanic). When all base names are taken, `get_unique_name` appends Roman numeral suffixes (II–X) then numeric (11+) to guarantee uniqueness across generations.
 
 ### Beliefs
 
@@ -55,7 +83,7 @@ Fully playable on a **$150 Intel N95 mini-PC with 16 GB RAM**. No GPU required.
 
 - 🏛 **Organic faction formation** — When three nearby inhabitants (Manhattan distance ≤ 2) share ≥ 2 core beliefs and mutual trust > 8, a faction coalesces around them. Faction names are generated from belief-keyed adjective/noun components ("The Iron Wanderers", "The Salted Few").
 
-- ⚡ **Schisms & mergers** — Ideological minorities (≥ 30% of members) split off every 25 ticks. Solo-member factions within range can merge every 10 ticks. Four ideological conflict pairs block joining and trigger splits.
+- ⚡ **Schisms & mergers** — Ideological minorities (≥ 30% of members) split off every 25 ticks. Solo-member factions within range can merge every 10 ticks. Four ideological conflict pairs block joining and trigger splits. Factions can also diplomatically merge when reputation is high enough.
 
 - 🏰 **Territory & pooling** — Factions control territory chunks, pool 20% of surplus food into reserves, and nudge drifting members back toward their land. Members beyond size 10 with `self_reliance` leave voluntarily.
 
@@ -75,13 +103,15 @@ Fully playable on a **$150 Intel N95 mini-PC with 16 GB RAM**. No GPU required.
 
 ### Technology
 
-- 🔬 **15-tech research tree across 3 branches:**
+- 🔬 **16-tech research tree across 3 branches:**
 
   | Branch | Tier 1 | Tier 2 | Tier 3 | Tier 4 |
   |--------|--------|--------|--------|--------|
-  | **Industrial** | Tools | Farming | Mining, Engineering | Currency |
+  | **Industrial** | Tools | Farming, Sailing | Mining, Engineering | Currency |
   | **Martial** | Scavenging | Metalwork | Weaponry, Masonry | Steel |
   | **Civic** | Oral Tradition | Medicine | Writing | Code of Laws |
+
+- ⛵ **Sailing** — Unlocks sea traversal for all faction members (`_can_sail = True`). Sailors navigate sea tiles at 2× effective score and earn passive fishing income on coast tiles every 3 ticks.
 
 - 🧠 **Belief-driven AI selection** — Factions choose research based on dominant belief affinity (16 belief→branch mappings). Engineering reduces all future research durations by 20%. Research pauses during war and resumes after.
 
@@ -96,6 +126,18 @@ Fully playable on a **$150 Intel N95 mini-PC with 16 GB RAM**. No GPU required.
 - ⚖ **Surrender terms** — Belief-driven: `community_sustains` → annexation, `the_strong_take` → tribute, `migration_brings_hope` → exile, `the_wise_must_lead` → vassalization.
 
 - 🌟 **Reputation** — Integer −10 to +10 per faction (reviled → legendary). Recovers +1 every 25 peaceful ticks. Factions with surplus food can share with needy neighbors for +2 reputation.
+
+### Live Dashboard
+
+- 📊 **Streamlit dashboard** (`dashboard.py`) — run alongside the simulation for a live 2-FPS view of the world. Auto-refreshes via `streamlit-autorefresh`; falls back to a manual refresh button gracefully.
+
+- 🗺 **World map** — Plotly `imshow` over an H×W×3 RGB biome image (sea=blue, forest=dark green, plains=yellow-green, desert=tan, mountains=gray, coast=cadet). Faction members overlaid as coloured scatter dots; hover shows name, size, reputation, and techs.
+
+- 📈 **Reputation chart** — Line traces for the top 5 factions over the last 3,000 simulation ticks, with dashed **Allied** (+5) and **Reviled** (−5) reference lines.
+
+- 📋 **Sidebar metrics** — Tick, Alive count, Tick Rate (rolling 30-tick average), Max Generation, Active Factions, per-faction badges (settler status, rep emoji).
+
+- ⚡ **N95-safe I/O** — `dashboard_bridge.py` writes `dashboard_data.json` only every 25 ticks via atomic `os.replace()` (temp-file swap). The dashboard reads with `@st.cache_data(ttl=2)` so it never fights the simulation for disk or CPU.
 
 ### Anti-Stagnation
 
@@ -131,7 +173,7 @@ Fully playable on a **$150 Intel N95 mini-PC with 16 GB RAM**. No GPU required.
   The Wild Rovers  (founded tick 090)
     Members  : Brea, Brek
     Beliefs  : the wilds provide, migration brings hope, endurance rewarded
-    Techs    : farming, medicine, metalwork, tools, weapons, writing
+    Techs    : farming, medicine, metalwork, sailing, tools, weapons, writing
     Territory: (1,7)  (2,7)
     Reserve  : 339.9 food
     Reputation: +10 (legendary)
@@ -166,7 +208,7 @@ Fully playable on a **$150 Intel N95 mini-PC with 16 GB RAM**. No GPU required.
   🪦  Fenn: Fenn of The Lone Bond, noble warrior fallen at battle's
       heart; in unwavering loyalty and strength he kept the ancient oath.
 
-  🪦  Sera: Here lies Sera of The Woven Drifters — endurance rewarded,
+  🪦  Sera: Here lies Sera of The Bound Ones — endurance rewarded,
       the wise must lead. She proved both, and fell proving them.
 
   🪦  Yeva: Here lies Yeva of The Salted Bridge, who fell defending
@@ -188,25 +230,27 @@ Fully playable on a **$150 Intel N95 mini-PC with 16 GB RAM**. No GPU required.
 ## Architecture
 
 ```
-sim.py  (entry point — 10,000-tick main loop, logging, layer orchestration)
+sim.py              Entry point — 10,000-tick main loop, logging, layer orchestration
 │
-├── world.py        Layer 0 · Perlin-noise terrain, biomes, food scaling, seasons
-├── inhabitants.py  Layer 1 · Survival, movement, gathering, trust, procreation
+├── world.py        Layer 0 · 3-field Perlin terrain, 6 biomes, sea calibration, seasons
+├── inhabitants.py  Layer 1 · Survival, cost-adjusted navigation, trust, procreation
 ├── beliefs.py      Layer 2 · 27 event-driven beliefs, peer sharing
-├── factions.py     Layer 3 · Formation, schisms, merges, territory, food pooling
+├── factions.py     Layer 3 · Formation, schisms, merges, territory, settlements
 ├── economy.py      Layer 4 · Currency, dynamic pricing, trade routes, raids, Gini
 ├── combat.py       Layer 5 · War declarations, alliances, multi-tick battles, legends
-├── technology.py   Layer 6 · 15-tech tree (3 branches), AI-driven research selection
+├── technology.py   Layer 6 · 16-tech tree (3 branches), Sailing passive, AI research
 ├── diplomacy.py    Layer 7 · Council votes, treaties, reputation, surrender terms
 ├── mythology.py    Layer 8 · LLM chronicles, myths, epitaphs (optional, read-only)
 │
-├── display.py      Rendering — per-tick output, faction summaries, final reports
-└── config.py       Settings — population cap, mythology toggle, LLM parameters
+├── dashboard_bridge.py  Data bridge — atomic JSON snapshot writer (every 25 ticks)
+├── dashboard.py         Streamlit live dashboard — world map, rep chart, event feed
+├── display.py           Terminal rendering — per-tick output, faction summaries
+└── config.py            Settings — population cap, mythology toggle, LLM parameters
 ```
 
-Each layer is a pure function over shared state. Layers 0–7 are deterministic Python. Layer 8 (mythology) is the only one that touches a network socket — and it is disabled by default. When enabled, it degrades gracefully with fallback text if Ollama is unavailable.
+Each layer is a pure function over shared state. Layers 0–7 are deterministic Python. Layer 8 (mythology) is the only one that touches a network socket — disabled by default. The dashboard bridge writes once every 25 ticks via atomic `os.replace()`, so running the dashboard in parallel has no measurable impact on simulation speed.
 
-The terminal output is selectively filtered: only notable events (war declarations, births, deaths, treaties, tech discoveries, schisms, era shifts) appear live via a keyword filter (39 keywords). Full tick-by-tick detail goes to a timestamped log file in `logs/`.
+The terminal output is selectively filtered: only notable events (war declarations, births, deaths, treaties, tech discoveries, schisms, era shifts) appear live via a keyword filter. Full tick-by-tick detail goes to a timestamped log file in `logs/`.
 
 ---
 
@@ -229,12 +273,22 @@ python -m venv .venv
 .venv\Scripts\activate        # Windows
 # source .venv/bin/activate   # macOS / Linux
 
-# 3. Install dependencies (just Perlin noise)
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Run
+# 4. Run the simulation
 python sim.py
 ```
+
+### Live Dashboard (optional, but recommended)
+
+Open a second terminal and run the dashboard while the simulation is running:
+
+```bash
+streamlit run dashboard.py
+```
+
+Then open **http://localhost:8501** in your browser. The world map, reputation graph, and event feed update automatically at 2 FPS as the simulation writes snapshots every 25 ticks.
 
 To enable the LLM mythology layer:
 
@@ -258,6 +312,7 @@ Tick 045: ⚡ SCHISM — The Drifting Circle breaks from The Wild Rovers
 Tick 060: ⚔ WAR DECLARED — The Lone Bond vs The Trading Bridge (tension 222)
 Tick 060: 💀 Fenn (The Lone Bond) fell in battle at (1,6)
 Tick 120: 🍼 BIRTH: Sera II born to Brea and Arin
+Tick 200: ⛵ TECH DISCOVERED — The Wild Rovers unlock Sailing
 Tick 500: 📅 NEW ERA DAWNS — The Age of Iron
   ...
 ```
@@ -273,6 +328,8 @@ Tick 500: 📅 NEW ERA DAWNS — The Age of Iron
 | **With GPU** | Any iGPU/dGPU supported by Ollama | Mythology calls become near-instant |
 
 No GPU is required. The simulation itself is pure Python and runs without any LLM. The optional mythology layer calls Ollama with `keep_alive: 0` (immediate VRAM release) and `gc.collect()` after each inference to minimize memory pressure on shared-memory iGPU systems.
+
+Several optimizations target N95-class hardware specifically: sea tiles (~25% of the grid) are skipped during resource regeneration, biome comparisons use integer IDs instead of string equality, the spatial partition replaces O(n) neighbor scans with bounded-radius lookups, and the event log is capped at 200 entries in RAM with overflow archived to disk.
 
 ---
 
@@ -291,7 +348,7 @@ OLLAMA_TIMEOUT    = 150         # seconds per LLM call
 MYTHOLOGY_ENABLED = False       # True → enable LLM chronicles; False → manual export
 
 # Population
-POP_CAP           = 200         # hard ceiling; world food scales up as population grows
+POP_CAP           = 1000        # hard ceiling; world food scales up as population grows
 
 # LLM tuning
 LLM_TEMPERATURE   = 0.7
@@ -303,6 +360,11 @@ In `sim.py`:
 TICKS = 10000   # Change to run shorter (300) or longer simulations
 ```
 
+In `dashboard_bridge.py`:
+```python
+DASHBOARD_WRITE_EVERY = 25   # ticks between dashboard snapshots (increase to reduce I/O)
+```
+
 ---
 
 ## File Outputs
@@ -310,6 +372,7 @@ TICKS = 10000   # Change to run shorter (300) or longer simulations
 | File | When | Contents |
 |------|------|---------|
 | `logs/run_*.txt` | Every run | Full tick-by-tick log of all events |
+| `dashboard_data.json` | Every 25 ticks | Live snapshot: biome grid, faction positions, reputation history, event tail |
 | `manual_chronicle.txt` | Every 50 ticks (mythology disabled) | Structured era events + perished names for external LLM use |
 | `era_export.txt` | Every 50 ticks | Last 100 events + era summaries |
 | `history_*.txt` | End of run (mythology enabled) | Tolkien-style epic summary generated by LLM |
@@ -319,9 +382,10 @@ TICKS = 10000   # Change to run shorter (300) or longer simulations
 ## Roadmap
 
 - [x] **Generational agents** — children inherit beliefs and faction membership from parents
-- [ ] **Streamlit live dashboard** — watch the world map, faction borders, and reputation graph update in real time
+- [x] **Streamlit live dashboard** — world map, faction borders, and reputation graph updating in real time
 - [ ] **Religion system** — formalized beliefs become institutions with priests, temples, and schismatic holy wars
-- [x] **Larger world scale** — 16×16 or 32×32 grids, multiple biome clusters, sea travel
+- [x] **Larger world scale** — dynamic grid expansion, 6 biome types, calibrated 25% sea coverage
+- [x] **Navigable seas** — Sailing tech, coast fishing, port bias for settlements
 - [x] **Multiple settlements** — factions build fixed towns with storage, walls, and population caps
 - [ ] **Persistent history** — cross-run chronicles where great factions from past runs become legends in new ones
 

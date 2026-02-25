@@ -16,6 +16,7 @@ from beliefs  import add_belief, inh_cores
 from factions import RIVALRIES
 import technology
 import diplomacy
+import religion
 
 # ══════════════════════════════════════════════════════════════════════════
 # Module-level state
@@ -390,6 +391,11 @@ def _side_strength(factions_list: list, defending: bool) -> float:
     for f in factions_list:
         morale    = _faction_morale(f, defending, war_history)
         tech_mult = technology.combat_bonus(f)
+        # Holy War: Metalwork bonus is doubled (1.30 → 1.60) when this faction
+        # is fighting a holy war AND has not yet unlocked a higher martial tier
+        # (Weaponry=1.50 or Steel=1.80 already exceed 1.60, so we leave them).
+        if tech_mult == 1.30 and religion.is_holy_war_member(f.name):
+            tech_mult = 1.60
         base      = len(f.members) * (1.0 + morale) * tech_mult
         # Settlement walls grant +10% defense (proportional to members inside zone)
         if defending:

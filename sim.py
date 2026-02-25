@@ -39,6 +39,7 @@ import diplomacy
 import mythology
 import display
 import dashboard_bridge
+import religion
 
 TICKS = config.TICKS
 
@@ -251,6 +252,11 @@ def diplomacy_layer(t: int) -> None:
     diplomacy.diplomacy_tick(factions, t, event_log)
 
 
+def religion_layer(t: int) -> None:
+    """Layer 9: religions, temples, priesthood, holy wars, birth inheritance."""
+    religion.religion_tick(people, factions, t, event_log)
+
+
 POP_CAP = config.POP_CAP   # defined in config.py — hard population ceiling
 
 
@@ -351,6 +357,23 @@ def procreation_layer(t: int) -> None:
                 # to other threads the moment people.append() completes.
                 grid_add(child)
                 people.append(child)
+
+                # Religion inheritance: 95 % chance when the birth tile is
+                # within temple range of the parent faction's temple.
+                _par_faction_name = (pa.faction if pa.faction == pb.faction
+                                     else pa.faction)
+                for _f in factions:
+                    if _f.name == _par_faction_name:
+                        _frel = religion.get_faction_religion(_f)
+                        if _frel and _frel.temple_tiles:
+                            if any(
+                                abs(child.r - _tr) <= religion.TEMPLE_TRUST_RANGE
+                                and abs(child.c - _tc) <= religion.TEMPLE_TRUST_RANGE
+                                for (_tr, _tc) in _frel.temple_tiles
+                            ):
+                                if random.random() < religion.BIRTH_INHERIT_CHANCE:
+                                    religion.templated_birth_religion(child, _frel)
+                        break
 
         finally:
             # Always release the busy flags, whether the block succeeded, returned
@@ -933,6 +956,7 @@ def run() -> None:
             combat_layer(t)
             technology_layer(t)
             diplomacy_layer(t)
+            religion_layer(t)
             if config.MYTHOLOGY_ENABLED:
                 mythology_layer(t)
             elif t % 50 == 0:
@@ -961,7 +985,9 @@ def run() -> None:
                    for kw in ('WAR DECLARED', 'SCHISM', 'FACTION FORMED',
                               'GREAT MIGRATION', 'CIVIL WAR',
                               'WORLD EVENT', 'PLAGUE SWEEPS', 'PROMISED LAND',
-                              'PROPHET', 'WILDERNESS', 'INCIDENT')):
+                              'PROPHET', 'WILDERNESS', 'INCIDENT',
+                              'HOLY WAR', 'RELIGION FOUNDED', 'CONVERTED',
+                              'TEMPLE BUILT')):
                 _last_dynamic_t   = t
                 _peace_applied    = set()
                 _low_faction_since = 0

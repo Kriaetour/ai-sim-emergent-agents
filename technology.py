@@ -500,12 +500,15 @@ def technology_tick(factions: list, t: int, event_log: list) -> None:
                     m.inventory['food'] = m.inventory.get('food', 0) + 1
         # ── CODE OF LAWS: boost internal trust; one-time reputation bonus ──
         if 'code_of_laws' in techs and t % 5 == 0:
-            members = faction.members
-            for a in members:
-                for b in members:
-                    if a is b:
-                        continue
-                    a.trust[b.name] = min(100, a.trust.get(b.name, 50) + 2)
+            import religion as _rel
+            # Holy wars fracture social cohesion — suppress the trust bonus
+            if not _rel.is_holy_war_member(faction.name):
+                members = faction.members
+                for a in members:
+                    for b in members:
+                        if a is b:
+                            continue
+                        a.trust[b.name] = min(100, a.trust.get(b.name, 50) + 2)
             if not getattr(faction, '_laws_rep_applied', False):
                 try:
                     import diplomacy as _dip
