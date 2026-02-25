@@ -931,21 +931,22 @@ Begin:"""
             text = '[The chronicler\'s vision was unclear. The ages spoke thus:]\n\n' + text
 
     if not text:
-        # Code-built fallback: 4 paragraphs stitched from era blocks
+        # Code-built fallback: 4 paragraphs using the canonical paragraph openers
         era_lines = era_text.strip().split('\n')
         chunk     = max(1, len(era_lines) // 4)
-        paras: list = []
-        for i in range(4):
-            block = ' | '.join(era_lines[i * chunk:(i + 1) * chunk])
-            if block:
-                paras.append(f'In those days it was recorded: {block}')
-        if not paras:
-            paras = [f'Thus passed {ticks} ticks of mortal struggle.']
-        paras.append(
-            f'{tot_dead} souls perished in total. '
-            f'{len(active)} faction(s) stood at the last: {survivors}.'
-        )
-        text = '\n\n'.join(paras[:4])
+        def _era_block(i: int) -> str:
+            return ' '.join(era_lines[i * chunk:(i + 1) * chunk]).strip()
+        p1 = (_era_block(0) or f'the peoples of this world first gathered and made their homes.')
+        p2 = (_era_block(1) or f'calm could not endure, and the factions grew restless.')
+        p3 = (_era_block(2) or f'{war_count} wars were fought across the land.')
+        p4 = (_era_block(3) or f'silence remains where once there was life.')
+        paras = [
+            f'Before the first winter, {p1}',
+            f'Yet peace is a fragile thing — {p2}',
+            f'The great wars came: {p3}',
+            f'Now only {survivors} endure. {tot_dead} souls perished across {ticks} ticks of struggle.',
+        ]
+        text = '\n\n'.join(paras)
 
     _box(f'THE GREAT HISTORY — A Chronicle of {ticks} Ticks', text, width=76)
 

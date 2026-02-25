@@ -34,7 +34,7 @@ import diplomacy
 import mythology
 import display
 
-TICKS = 100
+TICKS = 1000
 
 # ── Shared simulation state ────────────────────────────────────────────────
 people:         list = []
