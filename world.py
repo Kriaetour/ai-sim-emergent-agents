@@ -98,14 +98,33 @@ def make_chunk():
 
 world = _generate_world()
 
-def tick(regen_rate=0.05):
+def tick(regen_rate: float = 0.05, pop: int = 0, pop_cap: int = 120) -> None:
+    """
+    Regenerate world resources each tick.
+
+    Food regen scales smoothly upward with population pressure so a large
+    civilisation doesn't strip the land bare:
+      - Normal:     food_mult = 1.0 + 0.5 * (pop / pop_cap)
+          pop=0   → 1.0×  (no change)
+          pop=60  → 1.25× (+25 %)
+          pop=120 → 1.5×  (+50 %)
+      - Extinction guard: if pop < 10 % of cap, double food regen so a
+        near-wiped civilisation can recover without requiring player action.
+    """
+    pressure   = min(1.0, pop / pop_cap) if pop_cap > 0 else 0.0
+    food_mult  = 1.0 + 0.5 * pressure
+    # Extinction guard: tiny population → generous food recovery burst
+    if pop_cap > 0 and pop < max(2, pop_cap * 0.10):
+        food_mult = 2.0
+
     for row in world:
         for chunk in row:
             maxes = BIOME_MAX[chunk['biome']]
             res   = chunk['resources']
             for k in res:
-                cap      = maxes[k]
-                res[k]   = min(cap, res[k] + int((cap - res[k]) * regen_rate))
+                cap   = maxes[k]
+                rate  = regen_rate * food_mult if k == 'food' else regen_rate
+                res[k] = min(cap, res[k] + int((cap - res[k]) * rate))
             chunk['habitable'] = res['water'] > 0 and res['food'] > 0
 
 def vitality(chunk):

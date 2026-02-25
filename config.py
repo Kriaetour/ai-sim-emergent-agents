@@ -9,6 +9,9 @@ OLLAMA_URL       = "http://localhost:11434/api/generate"
 OLLAMA_TIMEOUT   = 150           # seconds per LLM call
 MYTHOLOGY_ENABLED = False       # set True to enable LLM chronicle layer
 
+# ── Population cap ──────────────────────────────────────────────────────
+POP_CAP = 200   # hard ceiling; world food scales up as population grows
+
 # ── LLM generation parameters ────────────────────────────────────────────
 LLM_TEMPERATURE  = 0.7
 LLM_MAX_TOKENS   = 200   # default; overridden per-call          # num_predict passed to Ollama

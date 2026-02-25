@@ -116,7 +116,7 @@ def world_layer(t: int, winter_just_ended: bool) -> None:
         event_log.append(f"Tick {t:03d}: ❄ WINTER ARRIVES — regen pauses")
     if winter_just_ended:
         event_log.append(f"Tick {t:03d}: ☀ Spring — food regeneration resumes")
-    _world_tick(regen_rate(t))
+    _world_tick(regen_rate(t), pop=len(people), pop_cap=POP_CAP)
 
 
 def inhabitants_layer(t: int) -> tuple[list, dict]:
@@ -165,7 +165,7 @@ def diplomacy_layer(t: int) -> None:
     diplomacy.diplomacy_tick(factions, t, event_log)
 
 
-POP_CAP = 50   # B95 hard limit — prevents RAM spikes on 16 GB systems
+POP_CAP = config.POP_CAP   # defined in config.py — hard population ceiling
 
 
 def procreation_layer(t: int) -> None:
