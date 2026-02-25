@@ -383,7 +383,7 @@ DASHBOARD_WRITE_EVERY = 25   # ticks between dashboard snapshots (increase to re
 
 - [x] **Generational agents** — children inherit beliefs and faction membership from parents
 - [x] **Streamlit live dashboard** — world map, faction borders, and reputation graph updating in real time
-- [ ] **Religion system** — formalized beliefs become institutions with priests, temples, and schismatic holy wars
+- [x] **Religion system** — formalized beliefs become institutions with priests, temples, and schismatic holy wars
 - [x] **Larger world scale** — dynamic grid expansion, 6 biome types, calibrated 25% sea coverage
 - [x] **Navigable seas** — Sailing tech, coast fishing, port bias for settlements
 - [x] **Multiple settlements** — factions build fixed towns with storage, walls, and population caps

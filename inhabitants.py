@@ -61,6 +61,8 @@ class Inhabitant:
         '_can_sail',
         # Religion object pointer and priesthood flag (managed by religion.py)
         'religion', 'is_priest',
+        # Role tag (e.g. 'priest') used by religion.py movement logic
+        'role',
     )
 
     def __init__(self, name, r, c):
@@ -85,6 +87,7 @@ class Inhabitant:
         self._can_sail      = False          # True when faction owns Sailing tech
         self.religion       = None           # Religion object pointer (or None)
         self.is_priest      = False          # True when designated as faction priest
+        self.role           = None           # e.g. 'priest' (set by religion.py)
 
     @property
     def total_trust(self):

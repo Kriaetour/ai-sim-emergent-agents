@@ -237,7 +237,12 @@ def _temple_trust_tick(people: list) -> None:
         for (tr, tc) in all_tiles:
             if (abs(inh.r - tr) <= TEMPLE_TRUST_RANGE
                     and abs(inh.c - tc) <= TEMPLE_TRUST_RANGE):
-                inh.trust = min(100, inh.trust + TEMPLE_TRUST_BONUS)
+                # trust is a dict {name: score} — boost every relationship
+                t = inh.trust
+                if isinstance(t, dict):
+                    for k in t:
+                        t[k] = min(100, t[k] + TEMPLE_TRUST_BONUS)
+                # (int trust is legacy / unaligned; leave it untouched)
                 break   # only apply once per person per tick
 
 
@@ -245,10 +250,28 @@ def _temple_trust_tick(people: list) -> None:
 # Priesthood
 # ---------------------------------------------------------------------------
 
+def _trust_score(m) -> float:
+    """Safe average-trust score for an inhabitant regardless of trust type.
+
+    * Normal path: trust is a dict {name: score} → return mean value.
+    * Fallback:    trust is an int/float (unaligned inhabitants) → return it.
+    * Default:     anything else (None, missing) → 0.0.
+    """
+    t = getattr(m, 'trust', 0)
+    if isinstance(t, dict):
+        return sum(t.values()) / len(t) if t else 0.0
+    if isinstance(t, (int, float)):
+        return float(t)
+    return 0.0
+
+
 def _assign_priests(factions: list) -> None:
     """Ensure every faction with a religion has exactly one priest.
 
-    Selects the highest-trust member.  Does nothing if a priest already exists.
+    Uses a per-faction ``_priest_id`` cache (id of the priest object) so we
+    skip the O(N) social-score scan on ticks where the priest is still alive.
+    The cache is invalidated when the cached member is no longer present or
+    has lost its is_priest flag (death / schism / demotion).
     """
     for faction in factions:
         rel = get_faction_religion(faction)
@@ -257,14 +280,28 @@ def _assign_priests(factions: list) -> None:
         members = faction.members
         if not members:
             continue
-        existing = [m for m in members if getattr(m, 'is_priest', False)]
-        if existing:
-            # Refresh religion pointer in case it drifted
-            existing[0].religion = rel
-            continue
-        best = max(members, key=lambda m: getattr(m, 'trust', 0))
+
+        # Fast path: validate cached priest
+        cached_id = getattr(faction, '_priest_id', None)
+        if cached_id is not None:
+            for m in members:
+                if id(m) == cached_id and getattr(m, 'is_priest', False):
+                    m.religion = rel   # keep Religion pointer fresh
+                    break
+            else:
+                # Cached priest died or left — clear and fall through to full scan
+                faction._priest_id = None
+                cached_id = None
+
+        if cached_id is not None:
+            continue  # priest still active; nothing to do
+
+        # Full scan: pick highest-average-trust member and appoint them
+        best = max(members, key=_trust_score)
         best.is_priest = True
         best.religion  = rel
+        best.role      = 'priest'    # movement hint used by religion_tick
+        faction._priest_id = id(best)
 
 
 def _priest_food_tick(factions: list) -> None:
@@ -286,8 +323,9 @@ def _priest_food_tick(factions: list) -> None:
 
 def _priest_conversion_tick(people: list, factions: list,
                              t: int, event_log: list) -> None:
-    """Priests attempt to convert nearby inhabitants."""
-    from inhabitants import grid_neighbors  # local import
+    """Priests move toward low-trust faction members and attempt conversions."""
+    from inhabitants import grid_neighbors   # local import
+    from world import grid_move              # local import
 
     faction_map: dict[int, object] = {}
     for f in factions:
@@ -297,20 +335,37 @@ def _priest_conversion_tick(people: list, factions: list,
     for inh in people:
         if not getattr(inh, 'is_priest', False):
             continue
-        inh_rel    = getattr(inh, 'religion', None)
+        inh_rel     = getattr(inh, 'religion', None)
         inh_faction = faction_map.get(id(inh))
         if inh_rel is None:
             continue
+
+        # Role movement: step toward the lowest-trust same-faction member
+        if inh_faction:
+            low_trust_members = [
+                m for m in inh_faction.members
+                if m is not inh and _trust_score(m) < 30
+            ]
+            if low_trust_members:
+                goal = min(low_trust_members,
+                           key=lambda m: abs(m.r - inh.r) + abs(m.c - inh.c))
+                dr = (1 if goal.r > inh.r else -1 if goal.r < inh.r else 0)
+                dc = (1 if goal.c > inh.c else -1 if goal.c < inh.c else 0)
+                try:
+                    grid_move(inh, inh.r + dr, inh.c + dc)
+                except Exception:
+                    pass  # out-of-bounds or sea tile — stay put
 
         neighbors = [p for p in grid_neighbors(inh.r, inh.c) if p is not inh]
         if not neighbors:
             continue
 
-        # Target: lowest-trust neighbor who doesn't share this religion
-        candidates = [p for p in neighbors if getattr(p, 'religion', None) is not inh_rel]
+        # Target: lowest-average-trust neighbor who doesn't share this religion
+        candidates = [p for p in neighbors
+                      if getattr(p, 'religion', None) is not inh_rel]
         if not candidates:
             candidates = neighbors
-        target = min(candidates, key=lambda p: getattr(p, 'trust', 100))
+        target = min(candidates, key=_trust_score)
 
         target_faction = faction_map.get(id(target))
         same_faction   = (inh_faction is not None and inh_faction is target_faction)
@@ -318,7 +373,10 @@ def _priest_conversion_tick(people: list, factions: list,
 
         if random.random() < chance:
             target.religion = inh_rel
-            target.trust    = min(100, getattr(target, 'trust', 0) + 5)
+            # Boost mutual trust between priest and convert (dict-safe)
+            if isinstance(inh.trust, dict) and isinstance(target.trust, dict):
+                inh.trust[target.name]   = min(100, inh.trust.get(target.name, 50) + 5)
+                target.trust[inh.name]   = min(100, target.trust.get(inh.name, 50) + 5)
             # Share dominant belief of priest's faction
             if inh_faction:
                 dom = _dominant_belief(inh_faction)
@@ -353,8 +411,18 @@ def religion_tick(people: list, factions: list,
         for faction in factions:
             try_found_religion(faction, t, event_log)
 
-    # 2. Assign priests to factions that gained a religion but have none yet
-    _assign_priests(factions)
+    # 2. Assign/validate priests every 100 ticks (cached; O(1) on hit ticks)
+    if t % 100 == 0:
+        _assign_priests(factions)
+    else:
+        # Lightweight cache-validation pass — evict dead priests, no scoring
+        for faction in factions:
+            cached_id = getattr(faction, '_priest_id', None)
+            if cached_id is None:
+                continue
+            member_ids = {id(m) for m in faction.members}
+            if cached_id not in member_ids:
+                faction._priest_id = None   # priest died; schedule reassign
 
     # 3. Feed priests from faction reserve (so their step-5 gather is skipped safely)
     _priest_food_tick(factions)
