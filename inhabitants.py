@@ -80,10 +80,10 @@ class Inhabitant:
         """Return True when both inhabitants meet the procreation conditions."""
         return (
             self.r == other.r and self.c == other.c          # same tile
-            and self.trust.get(other.name, 0)  > 25          # mutual trust
-            and other.trust.get(self.name,  0) > 25
-            and self.inventory.get('food',  0) > 20          # both well-fed
-            and other.inventory.get('food', 0) > 20
+            and self.trust.get(other.name, 0)  > 15          # mutual trust
+            and other.trust.get(self.name,  0) > 15
+            and self.inventory.get('food',  0) > 10          # both reasonably fed
+            and other.inventory.get('food', 0) > 10
         )
 
 

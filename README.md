@@ -43,7 +43,7 @@ Fully playable on a **$150 Intel N95 mini-PC with 16 GB RAM**. No GPU required.
 
 - 👤 **Survivors, not agents** — Each inhabitant moves, gathers food, and builds individual trust scores with every person they meet. They starve, migrate, and die with no guidance. Memory-efficient `__slots__` (19 attributes) keeps RAM usage low even at 200 population.
 
-- 👶 **Generational procreation** — Pairs on the same tile with mutual trust > 25 and food > 20 each can produce a child. Children inherit 50% of their parents' combined beliefs, cost 5 food per parent, start with 10 food, and are born with trust of 30 toward each parent. One birth per tick maximum; no births during winter.
+- 👶 **Generational procreation** — Pairs on the same tile with mutual trust > 15 and food > 10 each can produce a child. Children inherit 50% of their parents' combined beliefs, cost 5 food per parent, start with 10 food, and are born with trust of 30 toward each parent. One birth per tick maximum; no births during winter.
 
 - 📛 **135 fantasy names** — Four name pools (Original, Norse, Celtic, Germanic) with 30–45 names each. When all base names are taken, `get_unique_name` appends Roman numeral suffixes (II–X) then numeric (11+) to guarantee uniqueness across generations.
 
