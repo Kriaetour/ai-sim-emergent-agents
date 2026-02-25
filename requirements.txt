@@ -1,2 +1,8 @@
-# No third-party dependencies.
-# Requires a running Ollama server (https://ollama.com) when MYTHOLOGY_ENABLED = True.
+﻿# AI Sandbox (Refactored) -- dependencies
+#
+# The simulation itself uses only Python standard library modules.
+# Ollama must be running separately (https://ollama.com) when MYTHOLOGY_ENABLED = True.
+#
+# The only third-party package required:
+noise==1.2.2   # Perlin noise for coherent terrain generation in world.py
+

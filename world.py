@@ -1,7 +1,8 @@
 import random, time, os
+from noise import pnoise2
 
 BIOMES  = ['forest', 'plains', 'mountains', 'desert', 'coast']
-WEIGHTS = [25, 35, 20, 10, 10]
+WEIGHTS = [25, 35, 20, 10, 10]   # kept for reference; not used by noise generator
 LETTER  = {'forest': 'F', 'plains': 'P', 'mountains': 'M', 'desert': 'D', 'coast': 'C'}
 BARS    = ' ▁▂▃▄▅▆▇█'
 
@@ -15,7 +16,76 @@ BIOME_MAX = {
 
 GRID = 8
 
+# ── Perlin noise terrain parameters ────────────────────────────────────────
+_NOISE_SCALE   = 0.35   # sample spacing — lower = larger biome patches
+_NOISE_OCTAVES = 4      # fractal detail passes
+
+
+def _biome_from_noise(h: float, m: float) -> str:
+    """
+    Map (height, moisture) Perlin values in ~[-1, 1] to a biome.
+
+    Height axis  →  elevation / terrain type
+    Moisture axis →  wet vs dry modifier for mid-range elevations
+
+        h < -0.05              → coast   (low-lying, near water)
+        h > 0.55               → mountains
+        h > 0.20, m > 0.05    → forest  (elevated, wet)
+        h > 0.20, m <= 0.05   → desert  (elevated, dry plateau)
+        h <= 0.20, m > -0.10  → plains
+        h <= 0.20, m <= -0.10 → desert  (lowland arid)
+    """
+    if h < -0.05:
+        return 'coast'
+    if h > 0.55:
+        return 'mountains'
+    if h > 0.20:
+        return 'forest' if m > 0.05 else 'desert'
+    return 'plains' if m > -0.10 else 'desert'
+
+
+def _generate_world() -> list:
+    """
+    Build a GRID×GRID world using two independent Perlin noise fields
+    (height and moisture) so biomes cluster naturally — coasts neighbour
+    coasts, forests grade into plains, mountains form ridges, etc.
+    Random offsets give a unique map every run.
+    """
+    # Unique random offsets so every simulation has a different map
+    h_ox = random.uniform(0, 1000)
+    h_oy = random.uniform(0, 1000)
+    m_ox = random.uniform(0, 1000)
+    m_oy = random.uniform(0, 1000)
+
+    grid = []
+    for r in range(GRID):
+        row = []
+        for c in range(GRID):
+            h = pnoise2(
+                h_ox + r * _NOISE_SCALE,
+                h_oy + c * _NOISE_SCALE,
+                octaves=_NOISE_OCTAVES,
+            )
+            m = pnoise2(
+                m_ox + r * _NOISE_SCALE,
+                m_oy + c * _NOISE_SCALE,
+                octaves=_NOISE_OCTAVES,
+            )
+            biome     = _biome_from_noise(h, m)
+            maxes     = BIOME_MAX[biome]
+            resources = {k: random.randint(v // 2, v) for k, v in maxes.items()}
+            row.append({
+                'biome':      biome,
+                'resources':  resources,
+                'habitable':  resources['water'] > 0 and resources['food'] > 0,
+                'claimed_by': None,
+            })
+        grid.append(row)
+    return grid
+
+
 def make_chunk():
+    """Fallback random chunk (not used by the main world generator)."""
     biome = random.choices(BIOMES, weights=WEIGHTS)[0]
     maxes = BIOME_MAX[biome]
     resources = {k: random.randint(v // 2, v) for k, v in maxes.items()}
@@ -26,7 +96,7 @@ def make_chunk():
         'claimed_by': None,
     }
 
-world = [[make_chunk() for _ in range(GRID)] for _ in range(GRID)]
+world = _generate_world()
 
 def tick(regen_rate=0.05):
     for row in world:
