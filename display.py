@@ -10,8 +10,8 @@ import economy
 import combat
 import diplomacy
 
+from config import TICKS
 W     = 72
-TICKS = 300   # kept in sync with sim.py
 LOG_MODE = False  # set True by sim.py to suppress cls and route output to file
 
 # Faction → short tag, built lazily

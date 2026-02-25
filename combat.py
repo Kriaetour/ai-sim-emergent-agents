@@ -11,6 +11,7 @@ End of run:
 import sys, random
 sys.stdout.reconfigure(encoding='utf-8')
 
+from world    import grid_remove, get_settlement_at
 from beliefs  import add_belief, inh_cores
 from factions import RIVALRIES
 import technology
@@ -389,7 +390,16 @@ def _side_strength(factions_list: list, defending: bool) -> float:
     for f in factions_list:
         morale    = _faction_morale(f, defending, war_history)
         tech_mult = technology.combat_bonus(f)
-        total    += len(f.members) * (1.0 + morale) * tech_mult
+        base      = len(f.members) * (1.0 + morale) * tech_mult
+        # Settlement walls grant +10% defense (proportional to members inside zone)
+        if defending:
+            _s = getattr(f, 'settlement', None)
+            if _s and _s.status == 'active' and f.members:
+                in_zone = sum(1 for m in f.members if _s.in_zone(m.r, m.c))
+                if in_zone > 0:
+                    zone_ratio = in_zone / len(f.members)
+                    base *= (1.0 + 0.10 * zone_ratio)
+        total += base
     return max(0.01, total)
 
 
@@ -429,6 +439,7 @@ def _resolve_combat_tick(war: War, t: int, event_log: list,
                 victim = random.choice(f.members)
                 f.members.remove(victim)
                 if victim in people:
+                    grid_remove(victim)
                     people.remove(victim)
                 all_dead.append(victim)
                 # Create legend

@@ -1,129 +1,107 @@
-=== Age of Ticks 951–1000 ===
+=== Age of Ticks 51–100 ===
 
 ── Recent Events (last 100 log entries) ──
-Tick 951: 🤝 Trade: The Trading Seekers → The Flung Bond  4 stone  (tension now 10)
-Tick 951: 🤝 Trade: The Steadfast Exchange → The Trading Seekers  4 stone  (tension now 15)
-Tick 0951: 💡 TECH DISCOVERED: The Green Few → WEAPONRY [Combat strength +50% total; raids steal 3× resources]
-Tick 0951: 🔬 The Green Few begins researching MASONRY (ETA: 16 ticks)
-Tick 954: Tension rising between The Bound Market and The Flung Bond: 20
-Tick 954: 🤝 Trade: The Green Few → The Bound Market  4 ore  (tension now 0)
-Tick 954: 🤝 Trade: The Green Few → The Flung Bond  4 ore  (tension now 0)
-Tick 954: 🤝 Trade: The Green Few → The Trading Seekers  4 ore  (tension now 0)
-Tick 954: 🤝 Trade: The Green Few → The Steadfast Exchange  4 ore  (tension now 0)
-Tick 957: 🤝 Trade: The Green Few → The Bound Market  4 ore  (tension now 0)
-Tick 957: 🤝 Trade: The Green Few → The Flung Bond  4 ore  (tension now 0)
-Tick 957: 🤝 Trade: The Green Few → The Trading Seekers  4 ore  (tension now 0)
-Tick 957: 🤝 Trade: The Green Few → The Steadfast Exchange  4 ore  (tension now 0)
-Tick 957: 🚫 Trade negotiations between The Trading Seekers & The Steadfast Exchange failed (+3 tension)
-Tick 960: Tension rising between The Flung Bond and The Steadfast Exchange: 15
-Tick 960: 🤝 Trade: The Green Few → The Bound Market  4 ore  (tension now 0)
-Tick 960: 🤝 Trade: The Green Few → The Flung Bond  4 ore  (tension now 0)
-Tick 960: 🤝 Trade: The Green Few → The Trading Seekers  4 ore  (tension now 0)
-Tick 960: 🤝 Trade: The Green Few → The Steadfast Exchange  4 ore  (tension now 0)
-Tick 0962: ✍ Reva shares 'trust_no_group' within The Green Few (writing)
-Tick 0962: ✍ Trade route carries 'trust_no_group' The Flung Bond → The Trading Seekers
-Tick 963: Tension rising between The Bound Market and The Trading Seekers: 20
-Tick 963: Tension rising between The Bound Market and The Steadfast Exchange: 20
-Tick 963: 🤝 Trade: The Green Few → The Bound Market  4 ore  (tension now 0)
-Tick 963: 🤝 Trade: The Green Few → The Flung Bond  4 ore  (tension now 0)
-Tick 963: 🤝 Trade: The Green Few → The Trading Seekers  4 ore  (tension now 0)
-Tick 963: 🤝 Trade: The Green Few → The Steadfast Exchange  4 ore  (tension now 0)
-Tick 0963: ✍ Trade route carries 'trust_no_group' The Green Few → The Bound Market
-Tick 0965: ✍ Roan shares 'sacrifice_has_meaning' within The Bound Market (writing)
-Tick 965: 📜 TREATY: The Bound Market and The Flung Bond sign Trade Agreement (expires tick 1015)
-Tick 965: 📜 TREATY: The Trading Seekers and The Steadfast Exchange sign Trade Agreement (expires tick 1015)
-Tick 966: Tension rising between The Flung Bond and The Trading Seekers: 15
-Tick 966: 🤝 Trade: The Green Few → The Bound Market  4 ore  (tension now 0)
-Tick 966: 🤝 Trade: The Green Few → The Flung Bond  4 ore  (tension now 0)
-Tick 966: 🤝 Trade: The Green Few → The Trading Seekers  4 ore  (tension now 0)
-Tick 966: 🤝 Trade: The Green Few → The Steadfast Exchange  4 stone  (tension now 0)
-Tick 0966: 💡 TECH DISCOVERED: The Bound Market → MINING [Passively generates +1 ore and +1 stone each tick for the faction pool]
-Tick 0966: 🔬 The Bound Market begins researching ENGINEERING (ETA: 22 ticks)
-Tick 0966: 💡 TECH DISCOVERED: The Flung Bond → MINING [Passively generates +1 ore and +1 stone each tick for the faction pool]
-Tick 0966: 🔬 The Flung Bond begins researching ENGINEERING (ETA: 22 ticks)
-Tick 0967: 💡 TECH DISCOVERED: The Green Few → MASONRY [Defensive bonus +20% when defending home territory]
-Tick 0967: 🔬 The Green Few begins researching STEEL (ETA: 24 ticks)
-Tick 0968: ✍ Trade route carries 'sacrifice_has_meaning' The Bound Market → The Trading Seekers
-Tick 969: Tension rising between The Bound Market and The Flung Bond: 25
-Tick 969: 🤝 Trade: The Green Few → The Bound Market  4 stone  (tension now 0)
-Tick 969: 🤝 Trade: The Green Few → The Flung Bond  4 stone  (tension now 0)
-Tick 969: 🤝 Trade: The Green Few → The Trading Seekers  4 stone  (tension now 0)
-Tick 969: 🤝 Trade: The Green Few → The Steadfast Exchange  4 stone  (tension now 0)
-Tick 0970: 💀 Pyra (The Trading Seekers) wasted away alone
-Tick 972: 🤝 Trade: The Green Few → The Bound Market  4 stone  (tension now 0)
-Tick 972: 🤝 Trade: The Green Few → The Flung Bond  4 stone  (tension now 0)
-Tick 972: 🤝 Trade: The Green Few → The Steadfast Exchange  4 stone  (tension now 0)
-Tick 975: Tension rising between The Flung Bond and The Steadfast Exchange: 20
-Tick 975: 🤝 Trade: The Green Few → The Bound Market  4 stone  (tension now 0)
-Tick 975: 🤝 Trade: The Green Few → The Flung Bond  4 stone  (tension now 0)
-Tick 975: 🤝 Trade: The Green Few → The Steadfast Exchange  4 stone  (tension now 0)
-Tick 976: ❄ WINTER ARRIVES — regen pauses
-Tick 978: Tension rising between The Bound Market and The Steadfast Exchange: 25
-Tick 978: 🤝 Trade: The Green Few → The Bound Market  4 stone  (tension now 0)
-Tick 978: 🤝 Trade: The Green Few → The Flung Bond  4 stone  (tension now 0)
-Tick 978: 🤝 Trade: The Green Few → The Steadfast Exchange  4 ore  (tension now 0)
-Tick 0979: ✍ Roan shares 'the_wise_must_lead' within The Bound Market (writing)
-Tick 981: 🤝 Trade: The Green Few → The Bound Market  4 stone  (tension now 0)
-Tick 981: 🤝 Trade: The Green Few → The Flung Bond  4 stone  (tension now 0)
-Tick 981: 🤝 Trade: The Green Few → The Steadfast Exchange  4 stone  (tension now 0)
-Tick 0982: ✍ Trade route carries 'trust_no_group' The Flung Bond → The Bound Market
-Tick 0983: ✍ Trade route carries 'trust_no_group' The Green Few → The Steadfast Exchange
-Tick 984: Tension rising between The Bound Market and The Flung Bond: 30
-Tick 984: 🤝 Trade: The Green Few → The Bound Market  4 stone  (tension now 0)
-Tick 984: 🤝 Trade: The Green Few → The Flung Bond  4 stone  (tension now 0)
-Tick 984: 🤝 Trade: The Green Few → The Steadfast Exchange  4 stone  (tension now 0)
-Tick 984: ☀ Spring — food regeneration resumes
-Tick 985: 📜 TREATY: The Green Few and The Flung Bond sign Trade Agreement (expires tick 1035)
-Tick 985: 📜 TREATY: The Steadfast Exchange and The Bound Market sign Trade Agreement (expires tick 1035)
-Tick 987: 🤝 Trade: The Green Few → The Bound Market  4 stone  (tension now 0)
-Tick 987: 🤝 Trade: The Green Few → The Flung Bond  4 stone  (tension now 0)
-Tick 987: 🤝 Trade: The Green Few → The Steadfast Exchange  4 ore  (tension now 0)
-Tick 0988: 💡 TECH DISCOVERED: The Bound Market → ENGINEERING [Doubles mining yield; reduces all research tick costs by 20%]
-Tick 0988: 🔬 The Bound Market begins researching CURRENCY (ETA: 22 ticks)
-Tick 0988: 💡 TECH DISCOVERED: The Flung Bond → ENGINEERING [Doubles mining yield; reduces all research tick costs by 20%]
-Tick 0988: 🔬 The Flung Bond begins researching CURRENCY (ETA: 22 ticks)
-Tick 990: Tension rising between The Flung Bond and The Steadfast Exchange: 25
-Tick 990: 🤝 Trade: The Green Few → The Bound Market  4 ore  (tension now 0)
-Tick 990: 🤝 Trade: The Green Few → The Flung Bond  4 ore  (tension now 0)
-Tick 990: 🤝 Trade: The Green Few → The Steadfast Exchange  4 stone  (tension now 0)
-Tick 0990: 💀 Nori (The Steadfast Exchange) wasted away alone
-Tick 0991: 💡 TECH DISCOVERED: The Green Few → STEEL [Combat strength +80% total; raids steal 4×; immune to exhaustion]
-Tick 0991: ✍ Trade route carries 'the_wilds_provide' The Flung Bond → The Bound Market
-Tick 993: 🤝 Trade: The Green Few → The Bound Market  4 stone  (tension now 0)
-Tick 993: 🤝 Trade: The Green Few → The Flung Bond  4 stone  (tension now 0)
-Tick 995: 📣 Rumors of coming shortage spread through the land...
-Tick 996: 🤝 Trade: The Green Few → The Bound Market  4 stone  (tension now 0)
-Tick 996: 🤝 Trade: The Green Few → The Flung Bond  4 stone  (tension now 0)
-Tick 999: Tension rising between The Bound Market and The Flung Bond: 35 (HOSTILE)
-Tick 999: 🤝 Trade: The Green Few → The Bound Market  4 stone  (tension now 0)
-Tick 999: 🤝 Trade: The Green Few → The Flung Bond  4 stone  (tension now 0)
-Tick 1000: 📉 STONE SHORTAGE — stone running low across the land
-Tick 1000: 🎁 WORLD EVENT — FREE DISCOVERY (no eligible faction)
-Tick 1000: ══ A NEW ERA DAWNS ══  (tensions halved, lands refreshed)
-Tick 1000: [ERA SUMMARY] Era 901–1000 ― The Age of Enlightenment: 0 wars, 0 deaths, 3 discoveries, 2 treaties.
-
-── Perished This Era ──
-  Pyra
-  Nori
+Tick 100: ⚔ RAID: The Sworn Exchange plundered The Open Guard's territory — seized 2 wood, 1 stone (+10 tension)
+Tick 100: ⚔ RAID: The Lost Road plundered The Bound Market's territory — seized 2 wood, 1 stone (+10 tension)
+Tick 100: ⚔ RAID: The Lost Road plundered The United Walkers's territory — seized 2 wood, 1 stone (+10 tension)
+Tick 100: ⚔ RAID: The Wild Bridge plundered The Wandering Pact's territory — seized 2 wood, 1 stone (+10 tension)
+Tick 0100: ✍ Trade route carries 'loss_teaches_caution' The Open Road → The Trading Elders
+Tick 0100: ✍ Trade route carries 'loss_teaches_caution' The Open Road → The Bound Market
+Tick 0100: ✍ Trade route carries 'trade_builds_bonds' The Open Road → The Scattered Bond
+Tick 0100: ✍ Trade route carries 'loyalty_above_all' The Free Market → The Lost Road
+Tick 0100: ✍ Trade route carries 'loss_teaches_caution' The Free Market → The Drifting Market
+Tick 0100: ✍ Trade route carries 'lucky_survivor' The Free Market → The United Walkers
+Tick 0100: ✍ Trade route carries 'migration_brings_hope' The Trading Exchange → The Forest Sages
+Tick 0100: ✍ Trade route carries 'the_wilds_provide' The Open Market → The Flung Council
+Tick 0100: ✍ Tova shares 'loss_teaches_caution' within The Merchant Gatherers (writing)
+Tick 0100: ✍ Trade route carries 'self_reliance' The Merchant Gatherers → The Trading Exchange
+Tick 0100: ✍ Trade route carries 'migration_brings_hope' The Merchant Gatherers → The Wise Few
+Tick 0100: ✍ Trade route carries 'the_wise_must_lead' The Open Circle → The Tidal Shore
+Tick 0100: ✍ Wren shares 'fortune_favors_the_prepared' within The Open Rovers (writing)
+Tick 0100: ✍ Trade route carries 'endurance_rewarded' The Open Rovers → The Trading Market
+Tick 0100: ✍ Trade route carries 'endurance_rewarded' The Open Rovers → The Merchant Gatherers
+Tick 0100: ✍ Bard shares 'death_is_near' within The Bound Hearth (writing)
+Tick 0100: ✍ Trade route carries 'the_wise_must_lead' The Bound Hearth → The Flung Council
+Tick 0100: ✍ Ingr2 shares 'community_sustains' within The Lone Current (writing)
+Tick 0100: ✍ Trade route carries 'the_wise_must_lead' The Lone Current → The Trading Exchange
+Tick 0100: 💡 TECH DISCOVERED: The Trading Walkers → MEDICINE [Heals hunger damage; 50% plague resistance; starvation buffer +5]
+Tick 0100: 🔬 The Trading Walkers begins researching WRITING (ETA: 22 ticks)
+Tick 0100: ✍ Trade route carries 'the_wise_must_lead' The Wise Few → The Wild Market
+Tick 0100: ✍ Trade route carries 'crowded_lands_breed_conflict' The Wise Few → The Trading Market
+Tick 0100: ✍ Trade route carries 'the_strong_take' The Wise Few → The Coastal Blade
+Tick 0100: 💡 TECH DISCOVERED: The Forest Sages → FARMING [Passively adds up to +3 food/tick to reserve; territory floor 5 food]
+Tick 0100: 🔬 The Forest Sages begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: ✍ Trade route carries 'migration_brings_hope' The Wild Market → The Trading Market
+Tick 0100: ✍ Trade route carries 'migration_brings_hope' The Wild Market → The Open Rovers
+Tick 0100: ✍ Trade route carries 'the_wilds_provide' The Flung Council → The Free Market
+Tick 0100: ✍ Trade route carries 'migration_brings_hope' The Flung Council → The Trading Market
+Tick 0100: ✍ Trade route carries 'loss_teaches_caution' The Flung Council → The Bound Hearth
+Tick 0100: ✍ Trade route carries 'the_strong_take' The Flung Council → The Open Guard
+Tick 0100: ✍ Trade route carries 'endurance_rewarded' The Wandering Pact → The Untamed Road
+Tick 0100: ✍ Halv2 shares 'death_is_near' within The United Bond (writing)
+Tick 0100: ✍ Trade route carries 'the_wilds_provide' The United Bond → The Tidal Shore
+Tick 0100: 💡 TECH DISCOVERED: The Ruthless Conquerors → FARMING [Passively adds up to +3 food/tick to reserve; territory floor 5 food]
+Tick 0100: 🔬 The Ruthless Conquerors begins researching SCAVENGING (ETA: 8 ticks)
+Tick 0100: 💡 TECH DISCOVERED: The Faithful Sworn → FARMING [Passively adds up to +3 food/tick to reserve; territory floor 5 food]
+Tick 0100: 🔬 The Faithful Sworn begins researching MINING (ETA: 18 ticks)
+Tick 0100: 💡 TECH DISCOVERED: The Wise Market → FARMING [Passively adds up to +3 food/tick to reserve; territory floor 5 food]
+Tick 0100: 🔬 The Wise Market begins researching MINING (ETA: 18 ticks)
+Tick 0100: 💡 TECH DISCOVERED: The Wise Scattered → FARMING [Passively adds up to +3 food/tick to reserve; territory floor 5 food]
+Tick 0100: 🔬 The Wise Scattered begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 💡 TECH DISCOVERED: The Faithful Tide → FARMING [Passively adds up to +3 food/tick to reserve; territory floor 5 food]
+Tick 0100: 🔬 The Faithful Tide begins researching MINING (ETA: 18 ticks)
+Tick 0100: 💡 TECH DISCOVERED: The Woven Walkers → FARMING [Passively adds up to +3 food/tick to reserve; territory floor 5 food]
+Tick 0100: 🔬 The Woven Walkers begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 💡 TECH DISCOVERED: The Sworn Exchange → FARMING [Passively adds up to +3 food/tick to reserve; territory floor 5 food]
+Tick 0100: 🔬 The Sworn Exchange begins researching MINING (ETA: 18 ticks)
+Tick 0100: 💡 TECH DISCOVERED: The Coastal Tide → FARMING [Passively adds up to +3 food/tick to reserve; territory floor 5 food]
+Tick 0100: 🔬 The Coastal Tide begins researching SCAVENGING (ETA: 8 ticks)
+Tick 0100: 💡 TECH DISCOVERED: The Scattered Walkers → FARMING [Passively adds up to +3 food/tick to reserve; territory floor 5 food]
+Tick 0100: 🔬 The Scattered Walkers begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 💡 TECH DISCOVERED: The United Council → FARMING [Passively adds up to +3 food/tick to reserve; territory floor 5 food]
+Tick 0100: 🔬 The United Council begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 💡 TECH DISCOVERED: The Sworn Bridge → ORAL_TRADITION [Beliefs spread 30% faster within faction; unlocks Civic branch]
+Tick 0100: 🔬 The Sworn Bridge begins researching WRITING (ETA: 22 ticks)
+Tick 0100: 💡 TECH DISCOVERED: The Sworn Market → FARMING [Passively adds up to +3 food/tick to reserve; territory floor 5 food]
+Tick 0100: 🔬 The Sworn Market begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Tidal Market begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Dispersed Ones begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Trading Bridge begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Open Tide begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Faithful Rovers begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Sworn Hearth begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Merchant Road begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Flung Tide begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Bound Bond begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Coastal Current begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Guided Elders begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Elder Few begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Wandering Walkers begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The United Bridge begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Coastal Walkers begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Flung Sages begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Forest Shore begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Trading Few begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Wild Sworn begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Woven Circle begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Tidal Hearth begins researching SCAVENGING (ETA: 8 ticks)
+Tick 0100: 🔬 The Flung Ones begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Shadowed Scattered begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Restless Sworn begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Bound Mourning begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Wild Mourning begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Green Bridge begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Restless Mourning begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Salted Gatherers begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Lone Dispersed begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Iron Ones begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Guided Ones begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Drifting Rovers begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 0100: 🔬 The Dispersed Market begins researching TOOLS (ETA: 10 ticks)
+Tick 0100: 🔬 The Wild Few begins researching ORAL_TRADITION (ETA: 8 ticks)
+Tick 100: 📜 TREATY: The Scattered Walkers and The Trading Market sign Trade Agreement (expires tick 150)
+Tick 0100: 🗺 MAP EXPANDED — grid 21×21 → 22×22 (pop 235)
 
 ── Era Summaries ──
   Ticks 1–100: The Age of Iron
-    Era 1–100 ― The Age of Iron: 0 wars, 0 deaths, 8 discoveries, 0 treaties.
-  Ticks 101–200: The Age of Iron
-    Era 101–200 ― The Age of Iron: 0 wars, 1 deaths, 30 discoveries, 10 treaties.
-  Ticks 201–300: The Crimson Years
-    Era 201–300 ― The Crimson Years: 1 wars, 14 deaths, 38 discoveries, 2 treaties.
-  Ticks 301–400: The Age of Conflict
-    Era 301–400 ― The Age of Conflict: 1 wars, 2 deaths, 7 discoveries, 0 treaties.
-  Ticks 401–500: The Long Peace
-    Era 401–500 ― The Long Peace: 0 wars, 0 deaths, 0 discoveries, 0 treaties.
-  Ticks 501–600: The Age of Iron
-    Era 501–600 ― The Age of Iron: 0 wars, 3 deaths, 10 discoveries, 4 treaties.
-  Ticks 601–700: The Age of Conflict
-    Era 601–700 ― The Age of Conflict: 1 wars, 6 deaths, 9 discoveries, 2 treaties.
-  Ticks 701–800: The Age of Enlightenment
-    Era 701–800 ― The Age of Enlightenment: 0 wars, 0 deaths, 2 discoveries, 0 treaties.
-  Ticks 801–900: The Age of Conflict
-    Era 801–900 ― The Age of Conflict: 0 wars, 3 deaths, 1 discoveries, 2 treaties.
-  Ticks 901–1000: The Age of Enlightenment
-    Era 901–1000 ― The Age of Enlightenment: 0 wars, 0 deaths, 3 discoveries, 2 treaties.
+    Era 1–100 ― The Age of Iron: 0 wars, 0 deaths, 42 discoveries, 6 treaties.

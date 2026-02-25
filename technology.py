@@ -19,7 +19,7 @@ Branches
 import random, sys
 sys.stdout.reconfigure(encoding='utf-8')
 
-from world   import world, BIOME_MAX
+from world   import world, BIOME_MAX, coast_score
 from beliefs import add_belief, core_of, inh_cores, MAX_BELIEFS
 
 
@@ -45,6 +45,14 @@ TECH_TREE: dict[str, dict] = {
         'cost':     {'food': 10, 'wood': 3},
         'ticks':    15,
         'desc':     'Passively adds up to +3 food/tick to reserve; territory floor 5 food',
+    },
+    'sailing': {
+        'branch':   'industrial',
+        'tier':     2,
+        'requires': ['tools'],
+        'cost':     {'wood': 8, 'stone': 4},
+        'ticks':    20,
+        'desc':     'Unlocks sea travel; sea movement is 2× the range but costs 1.5× energy',
     },
     'mining': {
         'branch':   'industrial',
@@ -477,7 +485,19 @@ def technology_tick(factions: list, t: int, event_log: list) -> None:
                     msg = (f"Tick {t:04d}: ✍ Trade route carries '{core}' "
                            f"{faction.name} → {other_name}")
                     event_log.append(msg)
-
+        # ── SAILING: tag members so inhabitants.py sea-traversal check works ──
+        if 'sailing' in techs:
+            for m in faction.members:
+                m._can_sail = True
+                # Fishing passive: coast/sea adjacency yields +1 food every 3 ticks
+                if t % 3 == 0 and coast_score(m.r, m.c) > 0:
+                    biome       = world[m.r][m.c]['biome']
+                    max_food    = BIOME_MAX.get(biome, {}).get('food', 0)
+                    cur_food    = world[m.r][m.c]['resources'].get('food', 0)
+                    if cur_food < max_food:
+                        world[m.r][m.c]['resources']['food'] = min(
+                            max_food, cur_food + 1)
+                    m.inventory['food'] = m.inventory.get('food', 0) + 1
         # ── CODE OF LAWS: boost internal trust; one-time reputation bonus ──
         if 'code_of_laws' in techs and t % 5 == 0:
             members = faction.members

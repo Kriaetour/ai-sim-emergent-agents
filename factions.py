@@ -1,6 +1,11 @@
 import random
 from itertools import combinations
-from world   import world, GRID
+from world   import (world, grid_move,
+                     Settlement, settlement_register, settlement_unregister,
+                     get_settlement_at,
+                     SETTLEMENT_POP_MIN, SETTLEMENT_TICKS_STABLE,
+                     SETTLEMENT_STORAGE_CAP,
+                     coast_score, tile_is_sea)
 from beliefs import core_of, inh_cores, LABELS, add_belief
 
 # module-level rivalry scores: {(name_a, name_b): int}  (names always sorted)
@@ -103,6 +108,13 @@ class Faction:
         self.founded_tick   = founded_tick
         self.food_reserve   = 0.0
         self.legends        = []
+        # ── Proto-city / settlement tracking ──────────────────────────────
+        self.is_settled     = False   # True once faction is a proto-city
+        self.settled_since  = 0       # tick when is_settled first became True
+        self._cog_snapshots: list = [] # rolling (r_avg, c_avg) tuples (capped 50)
+        # ── Permanent Settlement (Towns, Walls, Storage) ───────────────────
+        self.settlement     = None    # Settlement object once founded, else None
+        self.settled_ticks  = 0       # ticks elapsed while is_settled == True
 
     def member_names(self):
         return {m.name for m in self.members}
@@ -112,6 +124,44 @@ class Faction:
 
     def remove_dead(self, dead_names):
         self.members = [m for m in self.members if m.name not in dead_names]
+
+    @property
+    def center_of_gravity(self) -> tuple:
+        """Average (r, c) of all current members; returns (0.0, 0.0) when empty."""
+        if not self.members:
+            return (0.0, 0.0)
+        return (
+            sum(m.r for m in self.members) / len(self.members),
+            sum(m.c for m in self.members) / len(self.members),
+        )
+
+    def update_settlement_status(self, t: int) -> None:
+        """Append current COG to rolling history and test the 5×5 / 50-tick rule.
+
+        A faction is 'Settled' (proto-city) if, over the last 50 ticks, all
+        recorded centre-of-gravity snapshots fit within a 5×5 tile bounding box
+        (max spread <= 4 in each axis).
+        """
+        if not self.members:
+            return
+        self._cog_snapshots.append(self.center_of_gravity)
+        if len(self._cog_snapshots) > 50:
+            self._cog_snapshots = self._cog_snapshots[-50:]
+        if len(self._cog_snapshots) < 50:
+            return  # not enough history yet
+        rs = [s[0] for s in self._cog_snapshots]
+        cs = [s[1] for s in self._cog_snapshots]
+        in_zone = (max(rs) - min(rs) <= 4) and (max(cs) - min(cs) <= 4)
+        if in_zone and not self.is_settled:
+            self.is_settled    = True
+            self.settled_since = t
+            self.settled_ticks = 0
+        elif in_zone and self.is_settled:
+            self.settled_ticks += 1
+        elif not in_zone:
+            self.is_settled    = False
+            self.settled_ticks = 0
+
 
 # ── Internal helpers ───────────────────────────────────────────────────────
 def _mutual_trust(a, b, threshold=5):
@@ -218,6 +268,33 @@ def faction_tick(people, factions, t, event_log):
             a.trust[b.name] = a.trust.get(b.name, 0) + 1
             b.trust[a.name] = b.trust.get(a.name, 0) + 1
 
+        # Settlement stability bonus: settled proto-cities get +5 internal trust
+        faction.update_settlement_status(t)
+        if faction.is_settled:
+            for a, b in combinations(faction.members, 2):
+                a.trust[b.name] = a.trust.get(b.name, 0) + 5
+                b.trust[a.name] = b.trust.get(a.name, 0) + 5
+
+        # ── Settlement storage: deposit surplus food, withdraw for the hungry ──
+        _s = faction.settlement
+        if _s and _s.status == 'active':
+            # Deposit: members with >5 food contribute surplus to the common store
+            for m in faction.members:
+                if m.inventory['food'] > 5 and _s.storage_buffer < SETTLEMENT_STORAGE_CAP:
+                    deposit = min(
+                        int(m.inventory['food'] - 5),
+                        int(SETTLEMENT_STORAGE_CAP - _s.storage_buffer),
+                    )
+                    m.inventory['food']  -= deposit
+                    _s.storage_buffer    += deposit
+            # Withdraw: hungriest members inside the zone get one food each
+            for m in sorted(faction.members, key=lambda p: p.hunger, reverse=True):
+                if (_s.in_zone(m.r, m.c)
+                        and m.hunger > 20
+                        and _s.storage_buffer >= 1):
+                    m.inventory['food']  += 1
+                    _s.storage_buffer    -= 1
+
         # Territory pull: nudge members who drifted > 3 from any territory cell
         if faction.territory:
             for m in faction.members:
@@ -229,11 +306,8 @@ def faction_tick(people, factions, t, event_log):
                     dr = 0 if near[0] == m.r else (1 if near[0] > m.r else -1)
                     dc = 0 if near[1] == m.c else (1 if near[1] > m.c else -1)
                     nr, nc = m.r + dr, m.c + dc
-                    if 0 <= nr < GRID and 0 <= nc < GRID:
-                        m.r, m.c = nr, nc
-
-        faction.update_territory()
-
+                    if 0 <= nr < len(world) and 0 <= nc < len(world):
+                        grid_move(m, nr, nc)   # keeps spatial partition consistent
         # ── Joining: geo limit, 2+ beliefs, trust>5 with 1+, no conflict ──
         taken        = {n for f in factions for n in f.member_names()}
         faction_cors = {core_of(b) for b in faction.shared_beliefs}
@@ -357,12 +431,117 @@ def faction_tick(people, factions, t, event_log):
     if t % 10 == 0:
         _merge_solo_factions(factions, t, event_log)
 
+    # ── Diplomatic merge for small mutually-trusting factions (every 50 ticks)
+    if t % 50 == 0:
+        _try_diplomatic_merge(factions, t, event_log)
+
+    # ── Reputation-based merger check (every 25 ticks) ───────────────────
+    if t % 25 == 0:
+        check_for_merger(factions, t, event_log)
+
+    # ── Settlement founding ───────────────────────────────────────────────
+    for faction in factions:
+        if faction.members and faction.settlement is None:
+            _try_found_settlement(faction, t, event_log)
+
+    # ── Settlement abandonment ────────────────────────────────────────────
+    for faction in factions:
+        _s = faction.settlement
+        if _s and _s.status == 'active' and not faction.members:
+            settlement_unregister(_s)
+            _s.status         = 'abandoned'
+            _s.storage_buffer = 0.0
+            msg = (f"Tick {t:04d}: \U0001f3da ABANDONED — {faction.name}'s settlement "
+                   f"at ({_s.r},{_s.c}) lies empty")
+            event_log.append(msg)
+            print(msg)
+
+    # ── Settlement reclaim ────────────────────────────────────────────────
+    for faction in factions:
+        if not faction.members or faction.settlement is not None:
+            continue
+        cog = faction.center_of_gravity
+        cr, cc = round(cog[0]), round(cog[1])
+        _s = get_settlement_at(cr, cc)
+        if _s and _s.status == 'abandoned':
+            inside = sum(1 for m in faction.members if _s.in_zone(m.r, m.c))
+            if inside >= min(3, len(faction.members)):
+                _s.owner_faction  = faction.name
+                _s.status         = 'active'
+                _s.storage_buffer = 0.0
+                settlement_register(_s)
+                faction.settlement = _s
+                msg = (f"Tick {t:04d}: \U0001f3d7 RECLAIMED — {faction.name} "
+                       f"occupies the settlement at ({_s.r},{_s.c})")
+                event_log.append(msg)
+                print(msg)
+
+
+# ── Settlement founding helper ─────────────────────────────────────────────
+def _try_found_settlement(faction, t, event_log):
+    """Found a permanent settlement when stability *and* size thresholds are met.
+
+    Conditions (all required):
+      • faction.is_settled == True  (COG in 5×5 box for 50+ ticks)
+      • faction.settled_ticks >= SETTLEMENT_TICKS_STABLE  (50 additional ticks)
+      • len(faction.members) >= SETTLEMENT_POP_MIN
+    """
+    if not faction.is_settled:
+        return
+    if faction.settled_ticks < SETTLEMENT_TICKS_STABLE:
+        return
+    if len(faction.members) < SETTLEMENT_POP_MIN:
+        return
+    cog  = faction.center_of_gravity
+    r    = max(0, min(round(cog[0]), len(world) - 1))
+    c    = max(0, min(round(cog[1]), len(world[0]) - 1))
+
+    # ── Port bias: snap anchor to coastline for merchant/seafaring factions ──
+    _PORT_BELIEFS = {'trade_builds_bonds', 'the_sea_provides'}
+    _shared_cores = {core_of(b) for b in faction.shared_beliefs}
+    if _PORT_BELIEFS & _shared_cores:
+        rows = len(world)
+        cols = len(world[0]) if rows else 0
+        best_cs, best_r, best_c = -1, r, c
+        for dr in range(-4, 5):
+            for dc in range(-4, 5):
+                nr, nc = r + dr, c + dc
+                if not (0 <= nr < rows and 0 <= nc < cols):
+                    continue
+                if tile_is_sea(nr, nc):
+                    continue   # can't build on water
+                cs = coast_score(nr, nc)
+                if cs > best_cs:
+                    best_cs, best_r, best_c = cs, nr, nc
+        if best_cs > 0:
+            r, c = best_r, best_c   # snap anchor to coastline
+
+    # Guard: never anchor on sea
+    if tile_is_sea(r, c):
+        return
+
+    s    = Settlement(faction.name, r, c, t)
+    settlement_register(s)
+    faction.settlement = s
+    port_tag = ' [⛵ PORT]' if coast_score(r, c) > 0 else ''
+    msg = (f"Tick {t:04d}: 🏰 SETTLEMENT FOUNDED — {faction.name} "
+           f"raises walls at ({r},{c}){port_tag}  "
+           f"[housing cap {s.housing_capacity}]")
+    event_log.append(msg)
+    print(msg)
+
 
 # ── Schism helper ─────────────────────────────────────────────────────────
 def _try_schism(faction, factions, t, event_log):
-    """Split a faction if a belief minority >= 30% exists."""
+    """Split a faction if a belief minority >= threshold exists.
+
+    Settled (proto-city) factions require a larger minority — 50% vs 30% —
+    reflecting the social cohesion of an established settlement.
+    """
     if len(faction.members) < 3:
         return
+    # Settled factions are harder to split — higher minority threshold
+    schism_threshold = 0.50 if faction.is_settled else 0.30
     for ba, bb in _IDEO_CONFLICTS:
         side_a = [m for m in faction.members if ba in inh_cores(m)]
         side_b = [m for m in faction.members if bb in inh_cores(m)]
@@ -370,7 +549,7 @@ def _try_schism(faction, factions, t, event_log):
             continue
         total    = len(faction.members)
         minority = side_a if len(side_a) < len(side_b) else side_b
-        if len(minority) / total < 0.30:
+        if len(minority) / total < schism_threshold:
             continue
         # ── SCHISM ────────────────────────────────────────────────────
         min_cores    = _common_cores(minority)
@@ -439,6 +618,216 @@ def _merge_solo_factions(factions, t, event_log):
             print(msg)
             break
 
+# ── Diplomatic faction merge ────────────────────────────────────────────────
+def _try_diplomatic_merge(factions, t, event_log):
+    """Merge pairs of small factions with high mutual cross-faction trust.
+
+    A merge fires when ALL conditions hold for a pair (fa, fb):
+      • Both have < MERGE_SIZE_CAP members.
+      • No ideological conflict between their shared beliefs.
+      • No active rivalry above MERGE_RIVALRY_MAX.
+      • Average mutual trust across all cross-faction member pairs
+        >= MERGE_TRUST_MIN.
+
+    The smaller faction is absorbed into the larger; ties resolved by
+    seniority (older absorbs newer).  At most one merge per faction per
+    call to prevent cascade.
+    """
+    MERGE_SIZE_CAP    = 5
+    MERGE_TRUST_MIN   = 8
+    MERGE_RIVALRY_MAX = 20
+
+    active = [f for f in factions if f.members]
+    merged = set()
+    for fa, fb in combinations(active, 2):
+        if fa.name in merged or fb.name in merged:
+            continue
+        if len(fa.members) >= MERGE_SIZE_CAP or len(fb.members) >= MERGE_SIZE_CAP:
+            continue
+
+        # Ideological conflict blocks merge
+        cores_a = {core_of(b) for b in fa.shared_beliefs}
+        cores_b = {core_of(b) for b in fb.shared_beliefs}
+        if any(
+            (ba in cores_a and bb in cores_b) or (bb in cores_a and ba in cores_b)
+            for ba, bb in _IDEO_CONFLICTS
+        ):
+            continue
+
+        # Active rivalry too high
+        key = tuple(sorted([fa.name, fb.name]))
+        if RIVALRIES.get(key, 0) > MERGE_RIVALRY_MAX:
+            continue
+
+        # Average mutual trust across all cross-faction member pairs
+        pairs = [(ma, mb) for ma in fa.members for mb in fb.members]
+        if not pairs:
+            continue
+        avg_trust = sum(
+            ma.trust.get(mb.name, 0) + mb.trust.get(ma.name, 0)
+            for ma, mb in pairs
+        ) / (2 * len(pairs))
+        if avg_trust < MERGE_TRUST_MIN:
+            continue
+
+        # Smaller absorbed into larger; ties → older absorbs newer
+        if len(fb.members) > len(fa.members):
+            keeper, donor = fb, fa
+        elif len(fa.members) > len(fb.members):
+            keeper, donor = fa, fb
+        else:
+            keeper, donor = (fa, fb) if fa.founded_tick <= fb.founded_tick else (fb, fa)
+
+        donor_members = list(donor.members)
+        donor.members = []
+        for m in donor_members:
+            m.faction = keeper.name
+            keeper.members.append(m)
+        # Union of shared beliefs
+        for b in donor.shared_beliefs:
+            if b not in keeper.shared_beliefs:
+                keeper.shared_beliefs.append(b)
+        keeper.update_territory()
+        merged.add(donor.name)
+
+        names_str = ', '.join(m.name for m in donor_members)
+        msg = (f"Tick {t:04d}: \U0001f91d DIPLOMATIC MERGE — {donor.name} "
+               f"unites with {keeper.name} ({names_str})")
+        event_log.append(msg)
+        print(msg)
+
+
+# ── Reputation-based faction merger ─────────────────────────────────────
+# Prestige adjectives: if the surviving faction name starts with one of these,
+# its identity is dominant and we generate a "The <Adj> Union/Alliance" name.
+_PRESTIGE_ADJS = {
+    'Merchant', 'Wise', 'Enduring', 'Steadfast', 'Iron', 'Faithful',
+    'Guided', 'Tidal', 'Stone', 'Elder', 'Trading', 'Open',
+}
+_PRESTIGE_NOUNS = ['Union', 'Alliance', 'Accord', 'League', 'Pact']
+
+MERGER_REP_SUM_MIN   = 8    # sum of both factions' global rep to qualify
+                             # (equivalent to "both at least trusted", maps the
+                             # design intent of "+20" onto the -10..+10 scale)
+MERGER_POP_THRESHOLD = 50   # combined member count must be below this
+MERGER_RIVALRY_MAX   = 15   # active rivalry between them must be below this
+
+
+def _merger_name(keeper, donor, existing_names: set) -> str:
+    """Derive the post-merger name, preserving any prestige lineage."""
+    # Pull the first word after "The " from the keeper's name
+    words = keeper.name.replace('The ', '', 1).split()
+    adj   = words[0] if words else ''
+    if adj in _PRESTIGE_ADJS:
+        for noun in _PRESTIGE_NOUNS:
+            candidate = f"The {adj} {noun}"
+            if candidate not in existing_names:
+                return candidate
+    # Fallback: re-derive from the union of shared beliefs
+    all_cores  = list(dict.fromkeys(keeper.shared_beliefs + donor.shared_beliefs))
+    new_name   = _faction_name(set(all_cores), existing_names)
+    return new_name
+
+
+def check_for_merger(factions, t, event_log):
+    """Merge faction pairs that meet the diplomatic reputation threshold.
+
+    Criteria (all must hold):
+      • Both factions' combined global reputation sum >= MERGER_REP_SUM_MIN.
+      • Combined member count < MERGER_POP_THRESHOLD.
+      • Active rivalry between them < MERGER_RIVALRY_MAX.
+      • No ideological conflict between their shared beliefs.
+
+    Consolidation rules:
+      • Smaller faction is absorbed into the larger/older one (the 'keeper').
+      • All donor members join the keeper; beliefs are unioned.
+      • Each donor member seeds trust toward every keeper member at half the
+        keeper member's existing trust value toward them (and vice versa),
+        simulating a gradual diplomatic handshake rather than instant bonding.
+      • The merged faction's name honours any prestige lineage (see _merger_name).
+    """
+    import diplomacy as _dip
+
+    active = [f for f in factions if f.members]
+    merged = set()
+    for fa, fb in combinations(active, 2):
+        if fa.name in merged or fb.name in merged:
+            continue
+
+        # Reputation gate: sum of individual global reputations
+        if _dip.get_rep(fa.name) + _dip.get_rep(fb.name) < MERGER_REP_SUM_MIN:
+            continue
+
+        # Combined population gate
+        if len(fa.members) + len(fb.members) >= MERGER_POP_THRESHOLD:
+            continue
+
+        # Active rivalry gate
+        key = tuple(sorted([fa.name, fb.name]))
+        if RIVALRIES.get(key, 0) >= MERGER_RIVALRY_MAX:
+            continue
+
+        # Ideological conflict blocks merge
+        cores_a = {core_of(b) for b in fa.shared_beliefs}
+        cores_b = {core_of(b) for b in fb.shared_beliefs}
+        if any(
+            (ba in cores_a and bb in cores_b) or (bb in cores_a and ba in cores_b)
+            for ba, bb in _IDEO_CONFLICTS
+        ):
+            continue
+
+        # Determine keeper (larger wins; tie → older/lower founded_tick)
+        if len(fb.members) > len(fa.members):
+            keeper, donor = fb, fa
+        elif len(fa.members) > len(fb.members):
+            keeper, donor = fa, fb
+        else:
+            keeper, donor = (fa, fb) if fa.founded_tick <= fb.founded_tick else (fb, fa)
+
+        existing_names = {f.name for f in factions}
+        new_name       = _merger_name(keeper, donor, existing_names)
+
+        # Half-trust seed: cross-faction member pairs
+        for km in keeper.members:
+            for dm in donor.members:
+                half_k = km.trust.get(dm.name, 0) // 2
+                half_d = dm.trust.get(km.name, 0) // 2
+                km.trust[dm.name] = max(km.trust.get(dm.name, 0), half_d)
+                dm.trust[km.name] = max(dm.trust.get(km.name, 0), half_k)
+
+        # Transfer donor members
+        donor_members = list(donor.members)
+        donor.members = []
+        for m in donor_members:
+            m.faction = new_name
+            keeper.members.append(m)
+
+        # Union of shared beliefs
+        for b in donor.shared_beliefs:
+            if b not in keeper.shared_beliefs:
+                keeper.shared_beliefs.append(b)
+
+        # Rename if prestige name changed
+        old_keeper_name = keeper.name
+        if new_name != old_keeper_name:
+            keeper.name = new_name
+            for m in keeper.members:
+                m.faction = new_name
+            # Transfer any reputation the old keeper had
+            old_rep = _dip.get_rep(old_keeper_name)
+            if old_rep:
+                _dip.adjust_rep(new_name, old_rep)
+
+        keeper.update_territory()
+        merged.add(donor.name)
+
+        names_str = ', '.join(m.name for m in donor_members)
+        msg = (f"Tick {t:04d}: 🏛 MERGER — {donor.name} absorbed into "
+               f"{keeper.name} ({names_str}) "
+               f"[rep {_dip.get_rep(fa.name):+d}/{_dip.get_rep(fb.name):+d}]")
+        event_log.append(msg)
+        print(msg)
+
 
 # ── Summary print (every 25 ticks) ────────────────────────────────────────
 def print_faction_summary(factions, t):
@@ -470,4 +859,8 @@ def print_faction_summary(factions, t):
         rep     = _dip.get_rep(f.name)
         rep_lbl = _dip.rep_label(rep)
         print(f"    Reputation: {rep:+d} ({rep_lbl})")
+        cog = f.center_of_gravity
+        settled_str = (f"  🏘 SETTLED since tick {f.settled_since}"
+                       if f.is_settled else "")
+        print(f"    Location : COG ({cog[0]:.1f}, {cog[1]:.1f}){settled_str}")
     print(sep + "\n")

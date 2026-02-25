@@ -17,15 +17,19 @@ Layer architecture
   Display               — per-tick render + periodic summaries
 """
 
-import sys, time, re, random, pathlib, gc
+import sys, time, re, random, pathlib, gc, threading
 from datetime import datetime
 import config
 sys.stdout.reconfigure(encoding='utf-8')
 
 # ── Layer imports ──────────────────────────────────────────────────────────
-from world       import world, tick as _world_tick, GRID, BIOME_MAX
-from inhabitants import (Inhabitant, do_tick, is_winter, regen_rate,
-                         NAMES, WINTER_START, CYCLE_LEN, make_child)
+from world       import (world, tick as _world_tick, GRID, BIOME_MAX,
+                         grid_add, grid_remove, update_map_bounds,
+                         grid_occupants, get_settlement_at)
+from inhabitants import (Inhabitant, do_tick, do_tick_preamble, do_tick_body,
+                         is_winter, regen_rate,
+                         NAMES, WINTER_START, CYCLE_LEN, make_child,
+                         procreation_lock)
 from beliefs     import assign_beliefs, share_beliefs, add_belief
 from factions    import check_faction_formation, faction_tick, Faction, _faction_name as _gen_faction_name
 import economy
@@ -34,17 +38,38 @@ import technology
 import diplomacy
 import mythology
 import display
+import dashboard_bridge
 
-TICKS = 10000
+TICKS = config.TICKS
 
 # ── Shared simulation state ────────────────────────────────────────────────
-people:         list = []
-factions:       list = []
-all_dead:       list = []
-event_log:      list = []
-era_summaries:   list = []   # {'start_t', 'end_t', 'name', 'text'} — archived 100-tick windows
-_dead_factions:  list = []   # defunct factions kept for reference
-_last_dynamic_t: int  = 0   # last tick with war / schism / faction-formation
+people:          list   = []
+factions:        list   = []
+all_dead:        list   = []
+event_log:       list   = []
+era_summaries:   list   = []   # {'start_t', 'end_t', 'name', 'text'} — archived 100-tick windows
+_dead_factions:  list   = []   # defunct factions kept for reference
+_last_dynamic_t: int    = 0    # last tick with war / schism / faction-formation
+_event_log_fh:   object = None  # file handle used to flush pruned log lines to disk
+
+# ── Threading locks (Layer 1) ──────────────────────────────────────────────
+# _world_lock  : guards read-modify-write on world[r][c]['resources']
+# _log_lock    : guards event_log.append() from worker threads
+# _trade_lock  : guards cross-inhabitant inventory swaps
+_LAYER1_THREADS = 4   # one per logical core (N95)
+_world_lock  = threading.Lock()
+_log_lock    = threading.Lock()
+_trade_lock  = threading.Lock()
+
+
+def _spawn(inh) -> None:
+    """Append *inh* to the global people list and register it in grid_occupants.
+
+    Using this helper (instead of bare people.append) guarantees the spatial
+    partition stays in sync with the authoritative list at every spawn site.
+    """
+    people.append(inh)
+    grid_add(inh)
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -106,6 +131,28 @@ class _LogTee:
 
 
 # ══════════════════════════════════════════════════════════════════════════
+# Layer 1 threading helpers
+# ══════════════════════════════════════════════════════════════════════════
+
+def process_inhabitants_chunk(inhabitants_list: list, all_people: list,
+                               t: int, dead_bucket: list) -> None:
+    """Worker target: runs do_tick_body for each inhabitant in *inhabitants_list*.
+
+    Called from a threading.Thread.  Shared state (world resources, event_log,
+    cross-inhabitant inventory swaps) is protected by the module-level locks.
+    Collected deaths are appended to *dead_bucket* (caller-supplied list).
+    """
+    for inh in inhabitants_list:
+        do_tick_body(
+            inh, all_people, t,
+            event_log, dead_bucket,
+            world_lock=_world_lock,
+            log_lock=_log_lock,
+            trade_lock=_trade_lock,
+        )
+
+
+# ══════════════════════════════════════════════════════════════════════════
 # Layer functions — one per concern, called in order each tick
 # ══════════════════════════════════════════════════════════════════════════
 
@@ -120,9 +167,48 @@ def world_layer(t: int, winter_just_ended: bool) -> None:
 
 
 def inhabitants_layer(t: int) -> tuple[list, dict]:
-    """Layer 1: move, eat, gather, trust. Returns (deaths, prev_positions)."""
+    """Layer 1: move, eat, gather, trust — processed across 4 threads.
+
+    Execution order:
+      1. Serial preamble  (shuffle, crowd-control, trust-pruning) in main thread.
+      2. Split population into _LAYER1_THREADS chunks.
+      3. Spawn one threading.Thread per chunk; each calls process_inhabitants_chunk.
+      4. Main thread joins all workers before returning.
+      5. Dead inhabitants collected from all buckets, removed from people list.
+    """
     prev_positions = {p.name: (p.r, p.c) for p in people}
-    deaths = do_tick(people, t, event_log)
+
+    # ─ 1. Serial preamble ──────────────────────────────────────────────
+    do_tick_preamble(people, t)
+
+    # ─ 2. Split population into chunks ──────────────────────────────────
+    n        = len(people)
+    size     = max(1, (n + _LAYER1_THREADS - 1) // _LAYER1_THREADS)
+    chunks   = [people[i: i + size] for i in range(0, n, size)]
+
+    # ─ 3. One dead-bucket + one thread per chunk ────────────────────────
+    dead_buckets: list[list] = [[] for _ in chunks]
+    threads: list[threading.Thread] = [
+        threading.Thread(
+            target=process_inhabitants_chunk,
+            args=(chunk, people, t, bucket),
+            daemon=True,
+        )
+        for chunk, bucket in zip(chunks, dead_buckets)
+    ]
+
+    for th in threads:
+        th.start()
+
+    # ─ 4. Wait for all workers ───────────────────────────────────────────
+    for th in threads:
+        th.join()
+
+    # ─ 5. Collect deaths and update people list ────────────────────────
+    deaths: list = [d for bucket in dead_buckets for d in bucket]
+    for d in deaths:
+        grid_remove(d)   # evict from spatial partition before removing from list
+        people.remove(d)
     all_dead.extend(deaths)
     return deaths, prev_positions
 
@@ -168,59 +254,117 @@ def diplomacy_layer(t: int) -> None:
 POP_CAP = config.POP_CAP   # defined in config.py — hard population ceiling
 
 
+MAX_BIRTHS_PER_TICK = 3   # upper limit on new births in a single tick
+
 def procreation_layer(t: int) -> None:
-    """Generational logic: trust-based births, belief inheritance, faction assignment."""
-    # Hard population cap
-    if len(people) >= POP_CAP:
-        return
-    # No births during winter — resources too scarce
-    if is_winter(t):
-        return
+    """Generational logic: trust-based births, belief inheritance, faction assignment.
 
-    used_names = {p.name for p in people} | {p.name for p in all_dead}
+    Runs up to MAX_BIRTHS_PER_TICK birth attempts per tick.  Each iteration
+    re-evaluates eligibility so that is_procreating flags set in iteration N
+    naturally exclude those parents from iteration N+1.
 
-    # Collect all eligible pairs (same tile, mutual trust > 25, both food > 20)
-    # Using index pairs to avoid duplicates and O(n²) list copies
-    eligible: list = []
-    for i in range(len(people)):
-        for j in range(i + 1, len(people)):
-            if people[i].can_procreate(people[j]):
-                eligible.append((people[i], people[j]))
+    Thread-safety contract
+    ----------------------
+    procreation_lock (defined in inhabitants.py) serialises the entire critical
+    section so that, even when four Layer-1 threads are active:
 
-    if not eligible:
-        return
+      • POP_CAP is checked *inside* the lock — never breached by a race.
+      • is_procreating is set and cleared atomically — no pair is double-used.
+      • Food deduction, name resolution, and people.append() are one atomic op.
 
-    # One birth per tick — pick a random eligible pair
-    pa, pb = random.choice(eligible)
-    nm = _make_traveler_name(used_names)
-    if not nm:
+    A try/finally guarantees is_procreating is always cleared, even on exceptions.
+    """
+    # Fast-path guards — read-only, no lock needed
+    if len(people) >= POP_CAP or is_winter(t):
         return
 
-    child = make_child(pa, pb, nm, people)
-    child.faction = None
+    for _attempt in range(MAX_BIRTHS_PER_TICK):
+        if len(people) >= POP_CAP:
+            break
 
-    # Inherit faction: shared faction takes priority, else parent_a's faction
-    if pa.faction and pa.faction == pb.faction:
-        child.faction = pa.faction
-        # Register child in the faction member list
-        for f in factions:
-            if f.name == child.faction:
-                f.members.append(child)
-                break
-    elif pa.faction:
-        child.faction = pa.faction
-        for f in factions:
-            if f.name == child.faction:
-                f.members.append(child)
-                break
+        used_names = {p.name for p in people} | {p.name for p in all_dead}
 
-    people.append(child)
+        # Build eligible pairs; can_procreate already skips is_procreating inhabitants
+        eligible: list = []
+        for i in range(len(people)):
+            for j in range(i + 1, len(people)):
+                if people[i].can_procreate(people[j]):
+                    eligible.append((people[i], people[j]))
 
-    faction_tag = f" of {child.faction}" if child.faction else ""
-    msg = (f"Tick {t:04d}: 🍼 BIRTH: {child.name} born to "
-           f"{pa.name} and {pb.name}{faction_tag}")
-    event_log.append(msg)
-    print(msg)
+        if not eligible:
+            break
+
+        pa, pb = random.choice(eligible)
+
+        # pa_claimed tracks whether we set is_procreating so the finally can clean up
+        pa_claimed = False
+        child      = None
+        try:
+            with procreation_lock:
+                # Re-verify every condition atomically — state may have changed since
+                # the eligible list was built (another procreation_layer call, deaths, etc.)
+                if (
+                    len(people) >= POP_CAP
+                    or pa.is_procreating
+                    or pb.is_procreating
+                    or not pa.can_procreate(pb)
+                ):
+                    break
+
+                # Claim both parents.  Any subsequent thread will see is_procreating=True
+                # and skip this pair inside can_procreate / the guard above.
+                pa.is_procreating = True
+                pb.is_procreating = True
+                pa_claimed = True
+
+                # Housing capacity: suppress birth when settlement zone is full
+                _par_s = get_settlement_at(pa.r, pa.c)
+                if (_par_s and _par_s.status == 'active'
+                        and _par_s.owner_faction == getattr(pa, 'faction', None)):
+                    if _par_s.local_pop(grid_occupants) >= _par_s.housing_capacity:
+                        break  # settlement at capacity — procreation suppressed
+
+                nm = _make_traveler_name(used_names)
+                if not nm:
+                    break  # finally block will clear flags
+
+                # Food deduction, unique naming, and child construction — all atomic
+                child = make_child(pa, pb, nm, people)
+                child.faction = None
+
+                # Inherit faction: shared faction takes priority, else parent_a's faction
+                if pa.faction and pa.faction == pb.faction:
+                    child.faction = pa.faction
+                    for f in factions:
+                        if f.name == child.faction:
+                            f.members.append(child)
+                            break
+                elif pa.faction:
+                    child.faction = pa.faction
+                    for f in factions:
+                        if f.name == child.faction:
+                            f.members.append(child)
+                            break
+
+                # Append while still under lock — POP_CAP respected even with 4 threads
+                # grid_add inside the lock so the child is visible in grid_occupants
+                # to other threads the moment people.append() completes.
+                grid_add(child)
+                people.append(child)
+
+        finally:
+            # Always release the busy flags, whether the block succeeded, returned
+            # early, or raised an exception.
+            if pa_claimed:
+                pa.is_procreating = False
+                pb.is_procreating = False
+
+        if child is not None:
+            faction_tag = f" of {child.faction}" if child.faction else ""
+            msg = (f"Tick {t:04d}: 🍼 BIRTH: {child.name} born to "
+                   f"{pa.name} and {pb.name}{faction_tag}")
+            event_log.append(msg)
+            print(msg)
 
 
 def mythology_layer(t: int) -> None:
@@ -256,11 +400,20 @@ def _era_name(entries: list) -> str:
 
 
 def _prune_event_log(t: int) -> None:
-    """Keep only the last 200 events in memory; archive older ticks into era_summaries."""
+    """Keep only the last 200 events in memory; archive older ticks into era_summaries.
+
+    Any entries that would be evicted are written directly to the log file before
+    being removed from RAM so nothing is silently lost.
+    """
     if len(event_log) <= 200:
         return
     archive      = event_log[:-200]
     event_log[:] = event_log[-200:]
+    # Flush evicted entries to disk immediately so they are never lost
+    if _event_log_fh is not None:
+        for entry in archive:
+            _event_log_fh.write(entry + '\n')
+        _event_log_fh.flush()
     # Bucket archived entries by 100-tick era
     buckets: dict = {}
     for entry in archive:
@@ -380,7 +533,7 @@ def _make_traveler_name(used: set) -> str | None:
 
 def world_event_layer(t: int) -> None:
     """Major world event every 200 ticks — shakes up stagnant civilizations."""
-    hab = [(r, c) for r in range(GRID) for c in range(GRID)
+    hab = [(r, c) for r in range(len(world)) for c in range(len(world))
            if world[r][c]['habitable']]
     # Weighted random pick
     choice = random.choices(
@@ -419,7 +572,7 @@ def world_event_layer(t: int) -> None:
             belief = _BIOME_BELIEF.get(world[r][c]['biome'])
             if belief:
                 add_belief(inh, belief)
-            people.append(inh)
+            _spawn(inh)
             spawned.append(nm)
         msg = (f'Tick {t:04d}: 🌊 WORLD EVENT — MIGRATION WAVE '
                f'({len(spawned)} newcomers: {chr(44).join(spawned)})')
@@ -475,7 +628,7 @@ def era_shift_layer(t: int) -> None:
 
 def disruption_event_layer(t: int) -> None:
     """Forced disruption event when civilisation stagnates for > 40 ticks."""
-    hab    = [(r, c) for r in range(GRID) for c in range(GRID) if world[r][c]['habitable']]
+    hab    = [(r, c) for r in range(len(world)) for c in range(len(world)) if world[r][c]['habitable']]
     active = [f for f in factions if f.members]
 
     # Weight CIVIL WAR out if no large enough faction
@@ -501,7 +654,7 @@ def disruption_event_layer(t: int) -> None:
             inh.faction           = None
             inh.inventory['food'] = 30
             add_belief(inh, bel)
-            people.append(inh)
+            _spawn(inh)
             newcomers.append(inh)
         # Form 2 competing factions immediately from the wave
         existing_names = {f.name for f in factions}
@@ -541,6 +694,7 @@ def disruption_event_layer(t: int) -> None:
         for p in list(people):
             sf = f_by_name.get(p.faction) if p.faction else None
             if sf and len(sf.members) == 1 and p.health < 30:
+                grid_remove(p)
                 people.remove(p)
                 all_dead.append(p)
                 sf.members = []
@@ -584,11 +738,11 @@ def disruption_event_layer(t: int) -> None:
                 inh  = Inhabitant(nm, r, c)
                 inh.faction = None
                 inh.inventory['food'] = 30
-                people.append(inh)
+                _spawn(inh)
 
     # ── d) PROMISED LAND ───────────────────────────────────────────────────
     elif choice == 'PROMISED LAND':
-        all_cells = [(r, c) for r in range(GRID) for c in range(GRID)]
+        all_cells = [(r, c) for r in range(len(world)) for c in range(len(world))]
         barren    = [(r, c) for r, c in all_cells if not world[r][c]['habitable']]
         pick_pool = barren if barren else all_cells
         r, c      = random.choice(pick_pool)
@@ -627,7 +781,7 @@ def disruption_event_layer(t: int) -> None:
                 inh.health            = 100
                 for bel in ['self_reliance', 'community_sustains', prophet_bel]:
                     add_belief(inh, bel)
-                people.append(inh)
+                _spawn(inh)
                 msg = (f'Tick {t:04d}: ══ A PROPHET arrives, preaching new truths ══'
                        f' ({nm} spreads: {prophet_bel})')
             else:
@@ -641,7 +795,7 @@ def disruption_event_layer(t: int) -> None:
 
 def _force_spawn_factions(t: int) -> None:
     """Directly spawn 2 new factions (3 members each) when civilisation is near-extinct."""
-    hab = [(r, c) for r in range(GRID) for c in range(GRID) if world[r][c]['habitable']]
+    hab = [(r, c) for r in range(len(world)) for c in range(len(world)) if world[r][c]['habitable']]
     if not hab:
         return
     used_names     = {p.name for p in people}
@@ -666,7 +820,7 @@ def _force_spawn_factions(t: int) -> None:
             inh.health            = 100
             for bel in bels:
                 add_belief(inh, bel)
-            people.append(inh)
+            _spawn(inh)
             members.append(inh)
         if len(members) >= 2:
             new_name = _gen_faction_name(set(bels), existing_names)
@@ -689,7 +843,7 @@ def _force_spawn_factions(t: int) -> None:
 
 def init_world() -> list:
     """Seed chunk food and return the list of habitable (r, c) positions."""
-    habitable = [(r, c) for r in range(GRID) for c in range(GRID)
+    habitable = [(r, c) for r in range(len(world)) for c in range(len(world))
                  if world[r][c]['habitable']]
     assert habitable, "No habitable chunks — rerun to reseed."
     for row in world:
@@ -717,7 +871,7 @@ def init_inhabitants(habitable: list) -> None:
         inh.faction = None
         if ideology:
             add_belief(inh, ideology)
-        people.append(inh)
+        _spawn(inh)
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -727,6 +881,7 @@ def init_inhabitants(habitable: list) -> None:
 _BIOME_BELIEF: dict[str, str] = {
     'forest':    'the_forest_shelters',
     'coast':     'the_sea_provides',
+    'sea':       'the_sea_provides',   # sailors on open water reinforce sea-belief
     'desert':    'desert_forges_the_worthy',
     'plains':    'the_wilds_provide',
     'mountains': 'stone_stands_eternal',
@@ -734,11 +889,13 @@ _BIOME_BELIEF: dict[str, str] = {
 
 
 def run() -> None:
+    global _event_log_fh
     # ── Set up file logging ────────────────────────────────────────────────
     pathlib.Path('logs').mkdir(exist_ok=True)
     _ts       = datetime.now().strftime('%Y%m%d_%H%M%S')
     _log_path = f'logs/run_{_ts}.txt'
     _log_fh   = open(_log_path, 'w', encoding='utf-8')
+    _event_log_fh = _log_fh   # expose to _prune_event_log for direct flush
     _real     = sys.stdout
     _tee      = _LogTee(_log_fh, _real)
     sys.stdout    = _tee
@@ -780,6 +937,22 @@ def run() -> None:
                 mythology_layer(t)
             elif t % 50 == 0:
                 export_to_mythology_file(t)
+
+            # ── Map expansion (every 25 ticks) ──────────────────────────────────────
+            if t % 25 == 0:
+                _expansion = update_map_bounds(len(people))
+                if _expansion:
+                    _old, _new = _expansion
+                    _emsg = (f'Tick {t:04d}: \U0001f5fa MAP EXPANDED — '
+                             f'grid {_old}×{_old} → {_new}×{_new} '
+                             f'(pop {len(people)})')
+                    event_log.append(_emsg)
+                    print(_emsg)
+                # Dashboard snapshot: piggyback on the same 25-tick cadence
+                if t % dashboard_bridge.DASHBOARD_WRITE_EVERY == 0:
+                    dashboard_bridge.write_dashboard_snapshot(
+                        t, people, factions, _tick_times, event_log)
+
             world_layer(t, winter_just_ended)
 
             # ── Track dynamic activity for stagnation detection ─────────────
@@ -801,6 +974,7 @@ def run() -> None:
                     if t % 10 == 0:                    # despair: -10 hp every 10 ticks → ~100 tick lifespan
                         _sp.health = max(0, _sp.health - 10)
                     if _sp.health <= 0:
+                        grid_remove(_sp)
                         people.remove(_sp)
                         all_dead.append(_sp)
                         _sf.members = []
@@ -851,7 +1025,7 @@ def run() -> None:
                         belief = _BIOME_BELIEF.get(world[r][c]['biome'])
                         if belief:
                             add_belief(inh, belief)
-                        people.append(inh)
+                        _spawn(inh)
                         spawned.append(nm)
                     if spawned:
                         msg = (f"Tick {t:04d}: 🧳 Travelers from beyond the known "

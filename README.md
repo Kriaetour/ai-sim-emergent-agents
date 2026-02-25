@@ -321,8 +321,8 @@ TICKS = 10000   # Change to run shorter (300) or longer simulations
 - [x] **Generational agents** — children inherit beliefs and faction membership from parents
 - [ ] **Streamlit live dashboard** — watch the world map, faction borders, and reputation graph update in real time
 - [ ] **Religion system** — formalized beliefs become institutions with priests, temples, and schismatic holy wars
-- [ ] **Larger world scale** — 16×16 or 32×32 grids, multiple biome clusters, sea travel
-- [ ] **Multiple settlements** — factions build fixed towns with storage, walls, and population caps
+- [x] **Larger world scale** — 16×16 or 32×32 grids, multiple biome clusters, sea travel
+- [x] **Multiple settlements** — factions build fixed towns with storage, walls, and population caps
 - [ ] **Persistent history** — cross-run chronicles where great factions from past runs become legends in new ones
 
 ---

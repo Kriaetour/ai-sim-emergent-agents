@@ -4,4 +4,4 @@ __pycache__/
 logs/
 .env
 *.log
-.DS_Store
+.DS_Store"*.txt" 
