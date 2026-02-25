@@ -4,11 +4,24 @@ from collections import defaultdict
 from world import world, tick, GRID, BIOME_MAX
 
 NAMES = [
-    'Arin','Brek','Cael','Dova','Esh','Fenn','Gara','Holt','Ivar','Joss',
-    'Kael','Lira','Mord','Neva','Orin','Pell','Quen','Reva','Sal','Tova',
-    'Ursa','Vael','Wren','Xan','Yeva','Zorn','Alun','Brea','Coro','Dusk',
-    'Emra','Finn','Gale','Hana','Idra','Jorn','Kira','Lyse','Mael','Nori',
-    'Olen','Pyra','Roan','Sera','Thev',
+    # ── Original pool ─────────────────────────────────────────────────────
+    'Arin', 'Brek', 'Cael', 'Dova', 'Esh',  'Fenn', 'Gara', 'Holt', 'Ivar', 'Joss',
+    'Kael', 'Lira', 'Mord', 'Neva', 'Orin', 'Pell', 'Quen', 'Reva', 'Sal',  'Tova',
+    'Ursa', 'Vael', 'Wren', 'Xan',  'Yeva', 'Zorn', 'Alun', 'Brea', 'Coro', 'Dusk',
+    'Emra', 'Finn', 'Gale', 'Hana', 'Idra', 'Jorn', 'Kira', 'Lyse', 'Mael', 'Nori',
+    'Olen', 'Pyra', 'Roan', 'Sera', 'Thev',
+    # ── Norse roots ───────────────────────────────────────────────────────
+    'Thror', 'Bjorn', 'Sven',  'Dag',   'Rulf', 'Leif', 'Orm',  'Vigr', 'Heid', 'Ravn',
+    'Skald', 'Ingr',  'Yrsa',  'Astri', 'Eir',  'Hela', 'Tor',  'Ulf',  'Sigr', 'Frode',
+    'Gunne', 'Askel', 'Bard',  'Hronn', 'Valdr','Solva','Tyra', 'Knud', 'Ragn', 'Brand',
+    # ── Celtic roots ──────────────────────────────────────────────────────
+    'Ael',  'Bryn',  'Cara',  'Drest', 'Gwyl', 'Idris','Lorn', 'Maren','Odra', 'Prenn',
+    'Ryke', 'Sola',  'Trev',  'Ulva',  'Wynne','Aldra','Brom', 'Coryn','Elva', 'Faeln',
+    'Halv', 'Jeld',  'Kelva', 'Morvyn','Nael', 'Rhynn','Taern','Veld', 'Brenn','Dwyn',
+    # ── Germanic roots ────────────────────────────────────────────────────
+    'Vark',  'Stav', 'Trel',  'Wulf',  'Zarl', 'Drax', 'Elwin','Greld','Ilvar','Luvar',
+    'Myra',  'Raed', 'Selk',  'Thorn', 'Uveld','Hael', 'Naev', 'Dreva','Ravna','Welk',
+    'Arwald','Burk', 'Delk',  'Erlan', 'Folke','Griml','Harwe','Irmin','Jutla','Konr',
 ]
 RES_KEYS      = ['food', 'wood', 'ore', 'stone', 'water']
 FOOD_FLOOR    = 3   # flee if chunk food drops below this
@@ -26,6 +39,17 @@ def regen_rate(t):
 
 # ── Inhabitant ─────────────────────────────────────────────────────────────
 class Inhabitant:
+    __slots__ = (
+        'name', 'r', 'c', 'health', 'hunger', 'inventory',
+        'beliefs', 'trust', 'memory', 'trade_count', 'was_pushed',
+        'prev_health', 'biome_ticks', 'faction_ticks', 'was_rejected',
+        'zero_food_ticks', 'currency',
+        # set externally by sim.py / factions.py / combat.py / diplomacy.py
+        'faction',
+        # lazily set by technology.py (accessed via getattr with defaults)
+        '_medicine_buffer', '_plague_resist', '_prev_hp_medicine',
+    )
+
     def __init__(self, name, r, c):
         self.name      = name
         self.r, self.c = r, c
@@ -51,6 +75,73 @@ class Inhabitant:
     def biome_label(self):
         b = world[self.r][self.c]['biome'].capitalize()
         return f"{b}({self.r},{self.c})"
+
+    def can_procreate(self, other: 'Inhabitant') -> bool:
+        """Return True when both inhabitants meet the procreation conditions."""
+        return (
+            self.r == other.r and self.c == other.c          # same tile
+            and self.trust.get(other.name, 0)  > 25          # mutual trust
+            and other.trust.get(self.name,  0) > 25
+            and self.inventory.get('food',  0) > 20          # both well-fed
+            and other.inventory.get('food', 0) > 20
+        )
+
+
+_GEN_SUFFIXES = ['II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
+
+
+def get_unique_name(base_name: str, living_people: list) -> str:
+    """
+    Return a name that does not collide with any living inhabitant.
+    Appends Roman-numeral suffixes (II, III, IV … X) then falls back to
+    numeric suffixes (11, 12, …) if the base pool is exhausted.
+    """
+    taken = {p.name for p in living_people}
+    if base_name not in taken:
+        return base_name
+    for suffix in _GEN_SUFFIXES:
+        candidate = f"{base_name} {suffix}"
+        if candidate not in taken:
+            return candidate
+    i = 11
+    while True:
+        candidate = f"{base_name} {i}"
+        if candidate not in taken:
+            return candidate
+        i += 1
+
+
+def make_child(
+    parent_a: 'Inhabitant',
+    parent_b: 'Inhabitant',
+    name: str,
+    living_people: list,
+) -> 'Inhabitant':
+    """
+    Create a new Inhabitant as offspring of parent_a and parent_b.
+    The child's name is first resolved to a unique value via get_unique_name.
+    Beliefs: random 50% sample from the union of both parents' beliefs.
+    Starts on the same tile as parent_a with modest food drawn from both parents.
+    """
+    unique_name = get_unique_name(name, living_people)
+    child = Inhabitant(unique_name, parent_a.r, parent_a.c)
+
+    # 50% belief blend: union → random half
+    belief_pool = list(dict.fromkeys(parent_a.beliefs + parent_b.beliefs))  # deduped, ordered
+    sample_n    = max(1, len(belief_pool) // 2) if belief_pool else 0
+    child.beliefs = random.sample(belief_pool, sample_n) if belief_pool else []
+
+    # Seed trust toward both parents
+    child.trust[parent_a.name] = 30
+    child.trust[parent_b.name] = 30
+
+    # Small food cost deducted from parents; child starts with that sum
+    cost = 5
+    parent_a.inventory['food'] = max(0, parent_a.inventory.get('food', 0) - cost)
+    parent_b.inventory['food'] = max(0, parent_b.inventory.get('food', 0) - cost)
+    child.inventory['food']    = cost * 2
+
+    return child
 
 # ── Navigation ─────────────────────────────────────────────────────────────
 def best_neighbor(inh, exclude_self=False):

@@ -17,14 +17,15 @@ Layer architecture
   Display               — per-tick render + periodic summaries
 """
 
-import sys, time, re, random, pathlib
+import sys, time, re, random, pathlib, gc
 from datetime import datetime
+import config
 sys.stdout.reconfigure(encoding='utf-8')
 
 # ── Layer imports ──────────────────────────────────────────────────────────
 from world       import world, tick as _world_tick, GRID, BIOME_MAX
 from inhabitants import (Inhabitant, do_tick, is_winter, regen_rate,
-                         NAMES, WINTER_START, CYCLE_LEN)
+                         NAMES, WINTER_START, CYCLE_LEN, make_child)
 from beliefs     import assign_beliefs, share_beliefs, add_belief
 from factions    import check_faction_formation, faction_tick, Faction, _faction_name as _gen_faction_name
 import economy
@@ -34,7 +35,7 @@ import diplomacy
 import mythology
 import display
 
-TICKS = 1000
+TICKS = 10000
 
 # ── Shared simulation state ────────────────────────────────────────────────
 people:         list = []
@@ -164,6 +165,64 @@ def diplomacy_layer(t: int) -> None:
     diplomacy.diplomacy_tick(factions, t, event_log)
 
 
+POP_CAP = 50   # B95 hard limit — prevents RAM spikes on 16 GB systems
+
+
+def procreation_layer(t: int) -> None:
+    """Generational logic: trust-based births, belief inheritance, faction assignment."""
+    # Hard population cap
+    if len(people) >= POP_CAP:
+        return
+    # No births during winter — resources too scarce
+    if is_winter(t):
+        return
+
+    used_names = {p.name for p in people} | {p.name for p in all_dead}
+
+    # Collect all eligible pairs (same tile, mutual trust > 25, both food > 20)
+    # Using index pairs to avoid duplicates and O(n²) list copies
+    eligible: list = []
+    for i in range(len(people)):
+        for j in range(i + 1, len(people)):
+            if people[i].can_procreate(people[j]):
+                eligible.append((people[i], people[j]))
+
+    if not eligible:
+        return
+
+    # One birth per tick — pick a random eligible pair
+    pa, pb = random.choice(eligible)
+    nm = _make_traveler_name(used_names)
+    if not nm:
+        return
+
+    child = make_child(pa, pb, nm, people)
+    child.faction = None
+
+    # Inherit faction: shared faction takes priority, else parent_a's faction
+    if pa.faction and pa.faction == pb.faction:
+        child.faction = pa.faction
+        # Register child in the faction member list
+        for f in factions:
+            if f.name == child.faction:
+                f.members.append(child)
+                break
+    elif pa.faction:
+        child.faction = pa.faction
+        for f in factions:
+            if f.name == child.faction:
+                f.members.append(child)
+                break
+
+    people.append(child)
+
+    faction_tag = f" of {child.faction}" if child.faction else ""
+    msg = (f"Tick {t:04d}: 🍼 BIRTH: {child.name} born to "
+           f"{pa.name} and {pb.name}{faction_tag}")
+    event_log.append(msg)
+    print(msg)
+
+
 def mythology_layer(t: int) -> None:
     """Layer 8 (read-only): LLM chronicle, myths, and epitaphs."""
     mythology.mythology_tick(factions, all_dead, t, event_log)
@@ -232,6 +291,78 @@ def _archive_dead_factions() -> None:
     for f in factions:
         if not f.members and f not in _dead_factions:
             _dead_factions.append(f)
+
+
+def export_era_data(t: int) -> None:
+    """Write the last 100 event_log entries and current era_summaries to era_export.txt."""
+    start_t = max(1, t - 49)
+    header  = f"Age of Ticks {start_t}\u2013{t}"
+
+    # Find inhabitants who perished during this 50-tick window
+    perished: list = []
+    for entry in event_log:
+        m = re.match(r'Tick (\d+).*?\U0001f480\s+(.+?)\s+\(', entry)
+        if m and start_t <= int(m.group(1)) <= t:
+            perished.append(m.group(2))
+
+    lines: list = [
+        f"=== {header} ===",
+        "",
+        "\u2500\u2500 Recent Events (last 100 log entries) \u2500\u2500",
+    ]
+    lines.extend(event_log[-100:])
+
+    if perished:
+        lines += ["", "\u2500\u2500 Perished This Era \u2500\u2500"]
+        lines.extend(f"  {name}" for name in perished)
+
+    if era_summaries:
+        lines += ["", "\u2500\u2500 Era Summaries \u2500\u2500"]
+        for era in era_summaries:
+            lines.append(
+                f"  Ticks {era.get('start_t', '?')}\u2013{era.get('end_t', '?')}: "
+                f"{era.get('name', '?')}"
+            )
+            if era.get('text'):
+                lines.append(f"    {era['text']}")
+
+    pathlib.Path("era_export.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def export_to_mythology_file(t: int) -> None:
+    """Append this era's events and recently deceased to manual_chronicle.txt."""
+    start_t = max(1, t - 49)
+    header  = f"Age of Ticks {start_t}\u2013{t}"
+
+    # Extract event_log entries belonging to this era
+    era_entries: list = []
+    perished:    list = []
+    tick_re = re.compile(r'^Tick (\d+)')
+    dead_re = re.compile(r'\U0001f480\s+(.+?)\s+\(')
+    for entry in event_log:
+        m_tick = tick_re.match(entry)
+        if m_tick and start_t <= int(m_tick.group(1)) <= t:
+            era_entries.append(entry)
+            m_dead = dead_re.search(entry)
+            if m_dead:
+                perished.append(m_dead.group(1))
+
+    lines: list = [
+        f"\n{'=' * 60}",
+        f"  {header}",
+        f"{'=' * 60}",
+    ]
+
+    if perished:
+        lines.append("Perished:")
+        lines.extend(f"  \u2022 {name}" for name in perished)
+
+    lines.append("Events:")
+    lines.extend(f"  {e}" for e in era_entries) if era_entries else lines.append("  (none recorded)")
+
+    with open("manual_chronicle.txt", "a", encoding="utf-8") as _f:
+        _f.write("\n".join(lines) + "\n")
+        _f.flush()
 
 
 def _make_traveler_name(used: set) -> str | None:
@@ -640,11 +771,15 @@ def run() -> None:
             dead_names             = beliefs_layer(t, deaths, winter_just_ended,
                                                    prev_positions)
             factions_layer(t, dead_names)
+            procreation_layer(t)
             economy_layer(t)
             combat_layer(t)
             technology_layer(t)
             diplomacy_layer(t)
-            mythology_layer(t)
+            if config.MYTHOLOGY_ENABLED:
+                mythology_layer(t)
+            elif t % 50 == 0:
+                export_to_mythology_file(t)
             world_layer(t, winter_just_ended)
 
             # ── Track dynamic activity for stagnation detection ─────────────
@@ -686,6 +821,7 @@ def run() -> None:
             if t % 50 == 0:
                 _prune_event_log(t)
                 _archive_dead_factions()
+                export_era_data(t)
                 for p in people:
                     if len(p.memory) > 10:
                         p.memory = p.memory[-10:]
@@ -856,7 +992,16 @@ def run() -> None:
         _real.write('\n')
         _tee.passthrough = True
         display.final_report(people, all_dead, factions, event_log, TICKS)
-        mythology.mythology_final_summary(factions, all_dead, TICKS, event_log, era_summaries)
+        if config.MYTHOLOGY_ENABLED:
+            mythology.mythology_final_summary(factions, all_dead, TICKS, event_log, era_summaries)
+            time.sleep(2)   # flush iGPU shared memory after final narrative LLM job
+            gc.collect()    # reclaim memory after final LLM job
+        else:
+            # Write final chronicle entry and ensure the file is flushed and closed
+            export_to_mythology_file(TICKS)
+            with open("manual_chronicle.txt", "a", encoding="utf-8") as _mcf:
+                _mcf.write(f"\n{'=' * 60}\n  END OF SIMULATION — {TICKS} ticks total\n{'=' * 60}\n")
+                _mcf.flush()
         sys.stdout = _real
         _log_fh.close()
         print(f"\nFull log saved → {_log_path}")

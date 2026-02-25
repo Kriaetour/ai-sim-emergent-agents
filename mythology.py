@@ -19,7 +19,7 @@ Public state:
     epitaphs       dict[str, str]       — person_name  → epitaph_text
 """
 
-import sys, re, json, textwrap, pathlib
+import sys, re, json, textwrap, pathlib, time
 from datetime import datetime
 import urllib.request, urllib.error
 
@@ -66,6 +66,7 @@ epitaphs:         dict = {}   # person_name  → text
 _epitaphed:       set  = set()   # names already given epitaphs
 _last_chr_t:      int  = 0       # tick when last chronicle was generated
 _myth_last_t:     dict = {}      # faction_name → last myth-generation tick
+_llm_fired:       bool = False   # set True each time _ollama() is invoked; reset by sim.py
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -81,13 +82,23 @@ def _ollama(prompt: str, max_tokens: int = 200, timeout: int = None) -> str:
     """
     _timeout = timeout if timeout is not None else config.OLLAMA_TIMEOUT
     try:
+        global _llm_fired
+        _llm_fired = True
         payload = json.dumps({
-            "model":   config.NARRATIVE_MODEL,
-            "prompt":  prompt,
-            "stream":  False,
+            "model":      config.NARRATIVE_MODEL,
+            "prompt":     prompt,
+            "system":     (
+                "You are an ancient, nameless scribe of the void. "
+                "Your language is archaic, dark, and descriptive. "
+                "Never use conversational filler, greetings, or polite confirmations. "
+                "Start every response directly with the chronicle text."
+            ),
+            "stream":     False,
+            "keep_alive": 0,
             "options": {
                 "temperature": 0.8,
                 "num_predict": max_tokens,
+                "num_ctx":     4096,
             },
         }).encode("utf-8")
 
@@ -547,15 +558,12 @@ def _generate_chronicle(factions: list, t: int, event_log: list) -> None:
     _last_chr_t = t
 
     top5      = _top_events(start_t, end_t, event_log, n=5)
-    fac_names = ', '.join(f.name for f in factions if f.members)[:120]
 
     prompt = (
-        f"You are an ancient chronicler. Ticks {start_t}–{end_t}.\n"
-        f"Factions: {fac_names}.\n"
-        f"Events:\n{top5}\n\n"
-        "Write exactly 3 sentences about these events. "
-        "Name the factions and fallen. Epic ancient style. Under 80 words.\n"
-        + _STRICT
+        "Here is a list of events from a tribal simulation. "
+        "Summarize them in three grim sentences. "
+        "Do not use greetings or modern terms. "
+        f"Events: {top5}."
     )
 
     text = _clean(_ollama(prompt, max_tokens=120), word_limit=80)

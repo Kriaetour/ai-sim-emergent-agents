@@ -1,0 +1,305 @@
+=== Age of Ticks 9951–10000 ===
+
+── Recent Events (last 100 log entries) ──
+Tick 9994: ✍ Trade route carries 'endurance_rewarded' The Wise Grove → The Merchant Exchange 2
+Tick 9994: ✍ Trade route carries 'the_wilds_provide' The Wise Grove → The Wild Shade
+Tick 9994: ✍ Trade route carries 'the_wilds_provide' The Wise Grove → The Green Sworn
+Tick 9994: ✍ Trade route carries 'self_reliance' The Wise Grove → The Wild Canopy
+Tick 9994: ✍ Trade route carries 'community_sustains' The Wild Shade → The Steadfast Bond
+Tick 9994: ✍ Trade route carries 'self_reliance' The Wild Shade → The Merchant Exchange 2
+Tick 9994: ✍ Trade route carries 'the_wise_must_lead' The Green Shore → The Wise Grove
+Tick 9994: ✍ Trade route carries 'crowded_lands_breed_conflict' The Green Shore → The Wild Canopy
+Tick 9995: Yeva rejected from The Wise Grove — conflicting beliefs
+Tick 9995: Fenn rejected from The Wise Grove — conflicting beliefs
+Tick 9995: Fenn rejected from The Green Sworn — conflicting beliefs
+Tick 9995: 📣 Rumors of coming shortage spread through the land...
+Tick 9996: Ursa shared 'migration brings hope' with Quen
+Tick 9996: Fenn rejected from The Wise Grove — conflicting beliefs
+Tick 9996: Yeva rejected from The Wise Grove — conflicting beliefs
+Tick 9996: Fenn rejected from The Green Sworn — conflicting beliefs
+Tick 9996: Tension rising between The Steadfast Bond and The Merchant Exchange 2: 10
+Tick 9996: Tension rising between The Merchant Exchange 2 and The Green Shore: 10
+Tick 9996: Tension rising between The Wild Shade and The Green Shore: 15
+Tick 9996: 🤝 Trade: The Wise Grove → The Steadfast Bond  4 food  (tension now 0)
+Tick 9996: 🤝 Trade: The Wise Grove → The Merchant Exchange 2  4 food  (tension now 0)
+Tick 9996: 🤝 Trade: The Wise Grove → The Wild Shade  4 food  (tension now 0)
+Tick 9996: 🤝 Trade: The Wise Grove → The Green Shore  4 food  (tension now 0)
+Tick 9996: 🤝 Trade: The Wise Grove → The Green Sworn  4 food  (tension now 0)
+Tick 9996: 🤝 Trade: The Wise Grove → The Wild Canopy  4 food  (tension now 0)
+Tick 9996: 🤝 Trade: The Merchant Exchange 2 → The Steadfast Bond  4 ore  (tension now 5)
+Tick 9996: 🚫 Trade negotiations between The Steadfast Bond & The Wild Shade failed (+3 tension)
+Tick 9996: 🤝 Trade: The Merchant Exchange 2 → The Wild Canopy  4 stone  (tension now 2)
+Tick 9996: 🤝 Trade: The Wild Shade → The Green Sworn  4 food  (tension now 13)
+Tick 9996: ✍ Trade route carries 'the_sea_provides' The Wise Grove → The Wild Canopy
+Tick 9996: ✍ Trade route carries 'endurance_rewarded' The Steadfast Bond → The Wild Canopy
+Tick 9996: 💡 TECH DISCOVERED: The Merchant Exchange 2 → ORAL_TRADITION [Beliefs spread 30% faster within faction; unlocks Civic branch]
+Tick 9996: 🔬 The Merchant Exchange 2 begins researching CURRENCY (ETA: 22 ticks)
+Tick 9996: ✍ Trade route carries 'the_sea_provides' The Green Shore → The Wise Grove
+Tick 9996: ✍ Trade route carries 'the_wise_must_lead' The Green Shore → The Merchant Exchange 2
+Tick 9997: Fenn rejected from The Wise Grove — conflicting beliefs
+Tick 9997: Yeva rejected from The Wise Grove — conflicting beliefs
+Tick 9997: Fenn rejected from The Green Sworn — conflicting beliefs
+Tick 9997: ✍ Trade route carries 'the_forest_shelters' The Steadfast Bond → The Wild Shade
+Tick 9997: ✍ Alun shares 'the_forest_shelters' within The Green Sworn (writing)
+Tick 9998: Quen shared 'self reliance' with Brea
+Tick 9998: Brea shared 'the forest shelters' with Quen
+Tick 9998: Alun shared 'the forest shelters' with Fenn
+Tick 9998: Fenn rejected from The Wise Grove — conflicting beliefs
+Tick 9998: Yeva rejected from The Wise Grove — conflicting beliefs
+Tick 9998: Fenn rejected from The Green Sworn — conflicting beliefs
+Tick 9998: ✍ Wren shares 'endurance_rewarded' within The Wise Grove (writing)
+Tick 9998: ✍ Trade route carries 'the_wise_must_lead' The Steadfast Bond → The Wild Shade
+Tick 9998: ✍ Trade route carries 'suffering_forges_strength' The Wild Shade → The Wild Canopy
+Tick 9998: 💡 TECH DISCOVERED: The Green Shore → MEDICINE [Heals hunger damage; 50% plague resistance; starvation buffer +5]
+Tick 9998: 🔬 The Green Shore begins researching CODE_OF_LAWS (ETA: 30 ticks)
+Tick 9998: ✍ Trade route carries 'crowded_lands_breed_conflict' The Green Shore → The Wise Grove
+Tick 9998: 💡 TECH DISCOVERED: The Green Sworn → MEDICINE [Heals hunger damage; 50% plague resistance; starvation buffer +5]
+Tick 9998: 🔬 The Green Sworn begins researching CODE_OF_LAWS (ETA: 30 ticks)
+Tick 9998: ✍ Alun shares 'community_sustains' within The Green Sworn (writing)
+Tick 9998: ✍ Trade route carries 'community_sustains' The Green Sworn → The Merchant Exchange 2
+Tick 9999: Xan shared 'the wilds provide' with Mord
+Tick 9999: Ursa shared 'endurance rewarded' with Xan
+Tick 9999: Yeva rejected from The Wise Grove — conflicting beliefs
+Tick 9999: Fenn rejected from The Wise Grove — conflicting beliefs
+Tick 9999: Fenn rejected from The Green Sworn — conflicting beliefs
+Tick 9999: Tension rising between The Merchant Exchange 2 and The Wild Canopy: 5
+Tick 9999: Tension rising between The Green Shore and The Wild Canopy: 15
+Tick 9999: 🤝 Trade: The Wise Grove → The Steadfast Bond  4 food  (tension now 0)
+Tick 9999: 🤝 Trade: The Wise Grove → The Merchant Exchange 2  4 food  (tension now 0)
+Tick 9999: 🤝 Trade: The Wise Grove → The Wild Shade  4 food  (tension now 0)
+Tick 9999: 🤝 Trade: The Wise Grove → The Green Shore  4 food  (tension now 0)
+Tick 9999: 🤝 Trade: The Wise Grove → The Green Sworn  4 food  (tension now 0)
+Tick 9999: 🤝 Trade: The Wise Grove → The Wild Canopy  4 food  (tension now 0)
+Tick 9999: 🤝 Trade: The Steadfast Bond → The Merchant Exchange 2  4 ore  (tension now 3)
+Tick 9999: 🤝 Trade: The Wild Canopy → The Steadfast Bond  4 ore  (tension now 1)
+Tick 9999: 🤝 Trade: The Merchant Exchange 2 → The Wild Canopy  4 stone  (tension now 0)
+Tick 9999: 🤝 Trade: The Wild Shade → The Green Shore  4 food  (tension now 13)
+Tick 9999: 🤝 Trade: The Wild Shade → The Green Sworn  4 food  (tension now 11)
+Tick 9999: ✍ Mord shares 'community_sustains' within The Wild Shade (writing)
+Tick 9999: ✍ Neva shares 'endurance_rewarded' within The Wild Shade (writing)
+Tick 9999: ✍ Orin shares 'the_forest_shelters' within The Wild Shade (writing)
+Tick 9999: ✍ Trade route carries 'migration_brings_hope' The Green Sworn → The Merchant Exchange 2
+Tick 10000: Xan shared 'migration brings hope' with Mord
+Tick 10000: Ursa shared 'endurance rewarded' with Quen
+Tick 10000: Quen shared 'endurance rewarded' with Brea
+Tick 10000: Fenn rejected from The Wise Grove — conflicting beliefs
+Tick 10000: Yeva rejected from The Wise Grove — conflicting beliefs
+Tick 10000: Fenn rejected from The Green Sworn — conflicting beliefs
+Tick 10000: ⚡ SCHISM — The Deep Hearth breaks from The Wild Shade (community_sustains vs self_reliance)
+Tick 10000: ⚡ SCHISM — The Sylvan Pact breaks from The Wild Canopy (community_sustains vs self_reliance)
+Tick 10000: 🤝 FACTION MERGE — Quen (The Sylvan Pact) joins The Steadfast Bond
+Tick 10000: 💰 The Deep Hearth invents currency — 'tokens of The De' (each member receives 10)
+Tick 10000: The Deep Hearth food price: 2→1 (surplus)
+Tick 10000: The Deep Hearth wood price: 3→2 (surplus)
+Tick 10000: The Deep Hearth ore price: 5→2 (surplus)
+Tick 10000: The Deep Hearth stone price: 4→2 (surplus)
+Tick 10000: 📉 ORE SHORTAGE — ore running low across the land
+Tick 10000: ✍ Esh shares 'migration_brings_hope' within The Wise Grove (writing)
+Tick 10000: ✍ Trade route carries 'migration_brings_hope' The Wise Grove → The Wild Shade
+Tick 10000: ✍ Trade route carries 'the_sea_provides' The Green Shore → The Merchant Exchange 2
+Tick 10000: ✍ Trade route carries 'the_sea_provides' The Green Shore → The Wild Canopy
+Tick 10000: 🔬 The Deep Hearth begins researching TOOLS (ETA: 10 ticks)
+Tick 10000: 🐀 WORLD EVENT — THE GREAT PLAGUE (26 inhabitants lose 20 health)
+Tick 10000: ══ A NEW ERA DAWNS ══  (tensions halved, lands refreshed)
+
+── Era Summaries ──
+  Ticks 1–100: The Age of Iron
+    Era 1–100 ― The Age of Iron: 0 wars, 1 deaths, 4 discoveries, 3 treaties.
+  Ticks 101–200: The Age of Iron
+    Era 101–200 ― The Age of Iron: 0 wars, 1 deaths, 21 discoveries, 6 treaties.
+  Ticks 201–300: The Age of Iron
+    Era 201–300 ― The Age of Iron: 0 wars, 0 deaths, 15 discoveries, 3 treaties.
+  Ticks 301–400: The Crimson Years
+    Era 301–400 ― The Crimson Years: 2 wars, 8 deaths, 6 discoveries, 1 treaties.
+  Ticks 401–500: The Age of Iron
+    Era 401–500 ― The Age of Iron: 0 wars, 0 deaths, 9 discoveries, 3 treaties.
+  Ticks 501–600: The Age of Iron
+    Era 501–600 ― The Age of Iron: 0 wars, 0 deaths, 20 discoveries, 3 treaties.
+  Ticks 601–700: The Long Peace
+    Era 601–700 ― The Long Peace: 0 wars, 0 deaths, 1 discoveries, 0 treaties.
+  Ticks 701–800: The Age of Conflict
+    Era 701–800 ― The Age of Conflict: 1 wars, 5 deaths, 10 discoveries, 2 treaties.
+  Ticks 801–900: The Age of Iron
+    Era 801–900 ― The Age of Iron: 0 wars, 0 deaths, 16 discoveries, 6 treaties.
+  Ticks 901–1000: The Crimson Years
+    Era 901–1000 ― The Crimson Years: 1 wars, 12 deaths, 14 discoveries, 5 treaties.
+  Ticks 1001–1100: The Age of Iron
+    Era 1001–1100 ― The Age of Iron: 0 wars, 0 deaths, 4 discoveries, 0 treaties.
+  Ticks 1101–1200: The Age of Iron
+    Era 1101–1200 ― The Age of Iron: 0 wars, 0 deaths, 11 discoveries, 6 treaties.
+  Ticks 1201–1300: The Age of Iron
+    Era 1201–1300 ― The Age of Iron: 0 wars, 1 deaths, 23 discoveries, 6 treaties.
+  Ticks 1301–1400: The Age of Conflict
+    Era 1301–1400 ― The Age of Conflict: 1 wars, 1 deaths, 5 discoveries, 3 treaties.
+  Ticks 1401–1500: The Age of Sickness
+    Era 1401–1500 ― The Age of Sickness: 0 wars, 0 deaths, 11 discoveries, 7 treaties.
+  Ticks 1501–1600: The Age of Iron
+    Era 1501–1600 ― The Age of Iron: 0 wars, 2 deaths, 15 discoveries, 6 treaties.
+  Ticks 1601–1700: The Age of Conflict
+    Era 1601–1700 ― The Age of Conflict: 1 wars, 2 deaths, 1 discoveries, 0 treaties.
+  Ticks 1701–1800: The Age of Iron
+    Era 1701–1800 ― The Age of Iron: 0 wars, 0 deaths, 9 discoveries, 4 treaties.
+  Ticks 1801–1900: The Age of Conflict
+    Era 1801–1900 ― The Age of Conflict: 1 wars, 4 deaths, 2 discoveries, 2 treaties.
+  Ticks 1901–2000: The Age of Iron
+    Era 1901–2000 ― The Age of Iron: 0 wars, 0 deaths, 9 discoveries, 4 treaties.
+  Ticks 2001–2100: The Age of Enlightenment
+    Era 2001–2100 ― The Age of Enlightenment: 0 wars, 0 deaths, 2 discoveries, 1 treaties.
+  Ticks 2101–2200: The Age of Enlightenment
+    Era 2101–2200 ― The Age of Enlightenment: 0 wars, 0 deaths, 3 discoveries, 1 treaties.
+  Ticks 2201–2300: The Age of Conflict
+    Era 2201–2300 ― The Age of Conflict: 1 wars, 0 deaths, 14 discoveries, 5 treaties.
+  Ticks 2301–2400: The Age of Enlightenment
+    Era 2301–2400 ― The Age of Enlightenment: 0 wars, 0 deaths, 3 discoveries, 1 treaties.
+  Ticks 2401–2500: The Age of Conflict
+    Era 2401–2500 ― The Age of Conflict: 1 wars, 5 deaths, 6 discoveries, 2 treaties.
+  Ticks 2501–2600: The Age of Enlightenment
+    Era 2501–2600 ― The Age of Enlightenment: 0 wars, 0 deaths, 2 discoveries, 0 treaties.
+  Ticks 2601–2700: The Age of Conflict
+    Era 2601–2700 ― The Age of Conflict: 1 wars, 3 deaths, 2 discoveries, 2 treaties.
+  Ticks 2701–2800: The Age of Enlightenment
+    Era 2701–2800 ― The Age of Enlightenment: 0 wars, 0 deaths, 2 discoveries, 1 treaties.
+  Ticks 2801–2900: The Age of Iron
+    Era 2801–2900 ― The Age of Iron: 0 wars, 4 deaths, 6 discoveries, 5 treaties.
+  Ticks 2901–3000: The Age of Conflict
+    Era 2901–3000 ― The Age of Conflict: 1 wars, 2 deaths, 9 discoveries, 6 treaties.
+  Ticks 3001–3100: The Age of Iron
+    Era 3001–3100 ― The Age of Iron: 0 wars, 0 deaths, 21 discoveries, 5 treaties.
+  Ticks 3101–3200: The Long Peace
+    Era 3101–3200 ― The Long Peace: 0 wars, 0 deaths, 1 discoveries, 0 treaties.
+  Ticks 3201–3300: The Age of Enlightenment
+    Era 3201–3300 ― The Age of Enlightenment: 0 wars, 0 deaths, 3 discoveries, 2 treaties.
+  Ticks 3301–3400: The Long Peace
+    Era 3301–3400 ― The Long Peace: 0 wars, 1 deaths, 0 discoveries, 2 treaties.
+  Ticks 3401–3500: The Age of Iron
+    Era 3401–3500 ― The Age of Iron: 0 wars, 0 deaths, 4 discoveries, 0 treaties.
+  Ticks 3501–3600: The Long Peace
+    Era 3501–3600 ― The Long Peace: 0 wars, 0 deaths, 0 discoveries, 1 treaties.
+  Ticks 3601–3700: The Age of Iron
+    Era 3601–3700 ― The Age of Iron: 0 wars, 0 deaths, 6 discoveries, 3 treaties.
+  Ticks 3701–3800: The Age of Conflict
+    Era 3701–3800 ― The Age of Conflict: 1 wars, 3 deaths, 5 discoveries, 1 treaties.
+  Ticks 3801–3900: The Age of Iron
+    Era 3801–3900 ― The Age of Iron: 0 wars, 0 deaths, 4 discoveries, 2 treaties.
+  Ticks 3901–4000: The Age of Iron
+    Era 3901–4000 ― The Age of Iron: 0 wars, 0 deaths, 27 discoveries, 7 treaties.
+  Ticks 4001–4100: The Age of Conflict
+    Era 4001–4100 ― The Age of Conflict: 1 wars, 1 deaths, 10 discoveries, 2 treaties.
+  Ticks 4101–4200: The Age of Enlightenment
+    Era 4101–4200 ― The Age of Enlightenment: 0 wars, 0 deaths, 3 discoveries, 0 treaties.
+  Ticks 4201–4300: The Age of Conflict
+    Era 4201–4300 ― The Age of Conflict: 1 wars, 7 deaths, 10 discoveries, 4 treaties.
+  Ticks 4301–4400: The Age of Iron
+    Era 4301–4400 ― The Age of Iron: 0 wars, 1 deaths, 37 discoveries, 9 treaties.
+  Ticks 4401–4500: The Age of Enlightenment
+    Era 4401–4500 ― The Age of Enlightenment: 0 wars, 0 deaths, 2 discoveries, 0 treaties.
+  Ticks 4501–4600: The Crimson Years
+    Era 4501–4600 ― The Crimson Years: 2 wars, 9 deaths, 5 discoveries, 2 treaties.
+  Ticks 4601–4700: The Age of Conflict
+    Era 4601–4700 ― The Age of Conflict: 0 wars, 10 deaths, 31 discoveries, 11 treaties.
+  Ticks 4701–4800: The Crimson Years
+    Era 4701–4800 ― The Crimson Years: 2 wars, 24 deaths, 26 discoveries, 1 treaties.
+  Ticks 4801–4900: The Age of Conflict
+    Era 4801–4900 ― The Age of Conflict: 1 wars, 4 deaths, 1 discoveries, 0 treaties.
+  Ticks 4901–5000: The Age of Conflict
+    Era 4901–5000 ― The Age of Conflict: 1 wars, 5 deaths, 4 discoveries, 2 treaties.
+  Ticks 5001–5100: The Age of Iron
+    Era 5001–5100 ― The Age of Iron: 0 wars, 0 deaths, 6 discoveries, 2 treaties.
+  Ticks 5101–5200: The Age of Iron
+    Era 5101–5200 ― The Age of Iron: 0 wars, 1 deaths, 20 discoveries, 6 treaties.
+  Ticks 5201–5300: The Age of Conflict
+    Era 5201–5300 ― The Age of Conflict: 1 wars, 3 deaths, 3 discoveries, 0 treaties.
+  Ticks 5301–5400: The Age of Conflict
+    Era 5301–5400 ― The Age of Conflict: 1 wars, 2 deaths, 0 discoveries, 1 treaties.
+  Ticks 5401–5500: The Age of Iron
+    Era 5401–5500 ― The Age of Iron: 0 wars, 0 deaths, 10 discoveries, 2 treaties.
+  Ticks 5501–5600: The Long Peace
+    Era 5501–5600 ― The Long Peace: 0 wars, 0 deaths, 1 discoveries, 0 treaties.
+  Ticks 5601–5700: The Age of Conflict
+    Era 5601–5700 ― The Age of Conflict: 1 wars, 1 deaths, 5 discoveries, 0 treaties.
+  Ticks 5701–5800: The Age of Iron
+    Era 5701–5800 ― The Age of Iron: 0 wars, 0 deaths, 9 discoveries, 6 treaties.
+  Ticks 5801–5900: The Age of Iron
+    Era 5801–5900 ― The Age of Iron: 0 wars, 0 deaths, 13 discoveries, 7 treaties.
+  Ticks 5901–6000: The Crimson Years
+    Era 5901–6000 ― The Crimson Years: 1 wars, 13 deaths, 22 discoveries, 4 treaties.
+  Ticks 6001–6100: The Age of Conflict
+    Era 6001–6100 ― The Age of Conflict: 1 wars, 6 deaths, 4 discoveries, 3 treaties.
+  Ticks 6101–6200: The Age of Enlightenment
+    Era 6101–6200 ― The Age of Enlightenment: 0 wars, 0 deaths, 3 discoveries, 1 treaties.
+  Ticks 6201–6300: The Age of Iron
+    Era 6201–6300 ― The Age of Iron: 0 wars, 1 deaths, 24 discoveries, 7 treaties.
+  Ticks 6301–6400: The Long Peace
+    Era 6301–6400 ― The Long Peace: 0 wars, 0 deaths, 1 discoveries, 0 treaties.
+  Ticks 6401–6500: The Age of Iron
+    Era 6401–6500 ― The Age of Iron: 0 wars, 0 deaths, 6 discoveries, 1 treaties.
+  Ticks 6501–6600: The Age of Conflict
+    Era 6501–6600 ― The Age of Conflict: 1 wars, 0 deaths, 8 discoveries, 2 treaties.
+  Ticks 6601–6700: The Age of Iron
+    Era 6601–6700 ― The Age of Iron: 0 wars, 1 deaths, 6 discoveries, 2 treaties.
+  Ticks 6701–6800: The Age of Iron
+    Era 6701–6800 ― The Age of Iron: 0 wars, 2 deaths, 19 discoveries, 8 treaties.
+  Ticks 6801–6900: The Age of Conflict
+    Era 6801–6900 ― The Age of Conflict: 1 wars, 0 deaths, 3 discoveries, 1 treaties.
+  Ticks 6901–7000: The Age of Conflict
+    Era 6901–7000 ― The Age of Conflict: 1 wars, 0 deaths, 0 discoveries, 1 treaties.
+  Ticks 7001–7100: The Long Peace
+    Era 7001–7100 ― The Long Peace: 0 wars, 0 deaths, 1 discoveries, 0 treaties.
+  Ticks 7101–7200: The Age of Iron
+    Era 7101–7200 ― The Age of Iron: 0 wars, 0 deaths, 7 discoveries, 2 treaties.
+  Ticks 7201–7300: The Age of Iron
+    Era 7201–7300 ― The Age of Iron: 0 wars, 0 deaths, 5 discoveries, 2 treaties.
+  Ticks 7301–7400: The Age of Iron
+    Era 7301–7400 ― The Age of Iron: 0 wars, 0 deaths, 7 discoveries, 3 treaties.
+  Ticks 7401–7500: The Age of Iron
+    Era 7401–7500 ― The Age of Iron: 0 wars, 0 deaths, 12 discoveries, 3 treaties.
+  Ticks 7501–7600: The Age of Enlightenment
+    Era 7501–7600 ― The Age of Enlightenment: 0 wars, 0 deaths, 2 discoveries, 0 treaties.
+  Ticks 7601–7700: The Age of Conflict
+    Era 7601–7700 ― The Age of Conflict: 1 wars, 3 deaths, 8 discoveries, 3 treaties.
+  Ticks 7701–7800: The Age of Iron
+    Era 7701–7800 ― The Age of Iron: 0 wars, 1 deaths, 19 discoveries, 8 treaties.
+  Ticks 7801–7900: The Crimson Years
+    Era 7801–7900 ― The Crimson Years: 2 wars, 16 deaths, 13 discoveries, 2 treaties.
+  Ticks 7901–8000: The Age of Sickness
+    Era 7901–8000 ― The Age of Sickness: 1 wars, 5 deaths, 4 discoveries, 1 treaties.
+  Ticks 8001–8100: The Age of Iron
+    Era 8001–8100 ― The Age of Iron: 0 wars, 0 deaths, 10 discoveries, 4 treaties.
+  Ticks 8101–8200: The Age of Iron
+    Era 8101–8200 ― The Age of Iron: 0 wars, 0 deaths, 39 discoveries, 8 treaties.
+  Ticks 8201–8300: The Crimson Years
+    Era 8201–8300 ― The Crimson Years: 3 wars, 12 deaths, 9 discoveries, 1 treaties.
+  Ticks 8301–8400: The Age of Conflict
+    Era 8301–8400 ― The Age of Conflict: 1 wars, 3 deaths, 16 discoveries, 9 treaties.
+  Ticks 8401–8500: The Age of Iron
+    Era 8401–8500 ― The Age of Iron: 0 wars, 0 deaths, 27 discoveries, 9 treaties.
+  Ticks 8501–8600: The Long Peace
+    Era 8501–8600 ― The Long Peace: 0 wars, 0 deaths, 1 discoveries, 0 treaties.
+  Ticks 8601–8700: The Age of Iron
+    Era 8601–8700 ― The Age of Iron: 0 wars, 0 deaths, 7 discoveries, 1 treaties.
+  Ticks 8701–8800: The Age of Iron
+    Era 8701–8800 ― The Age of Iron: 0 wars, 0 deaths, 6 discoveries, 4 treaties.
+  Ticks 8801–8900: The Age of Iron
+    Era 8801–8900 ― The Age of Iron: 0 wars, 0 deaths, 20 discoveries, 7 treaties.
+  Ticks 8901–9000: The Long Peace
+    Era 8901–9000 ― The Long Peace: 0 wars, 0 deaths, 1 discoveries, 0 treaties.
+  Ticks 9001–9100: The Long Peace
+    Era 9001–9100 ― The Long Peace: 0 wars, 0 deaths, 1 discoveries, 0 treaties.
+  Ticks 9101–9200: The Age of Enlightenment
+    Era 9101–9200 ― The Age of Enlightenment: 0 wars, 0 deaths, 2 discoveries, 1 treaties.
+  Ticks 9201–9300: The Long Peace
+    Era 9201–9300 ― The Long Peace: 0 wars, 0 deaths, 1 discoveries, 0 treaties.
+  Ticks 9301–9400: The Age of Iron
+    Era 9301–9400 ― The Age of Iron: 0 wars, 0 deaths, 12 discoveries, 5 treaties.
+  Ticks 9401–9500: The Age of Conflict
+    Era 9401–9500 ― The Age of Conflict: 1 wars, 4 deaths, 3 discoveries, 1 treaties.
+  Ticks 9501–9600: The Age of Iron
+    Era 9501–9600 ― The Age of Iron: 0 wars, 0 deaths, 11 discoveries, 4 treaties.
+  Ticks 9601–9700: The Age of Conflict
+    Era 9601–9700 ― The Age of Conflict: 1 wars, 3 deaths, 44 discoveries, 8 treaties.
+  Ticks 9701–9800: The Age of Iron
+    Era 9701–9800 ― The Age of Iron: 0 wars, 0 deaths, 8 discoveries, 2 treaties.
+  Ticks 9801–9900: The Age of Conflict
+    Era 9801–9900 ― The Age of Conflict: 2 wars, 6 deaths, 8 discoveries, 2 treaties.
+  Ticks 9901–10000: The Age of Enlightenment
+    Era 9901–10000 ― The Age of Enlightenment: 0 wars, 0 deaths, 3 discoveries, 1 treaties.
