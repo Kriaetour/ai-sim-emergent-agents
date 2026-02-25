@@ -1,5 +1,5 @@
 """
-technology.py — Layer 6: research tree, asymmetric faction strategies.
+technology.py — Layer 6: 3-branch research tree, passive effects, AI selection.
 
 Call order each tick (after combat_tick):
     technology_tick(factions, t, event_log)
@@ -7,75 +7,173 @@ Call order each tick (after combat_tick):
 Public helpers used by other modules:
     has_tech(faction, tech)     -> bool
     combat_bonus(faction)       -> float  (multiplicative, applied to strength)
-    raid_multiplier(faction)    -> int    (1 normally, 2 with weapons)
+    defense_bonus(faction)      -> float  (when defending, Masonry/Steel)
+    raid_multiplier(faction)    -> int    (1 normally, higher with martial techs)
+
+Branches
+────────
+  Industrial (Economy)  : Tools → Farming → Mining → Engineering → Currency
+  Martial    (War)      : Scavenging → Metalwork → Weaponry → Masonry → Steel
+  Civic      (Stability): Oral Tradition → Medicine → Writing → Code of Laws
 """
 import random, sys
 sys.stdout.reconfigure(encoding='utf-8')
 
-from world   import world
+from world   import world, BIOME_MAX
 from beliefs import add_belief, core_of, inh_cores, MAX_BELIEFS
 
 
 # ══════════════════════════════════════════════════════════════════════════
-# Tech tree definition
+# Tech tree — 15 technologies across 3 branches
 # ══════════════════════════════════════════════════════════════════════════
 
 TECH_TREE: dict[str, dict] = {
-    # ── Tier 1 ──────────────────────────────────────────────────────────
+
+    # ── Industrial Path (Economy) ────────────────────────────────────────
     'tools': {
+        'branch':   'industrial',
         'tier':     1,
         'requires': [],
-        'cost':     {'wood': 5, 'stone': 5},
-        'ticks':    12,
-        'desc':     '+50% gathering speed for all members',
+        'cost':     {'wood': 4, 'stone': 4},
+        'ticks':    10,
+        'desc':     'Bonus food gather every even tick; unlocks Industrial branch',
     },
-    # ── Tier 2 ──────────────────────────────────────────────────────────
     'farming': {
+        'branch':   'industrial',
         'tier':     2,
         'requires': ['tools'],
-        'cost':     {'food': 10},
+        'cost':     {'food': 10, 'wood': 3},
+        'ticks':    15,
+        'desc':     'Passively adds up to +3 food/tick to reserve; territory floor 5 food',
+    },
+    'mining': {
+        'branch':   'industrial',
+        'tier':     3,
+        'requires': ['tools'],
+        'cost':     {'stone': 10, 'ore': 4},
         'ticks':    18,
-        'desc':     'Territory produces +3 food / tick passively',
+        'desc':     'Passively generates +1 ore and +1 stone each tick for the faction pool',
+    },
+    'engineering': {
+        'branch':   'industrial',
+        'tier':     3,
+        'requires': ['farming', 'mining'],
+        'cost':     {'ore': 12, 'wood': 8},
+        'ticks':    22,
+        'desc':     'Doubles mining yield; reduces all research tick costs by 20%',
+    },
+    'currency': {
+        'branch':   'industrial',
+        'tier':     4,
+        'requires': ['engineering'],
+        'cost':     {'ore': 15, 'food': 10},
+        'ticks':    28,
+        'desc':     'All trade gives +2 bonus gold; faction wealth grows +1/tick',
+    },
+
+    # ── Martial Path (War) ───────────────────────────────────────────────
+    'scavenging': {
+        'branch':   'martial',
+        'tier':     1,
+        'requires': [],
+        'cost':     {'food': 5},
+        'ticks':    8,
+        'desc':     'Raiders loot 2× resources; unlocks Martial branch',
     },
     'metalwork': {
+        'branch':   'martial',
         'tier':     2,
-        'requires': ['tools'],
-        'cost':     {'ore': 8},
-        'ticks':    18,
+        'requires': ['scavenging'],
+        'cost':     {'ore': 8, 'stone': 4},
+        'ticks':    15,
         'desc':     'Combat strength +30%',
     },
-    # ── Tier 3 ──────────────────────────────────────────────────────────
-    'medicine': {
-        'tier':     3,
-        'requires': ['farming'],
-        'cost':     {'food': 15},
-        'ticks':    25,
-        'desc':     'Members lose health 50% slower from hunger',
-    },
-    'weapons': {
+    'weaponry': {
+        'branch':   'martial',
         'tier':     3,
         'requires': ['metalwork'],
-        'cost':     {'ore': 10},
-        'ticks':    25,
-        'desc':     'Combat strength +50%, raids steal double',
+        'cost':     {'ore': 12},
+        'ticks':    20,
+        'desc':     'Combat strength +50% total; raids steal 3× resources',
+    },
+    'masonry': {
+        'branch':   'martial',
+        'tier':     3,
+        'requires': ['metalwork'],
+        'cost':     {'stone': 14, 'wood': 6},
+        'ticks':    20,
+        'desc':     'Defensive bonus +20% when defending home territory',
+    },
+    'steel': {
+        'branch':   'martial',
+        'tier':     4,
+        'requires': ['weaponry', 'masonry'],
+        'cost':     {'ore': 20, 'stone': 10},
+        'ticks':    30,
+        'desc':     'Combat strength +80% total; raids steal 4×; immune to exhaustion',
+    },
+
+    # ── Civic Path (Stability) ───────────────────────────────────────────
+    'oral_tradition': {
+        'branch':   'civic',
+        'tier':     1,
+        'requires': [],
+        'cost':     {'food': 6},
+        'ticks':    8,
+        'desc':     'Beliefs spread 30% faster within faction; unlocks Civic branch',
+    },
+    'medicine': {
+        'branch':   'civic',
+        'tier':     2,
+        'requires': ['oral_tradition'],
+        'cost':     {'food': 12, 'wood': 4},
+        'ticks':    18,
+        'desc':     'Heals hunger damage; 50% plague resistance; starvation buffer +5',
     },
     'writing': {
+        'branch':   'civic',
         'tier':     3,
-        'requires': ['tools'],
-        'cost':     {'wood': 12},
+        'requires': ['oral_tradition'],
+        'cost':     {'wood': 10, 'stone': 6},
         'ticks':    22,
-        'desc':     'Beliefs spread 2x faster; beliefs travel via trade routes',
+        'desc':     'Beliefs spread 2× faster; myths travel via trade routes',
+    },
+    'code_of_laws': {
+        'branch':   'civic',
+        'tier':     4,
+        'requires': ['writing', 'medicine'],
+        'cost':     {'food': 15, 'wood': 10},
+        'ticks':    30,
+        'desc':     'Raises internal trust; suppresses schisms; +5 reputation permanently',
     },
 }
 
-# Belief → tech affinity: factions with these beliefs prefer these techs
-_AFFINITY: dict[str, set] = {
-    'farming':   {'community_sustains', 'the_wilds_provide', 'the_forest_shelters',
-                  'the_sea_provides', 'fortune_favors_the_prepared'},
-    'metalwork': {'the_strong_take', 'suffering_forges_strength', 'victory_proves_strength'},
-    'writing':   {'trade_builds_bonds', 'the_wise_must_lead', 'loyalty_above_all'},
-    'medicine':  {'endurance_rewarded', 'migration_brings_hope'},
-    'weapons':   {'the_strong_take', 'victory_proves_strength'},
+# Branch → set of tech names (for quick lookup)
+_BRANCH: dict[str, set] = {}
+for _t, _d in TECH_TREE.items():
+    _BRANCH.setdefault(_d['branch'], set()).add(_t)
+
+# ── Belief → preferred branch affinity ───────────────────────────────────
+_BELIEF_AFFINITY: dict[str, str] = {
+    # Industrial
+    'community_sustains':          'industrial',
+    'the_wilds_provide':           'industrial',
+    'the_forest_shelters':         'industrial',
+    'the_sea_provides':            'industrial',
+    'fortune_favors_the_prepared': 'industrial',
+    'trade_builds_bonds':          'industrial',
+    # Martial
+    'the_strong_take':             'martial',
+    'suffering_forges_strength':   'martial',
+    'victory_proves_strength':     'martial',
+    'desert_forges_the_worthy':    'martial',
+    'stone_stands_eternal':        'martial',
+    # Civic
+    'the_wise_must_lead':          'civic',
+    'loyalty_above_all':           'civic',
+    'endurance_rewarded':          'civic',
+    'migration_brings_hope':       'civic',
+    'self_reliance':               'civic',
 }
 
 
@@ -84,10 +182,10 @@ _AFFINITY: dict[str, set] = {
 # ══════════════════════════════════════════════════════════════════════════
 
 def _ensure_tech(faction) -> None:
-    """Lazily attach tech state to a faction if not already present."""
+    """Lazily attach tech state to a faction object if not already present."""
     if not hasattr(faction, 'techs'):
         faction.techs           = set()
-        faction.active_research = None   # {'tech', 'progress', 'started', 'paused'}
+        faction.active_research = None   # dict: {tech, progress, started, paused}
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -95,7 +193,7 @@ def _ensure_tech(faction) -> None:
 # ══════════════════════════════════════════════════════════════════════════
 
 def _pooled_resources(faction) -> dict:
-    """Sum member inventories + food_reserve (for food)."""
+    """Sum member inventories + food_reserve."""
     pool: dict[str, int] = {}
     for m in faction.members:
         for k, v in m.inventory.items():
@@ -111,32 +209,40 @@ def _can_afford(faction, tech: str) -> bool:
 
 
 def _deduct_cost(faction, tech: str) -> None:
-    """Remove tech cost from faction food_reserve then member inventories."""
+    """Remove tech cost from food_reserve first, then member inventories."""
     remaining = dict(TECH_TREE[tech]['cost'])
-    # Drain food from reserve first
     if 'food' in remaining:
         taken = min(int(faction.food_reserve), remaining['food'])
         faction.food_reserve -= taken
         remaining['food']    -= taken
-    # Drain wood / ore / stone from member inventories
+        if remaining['food'] == 0:
+            del remaining['food']
     for m in faction.members:
         if not remaining:
             break
         for res in list(remaining):
-            have          = m.inventory.get(res, 0)
-            take          = min(have, remaining[res])
-            m.inventory[res]   = have - take
-            remaining[res]    -= take
+            have              = m.inventory.get(res, 0)
+            take              = min(have, remaining[res])
+            m.inventory[res]  = have - take
+            remaining[res]   -= take
             if remaining[res] == 0:
                 del remaining[res]
 
 
+def _research_duration(faction, tech: str) -> int:
+    """Base tick cost, reduced 20% if faction has Engineering."""
+    base = TECH_TREE[tech]['ticks']
+    if 'engineering' in getattr(faction, 'techs', set()):
+        base = max(5, int(base * 0.80))
+    return base
+
+
 # ══════════════════════════════════════════════════════════════════════════
-# Research selection
+# Research AI — smart tech selection
 # ══════════════════════════════════════════════════════════════════════════
 
 def _researchable(faction) -> list:
-    """All techs whose prerequisites are met and not yet discovered."""
+    """All techs whose prerequisites are met and not yet owned."""
     done = faction.techs
     return [
         t for t, info in TECH_TREE.items()
@@ -145,16 +251,33 @@ def _researchable(faction) -> list:
 
 
 def _choose_next_tech(faction) -> str | None:
-    """Pick the highest-affinity affordable tech to research next."""
+    """
+    Pick the best affordable tech to research next.
+    Scoring:
+      +tier   — prefer higher tier within branch
+      +3      — if tech branch matches dominant belief affinity
+      +votes  — extra per shared_belief pointing at this branch
+    Ties broken randomly.
+    """
     affordable = [t for t in _researchable(faction) if _can_afford(faction, t)]
     if not affordable:
         return None
 
-    faction_cores = set(faction.shared_beliefs)
-    scored = []
+    # Tally branch votes from faction beliefs
+    branch_votes: dict[str, int] = {}
+    for bel in faction.shared_beliefs:
+        branch = _BELIEF_AFFINITY.get(bel)
+        if branch:
+            branch_votes[branch] = branch_votes.get(branch, 0) + 1
+    preferred_branch = max(branch_votes, key=branch_votes.get) if branch_votes else None
+
+    scored: list[tuple[int, str]] = []
     for tech in affordable:
-        affinity = _AFFINITY.get(tech, set())
-        score    = 1 + sum(2 for b in affinity if b in faction_cores)
+        info  = TECH_TREE[tech]
+        score = info['tier']
+        if preferred_branch and info['branch'] == preferred_branch:
+            score += 3
+        score += branch_votes.get(info['branch'], 0)
         scored.append((score, tech))
 
     scored.sort(key=lambda x: -x[0])
@@ -171,13 +294,14 @@ def _complete_research(faction, tech: str, t: int, event_log: list) -> None:
     faction.techs.add(tech)
     faction.active_research = None
     desc = TECH_TREE[tech]['desc']
-    sep  = '═' * 46
+    sep  = '═' * 50
     print(f"\n{sep}")
     print(f"  💡 TECH DISCOVERED: {tech.upper()}")
-    print(f"  {faction.name}  —  {desc}")
+    print(f"  {faction.name}  ·  Branch: {TECH_TREE[tech]['branch'].title()}")
+    print(f"  {desc}")
     print(f"{sep}\n")
-    msg = (f"Tick {t:03d}: 💡 {faction.name} discovered {tech.upper()}! "
-           f"[{desc}]")
+    msg = (f"Tick {t:04d}: 💡 TECH DISCOVERED: {faction.name} → "
+           f"{tech.upper()} [{desc}]")
     event_log.append(msg)
 
 
@@ -186,17 +310,15 @@ def _complete_research(faction, tech: str, t: int, event_log: list) -> None:
 # ══════════════════════════════════════════════════════════════════════════
 
 def technology_tick(factions: list, t: int, event_log: list) -> None:
-    """Advance research and apply per-tick tech effects for every faction."""
-    import combat as _cbt     # lazy — avoids circular import at module load
-    import economy as _eco    # lazy — same reason
+    """Advance research and apply passive tech effects for every faction."""
+    import combat  as _cbt   # lazy — avoids circular import at module load
+    import economy as _eco
 
     at_war_names: set = {
         f.name
         for w in _cbt.active_wars
         for f in w.all_attackers() + w.all_defenders()
     }
-
-    # Build lookup used by writing trade-route sharing
     faction_by_name = {f.name: f for f in factions if f.members}
 
     for faction in factions:
@@ -206,33 +328,30 @@ def technology_tick(factions: list, t: int, event_log: list) -> None:
         _ensure_tech(faction)
         at_war    = faction.name in at_war_names
         n_members = len(faction.members)
+        techs     = faction.techs
 
         # ── Advance or pause active research ──────────────────────────────
         if faction.active_research:
             r = faction.active_research
 
             if at_war:
-                # Pause (log once)
                 if not r.get('paused'):
                     r['paused'] = True
-                    msg = (f"Tick {t:03d}: ⏸ {faction.name} — "
+                    msg = (f"Tick {t:04d}: ⏸ {faction.name} — "
                            f"{r['tech'].upper()} research paused (at war)")
                     event_log.append(msg)
                     print(msg)
             else:
-                # Resume logging
                 if r.get('paused'):
                     r['paused'] = False
-                    msg = (f"Tick {t:03d}: ▶ {faction.name} — "
+                    msg = (f"Tick {t:04d}: ▶ {faction.name} — "
                            f"{r['tech'].upper()} research resumed")
                     event_log.append(msg)
                     print(msg)
-                # Advance (only when 2+ members so one can research)
                 if n_members >= 2:
                     r['progress'] += 1
-                    # Researcher forgoes gathering — drain 1 food from reserve
                     faction.food_reserve = max(0.0, faction.food_reserve - 1.0)
-                    if r['progress'] >= TECH_TREE[r['tech']]['ticks']:
+                    if r['progress'] >= _research_duration(faction, r['tech']):
                         _complete_research(faction, r['tech'], t, event_log)
 
         # ── Start new research ─────────────────────────────────────────────
@@ -240,54 +359,84 @@ def technology_tick(factions: list, t: int, event_log: list) -> None:
             next_tech = _choose_next_tech(faction)
             if next_tech:
                 _deduct_cost(faction, next_tech)
-                eta = TECH_TREE[next_tech]['ticks']
+                eta = _research_duration(faction, next_tech)
                 faction.active_research = {
                     'tech':     next_tech,
                     'progress': 0,
                     'started':  t,
                     'paused':   False,
                 }
-                msg = (f"Tick {t:03d}: 🔬 {faction.name} begins researching "
+                msg = (f"Tick {t:04d}: 🔬 {faction.name} begins researching "
                        f"{next_tech.upper()} (ETA: {eta} ticks)")
                 event_log.append(msg)
                 print(msg)
 
-        # ── Per-tick effects ───────────────────────────────────────────────
-        techs = faction.techs
+        # ══════════════════════════════════════════════════════════════════
+        # Passive effects — applied every tick
+        # ══════════════════════════════════════════════════════════════════
 
-        # ── tools: +50% gathering ≈ extra gather every other tick ─────────
+        # ── TOOLS: bonus food gather on even ticks ─────────────────────────
         if 'tools' in techs and t % 2 == 0:
             for m in faction.members:
                 res   = world[m.r][m.c]['resources']
-                bonus = min(1, res['food'])
-                res['food']         -= bonus
-                m.inventory['food'] += bonus
+                bonus = min(1, res.get('food', 0))
+                if bonus:
+                    res['food']         -= bonus
+                    m.inventory['food'] += bonus
 
-        # ── farming: territory passively produces +3 food / tick ──────────
-        #    guaranteed food floor: faction territory chunks never drop below 5
+        # ── FARMING: passive food generation into reserve ──────────────────
         if 'farming' in techs:
             cap = len(faction.members) * 20
             add = min(3.0, max(0.0, float(cap) - faction.food_reserve))
             faction.food_reserve += add
             for pos in faction.territory:
-                chunk = world[pos[0]][pos[1]]
-                if chunk['resources']['food'] < 5:
-                    chunk['resources']['food'] = 5
+                try:
+                    chunk = world[pos[0]][pos[1]]
+                    if chunk['resources'].get('food', 0) < 5:
+                        chunk['resources']['food'] = 5
+                except (IndexError, KeyError):
+                    pass
 
-        # ── medicine: heal hunger damage + grant 5-tick starvation buffer ─
-        #    _medicine_buffer is checked by inhabitants.do_tick before HP loss
+        # ── MINING: passive ore and stone generation ───────────────────────
+        if 'mining' in techs:
+            ore_add   = 2 if 'engineering' in techs else 1
+            stone_add = 2 if 'engineering' in techs else 1
+            if faction.members:
+                tgt = faction.members[t % len(faction.members)]
+                tgt.inventory['ore']   = tgt.inventory.get('ore',   0) + ore_add
+                tgt.inventory['stone'] = tgt.inventory.get('stone', 0) + stone_add
+
+        # ── CURRENCY: faction passive wealth growth ────────────────────────
+        if 'currency' in techs:
+            faction.wealth = getattr(faction, 'wealth', 0) + 1
+
+        # ── MEDICINE: heal hunger damage, starvation buffer, plague resist ─
         if 'medicine' in techs:
             for m in faction.members:
-                prev = getattr(m, 'prev_health', m.health)
-                if m.hunger > 40 and (prev - m.health) >= 10:
-                    m.health = min(100, m.health + 10)   # stronger heal
-                # Replenish starvation buffer (consumed 1/tick in inhabitants.py)
-                m._medicine_buffer = min(5, getattr(m, '_medicine_buffer', 0) + 1)
+                stored_hp = getattr(m, '_prev_hp_medicine', m.health)
+                hp_lost   = stored_hp - m.health
+                if m.hunger > 40 and hp_lost >= 8:
+                    m.health = min(100, m.health + 8)
+                m._prev_hp_medicine = m.health
+                m._medicine_buffer  = min(5, getattr(m, '_medicine_buffer', 0) + 1)
+                m._plague_resist    = True   # checked by disruption_event_layer
 
-        # ── writing: beliefs spread 2× faster + via trade routes ──────────
+        # ── ORAL TRADITION: 30% intra-faction belief spread boost ──────────
+        if 'oral_tradition' in techs and t % 3 == 0:
+            members = faction.members
+            if len(members) >= 2:
+                giver    = random.choice(members)
+                receiver = random.choice(members)
+                if giver is not receiver and giver.beliefs:
+                    belief = random.choice(giver.beliefs)
+                    core   = core_of(belief)
+                    if core not in inh_cores(receiver):
+                        if len(receiver.beliefs) >= MAX_BELIEFS:
+                            receiver.beliefs.pop(0)
+                        receiver.beliefs.append(f'heard_from_{giver.name}:{core}')
+
+        # ── WRITING: beliefs spread 2× + via trade routes ──────────────────
         if 'writing' in techs:
-
-            # Extra intra-faction belief sharing (second pass)
             members = faction.members
             for giver in members:
                 if not giver.beliefs or random.random() >= 0.40:
@@ -303,11 +452,9 @@ def technology_tick(factions: list, t: int, event_log: list) -> None:
                     if len(receiver.beliefs) >= MAX_BELIEFS:
                         receiver.beliefs.pop(0)
                     receiver.beliefs.append(f'heard_from_{giver.name}:{core}')
-                    msg = (f"Tick {t:03d}: ✍ {giver.name} shares '{core}' "
+                    msg = (f"Tick {t:04d}: ✍ {giver.name} shares '{core}' "
                            f"within {faction.name} (writing)")
                     event_log.append(msg)
-
-            # Trade-route cross-faction belief spreading
             for route_key, data in _eco.trade_routes.items():
                 if not data.get('active') or faction.name not in route_key:
                     continue
@@ -315,7 +462,7 @@ def technology_tick(factions: list, t: int, event_log: list) -> None:
                 other_f    = faction_by_name.get(other_name)
                 if not other_f or not other_f.members or not faction.members:
                     continue
-                if random.random() >= 0.25:   # 25% per active route per tick
+                if random.random() >= 0.25:
                     continue
                 giver_m = random.choice(faction.members)
                 if not giver_m.beliefs:
@@ -327,9 +474,27 @@ def technology_tick(factions: list, t: int, event_log: list) -> None:
                     if len(recv_m.beliefs) >= MAX_BELIEFS:
                         recv_m.beliefs.pop(0)
                     recv_m.beliefs.append(f'heard_from_{giver_m.name}:{core}')
-                    msg = (f"Tick {t:03d}: ✍ Trade route carries '{core}' "
+                    msg = (f"Tick {t:04d}: ✍ Trade route carries '{core}' "
                            f"{faction.name} → {other_name}")
                     event_log.append(msg)
+
+        # ── CODE OF LAWS: boost internal trust; one-time reputation bonus ──
+        if 'code_of_laws' in techs and t % 5 == 0:
+            members = faction.members
+            for a in members:
+                for b in members:
+                    if a is b:
+                        continue
+                    a.trust[b.name] = min(100, a.trust.get(b.name, 50) + 2)
+            if not getattr(faction, '_laws_rep_applied', False):
+                try:
+                    import diplomacy as _dip
+                    _dip._reputation[faction.name] = (
+                        _dip._reputation.get(faction.name, 0) + 5
+                    )
+                except Exception:
+                    pass
+                faction._laws_rep_applied = True
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -337,19 +502,37 @@ def technology_tick(factions: list, t: int, event_log: list) -> None:
 # ══════════════════════════════════════════════════════════════════════════
 
 def has_tech(faction, tech: str) -> bool:
+    """Return True if faction owns the named technology."""
     return tech in getattr(faction, 'techs', set())
 
 
 def combat_bonus(faction) -> float:
-    """Return the multiplicative strength bonus from military tech."""
+    """
+    Multiplicative strength bonus from the Martial branch.
+    Stacks: Metalwork (+30%) → Weaponry (+50%) → Steel (+80%).
+    """
     techs = getattr(faction, 'techs', set())
-    if 'weapons'  in techs:
-        return 1.50   # +50%
-    if 'metalwork' in techs:
-        return 1.30   # +30%
+    if 'steel'     in techs: return 1.80
+    if 'weaponry'  in techs: return 1.50
+    if 'metalwork' in techs: return 1.30
+    return 1.0
+
+
+def defense_bonus(faction) -> float:
+    """Extra multiplier applied when faction is defending (Masonry / Steel)."""
+    techs = getattr(faction, 'techs', set())
+    if 'masonry' in techs or 'steel' in techs:
+        return 1.20
     return 1.0
 
 
 def raid_multiplier(faction) -> int:
-    """Return 2 if faction has weapons (steals double), else 1."""
-    return 2 if 'weapons' in getattr(faction, 'techs', set()) else 1
+    """
+    How many times normal loot is stolen in a raid.
+      Scavenging → 2×  |  Weaponry → 3×  |  Steel → 4×
+    """
+    techs = getattr(faction, 'techs', set())
+    if 'steel'      in techs: return 4
+    if 'weaponry'   in techs: return 3
+    if 'scavenging' in techs: return 2
+    return 1
