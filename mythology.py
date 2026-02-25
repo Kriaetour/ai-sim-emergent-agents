@@ -19,7 +19,8 @@ Public state:
     epitaphs       dict[str, str]       — person_name  → epitaph_text
 """
 
-import sys, re, json, textwrap
+import sys, re, json, textwrap, pathlib
+from datetime import datetime
 import urllib.request, urllib.error
 
 sys.stdout.reconfigure(encoding='utf-8')
@@ -71,12 +72,14 @@ _myth_last_t:     dict = {}      # faction_name → last myth-generation tick
 # Ollama REST call
 # ══════════════════════════════════════════════════════════════════════════
 
-def _ollama(prompt: str, max_tokens: int = 200) -> str:
+def _ollama(prompt: str, max_tokens: int = 200, timeout: int = None) -> str:
     """
     POST to the local Ollama API.
     Returns the response text, or '' if the call fails for any reason.
     max_tokens overrides the config default for this call only.
+    timeout overrides config.OLLAMA_TIMEOUT for this call only.
     """
+    _timeout = timeout if timeout is not None else config.OLLAMA_TIMEOUT
     try:
         payload = json.dumps({
             "model":   config.NARRATIVE_MODEL,
@@ -94,7 +97,7 @@ def _ollama(prompt: str, max_tokens: int = 200) -> str:
             headers = {"Content-Type": "application/json"},
             method  = "POST",
         )
-        with urllib.request.urlopen(req, timeout=config.OLLAMA_TIMEOUT) as resp:
+        with urllib.request.urlopen(req, timeout=_timeout) as resp:
             data = json.loads(resp.read().decode("utf-8"))
         return data.get("response", "").strip()
 
@@ -864,47 +867,52 @@ def mythology_final_summary(factions: list, all_dead: list,
 
     active  = [f for f in factions if f.members]
     defunct = [f for f in factions if not f.members]
-
-    # ── Build structured era summary — never feed raw event_log to LLM ──────
-    era_text  = _build_structured_summary(event_log, ticks, era_summaries)
-    survivors = ', '.join(f'{f.name} ({len(f.members)})' for f in active) or 'none'
-    collapsed = ', '.join(f.name for f in defunct[:6]) or 'none'
-    tot_dead  = len(all_dead)
+    tot_dead = len(all_dead)
 
     leg_names = [f'{lg["name"]} of {f.name}'
                  for f in factions for lg in f.legends][:6]
 
-    _leg_str = ', '.join(leg_names) if leg_names else 'none'
+    # ── Build source text from already-generated era chronicles (prose, not data) ─
+    _chr_texts   = [c['text'] for c in chronicles] if chronicles else []
+    _chr_joined  = '\n\n'.join(_chr_texts)
+    if len(_chr_joined) > 1500:
+        _chr_joined = '...' + _chr_joined[-1500:]
+    if not _chr_joined:
+        _chr_joined = '(No chronicles recorded.)'
 
-    prompt = f"""Write a 4-paragraph epic history of a fallen civilization.
+    # ── Final summary stats ────────────────────────────────────────────────
+    alive        = sum(len(f.members) for f in active)
+    total        = alive + tot_dead
+    active_names = ', '.join(f.name for f in active) or 'none'
+    dead_count   = len(defunct)
+    legend_count = len(leg_names)
 
-STYLE: Write like Tolkien's Silmarillion — grand, tragic, poetic.
-VOICE: You are the last historian, writing by candlelight as the world ends.
+    prompt = f"""Write a cohesive, 4-paragraph epic history of this civilization in the style of Tolkien's Silmarillion — grand, poetic, tragic.
 
-STRICT FORMAT RULES:
-- Exactly 4 paragraphs
-- Each paragraph: 3-5 sentences
-- Paragraph 1 starts with: "Before the first winter..."
-- Paragraph 2 starts with: "Yet peace is a fragile thing..."
-- Paragraph 3 starts with: "The great wars came..."
-- Paragraph 4 starts with: "Now only..."
-- NEVER say "it was recorded" or "in those days"
-- NEVER list events with bullets or dashes
-- Every sentence must name a specific faction or person
-- End every paragraph with a period
+CHRONICLES (source material — weave these into your narrative):
+{_chr_joined}
 
-SOURCE MATERIAL (weave these facts into your narrative):
-{era_text}
+FINAL STATE:
+Survivors: {alive}/{total}
+Active factions: {active_names}
+Fallen factions: {dead_count}
+Legends fallen: {legend_count}
 
-FACTIONS THAT ENDURED: {survivors}
-FACTIONS THAT FELL: {collapsed}
-LEGENDS (fallen warriors): {_leg_str}
-TOTAL DEAD: {tot_dead}  TOTAL WARS: {war_count}
+STRICT FORMAT — each paragraph must begin with EXACTLY these phrases:
+Paragraph 1: "Before the first winter..."
+Paragraph 2: "Yet peace is a fragile thing..."
+Paragraph 3: "The great wars came..."
+Paragraph 4: "Now only..."
 
-Remember: flowing prose, not a list. Dramatic, not mechanical.
-Begin:"""
+RULES:
+- Exactly 4 paragraphs, each 3–5 sentences.
+- AVOID REPETITION. Do not start sentences with "The [Faction]" repeatedly.
+- Name specific factions and fallen warriors from the chronicles.
+- Flowing prose only. No bullet points, no lists.
+- Complete every sentence. End each paragraph with a period.
+- Under 400 words total."""
 
-    text = _clean_multi(_ollama(prompt, max_tokens=500), word_limit=450)
+    text = _clean_multi(_ollama(prompt, max_tokens=500, timeout=120), word_limit=500)
 
     # ── Post-processing: sanitise LLM output ────────────────────────────
     if text:
@@ -931,24 +939,40 @@ Begin:"""
             text = '[The chronicler\'s vision was unclear. The ages spoke thus:]\n\n' + text
 
     if not text:
-        # Code-built fallback: 4 paragraphs using the canonical paragraph openers
-        era_lines = era_text.strip().split('\n')
-        chunk     = max(1, len(era_lines) // 4)
-        def _era_block(i: int) -> str:
-            return ' '.join(era_lines[i * chunk:(i + 1) * chunk]).strip()
-        p1 = (_era_block(0) or f'the peoples of this world first gathered and made their homes.')
-        p2 = (_era_block(1) or f'calm could not endure, and the factions grew restless.')
-        p3 = (_era_block(2) or f'{war_count} wars were fought across the land.')
-        p4 = (_era_block(3) or f'silence remains where once there was life.')
-        paras = [
-            f'Before the first winter, {p1}',
-            f'Yet peace is a fragile thing — {p2}',
-            f'The great wars came: {p3}',
-            f'Now only {survivors} endure. {tot_dead} souls perished across {ticks} ticks of struggle.',
-        ]
-        text = '\n\n'.join(paras)
+        # Fallback: 4 paragraphs using canonical openers + last era chronicles
+        _last3 = [c['text'] for c in chronicles[-3:]] if chronicles else []
+        if len(_last3) >= 3:
+            text = (
+                f'Before the first winter, {_last3[0]}\n\n'
+                f'Yet peace is a fragile thing — {_last3[1]}\n\n'
+                f'The great wars came, and the land bore witness: {_last3[2]}\n\n'
+                f'Now only {active_names} endure. '
+                f'{tot_dead} souls perished across {ticks} ticks of mortal struggle, '
+                f'and {dead_count} faction{"s" if dead_count != 1 else ""} passed into memory.'
+            )
+        elif _last3:
+            body = ' '.join(_last3)
+            text = (
+                f'Before the first winter, the peoples of this world first gathered and made their homes.\n\n'
+                f'Yet peace is a fragile thing — {body}\n\n'
+                f'The great wars came: {war_count} conflict{"s" if war_count != 1 else ""} were fought across the land.\n\n'
+                f'Now only {active_names} endure. {tot_dead} souls perished in total.'
+            )
+        else:
+            text = (
+                f'Before the first winter, the peoples of this world first gathered and made their homes.\n\n'
+                f'Yet peace is a fragile thing — tensions rose between the factions as the ages turned.\n\n'
+                f'The great wars came: {war_count} conflict{"s" if war_count != 1 else ""} were fought across {ticks} ticks.\n\n'
+                f'Now only {active_names} endure. {tot_dead} souls perished in total.'
+            )
 
     _box(f'THE GREAT HISTORY — A Chronicle of {ticks} Ticks', text, width=76)
+
+    # ── Save final history to timestamped file ───────────────────────────
+    _ts       = datetime.now().strftime('%Y%m%d_%H%M%S')
+    _filename = f'history_{_ts}.txt'
+    pathlib.Path(_filename).write_text(text, encoding='utf-8')
+    _direct_print(f'Saved history to {_filename}')
 
 
 # ══════════════════════════════════════════════════════════════════════════
