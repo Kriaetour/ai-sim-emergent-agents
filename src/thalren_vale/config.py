@@ -18,3 +18,7 @@ POP_CAP = 1000   # hard ceiling; world food scales up as population grows
 # ── LLM generation parameters ────────────────────────────────────────────
 LLM_TEMPERATURE  = 0.7
 LLM_MAX_TOKENS   = 200   # default; overridden per-call          # num_predict passed to Ollama
+
+# ── Plugin system ────────────────────────────────────────────────────────
+PLUGINS_DIR          = 'plugins'      # directory scanned by load_plugins()
+PLUGIN_TICK_INTERVAL = 10             # default cadence; each plugin can override via tick_interval

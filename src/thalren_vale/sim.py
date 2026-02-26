@@ -19,9 +19,13 @@ Layer architecture
   Display               — per-tick render + periodic summaries
 """
 
-import sys, time, re, random, pathlib, gc, threading
+import sys, time, re, random, pathlib, gc, threading, importlib, importlib.util
 from datetime import datetime
 from . import config
+from .plugin_api import (
+    SimulationBridge, ThalrenPlugin, PluginCommand,
+    SpawnInhabitants, AdjustResource,
+)
 sys.stdout.reconfigure(encoding='utf-8')
 
 # ── Layer imports ──────────────────────────────────────────────────────────
@@ -50,6 +54,7 @@ people:          list   = []
 factions:        list   = []
 all_dead:        list   = []
 event_log:       list   = []
+_loaded_plugins: list   = []   # ThalrenPlugin instances registered by load_plugins()
 era_summaries:   list   = []   # {'start_t', 'end_t', 'name', 'text'} — archived 100-tick windows
 _dead_factions:  list   = []   # defunct factions kept for reference
 _last_dynamic_t: int    = 0    # last tick with war / schism / faction-formation
@@ -103,6 +108,8 @@ class _LogTee:
         # Disruption events
         'GREAT MIGRATION', 'PLAGUE SWEEPS', 'CIVIL WAR', 'PROMISED LAND',
         'PROPHET', 'wasted away',
+        # Plugin events
+        'PLUGIN EVENT',
     })
 
     passthrough: bool = False   # True → show everything (used for final report)
@@ -257,6 +264,273 @@ def diplomacy_layer(t: int) -> None:
 def religion_layer(t: int) -> None:
     """Layer 9: religions, temples, priesthood, holy wars, birth inheritance."""
     religion.religion_tick(people, factions, t, event_log)
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# Plugin system — dynamic loading and execution
+# ══════════════════════════════════════════════════════════════════════════
+
+def load_plugins() -> None:
+    """Scan the ``plugins/`` directory and register every ThalrenPlugin subclass.
+
+    Algorithm
+    ─────────
+    1. Resolve the plugins directory relative to the project root (two levels
+       above this package's __file__).
+    2. For every ``*.py`` file that is not ``__init__.py``, load it as a
+       unique module using importlib.util so it can import from thalren_vale.
+    3. Inspect every name in the loaded module's namespace; collect any class
+       that is a strict subclass of ThalrenPlugin (i.e. not ThalrenPlugin
+       itself) and is not abstract.
+    4. Instantiate each discovered class once, call on_load(), and append to
+       _loaded_plugins.
+
+    This function is idempotent: calling it again clears _loaded_plugins and
+    re-scans, which allows in-process hot-reload if needed.
+    """
+    global _loaded_plugins
+
+    # Unload any previously registered plugins
+    for plugin in _loaded_plugins:
+        try:
+            plugin.on_unload()
+        except Exception:
+            pass
+    _loaded_plugins = []
+
+    # Locate plugins/ relative to the package root
+    pkg_root   = pathlib.Path(__file__).parent.parent.parent   # …/AI Sandbox (Refactored)/
+    plugin_dir = pkg_root / config.PLUGINS_DIR
+
+    if not plugin_dir.is_dir():
+        print(f"[Plugin] No plugins/ directory found at {plugin_dir} — skipping.")
+        return
+
+    py_files = sorted(plugin_dir.glob('*.py'))
+    # Skip __init__.py
+    py_files = [f for f in py_files if f.name != '__init__.py']
+
+    if not py_files:
+        print("[Plugin] plugins/ directory is empty — no plugins loaded.")
+        return
+
+    for py_file in py_files:
+        module_name = f"thalren_plugins.{py_file.stem}"
+        spec        = importlib.util.spec_from_file_location(module_name, py_file)
+        if spec is None or spec.loader is None:
+            print(f"[Plugin] Could not load spec for {py_file.name} — skipping.")
+            continue
+
+        module = importlib.util.module_from_spec(spec)
+        try:
+            spec.loader.exec_module(module)
+        except Exception as exc:
+            print(f"[Plugin] Import error in {py_file.name}: {exc}")
+            continue
+
+        # Collect concrete ThalrenPlugin subclasses
+        found = 0
+        for attr_name in dir(module):
+            obj = getattr(module, attr_name)
+            if (
+                isinstance(obj, type)
+                and issubclass(obj, ThalrenPlugin)
+                and obj is not ThalrenPlugin
+                and not getattr(obj, '__abstractmethods__', None)
+            ):
+                try:
+                    instance = obj()
+                    instance.on_load()
+                    _loaded_plugins.append(instance)
+                    found += 1
+                    print(f"[Plugin] Registered: {obj.name!r} from {py_file.name}")
+                except Exception as exc:
+                    print(f"[Plugin] Error instantiating {obj.__name__}: {exc}")
+
+        if found == 0:
+            print(f"[Plugin] No valid plugins found in {py_file.name}.")
+
+    print(f"[Plugin] {len(_loaded_plugins)} plugin(s) loaded from {plugin_dir}.")
+
+
+def _make_bridge(t: int) -> SimulationBridge:
+    """Construct a SimulationBridge snapshot for tick *t*."""
+    return SimulationBridge(
+        tick      = t,
+        people    = people,
+        factions  = factions,
+        world     = world,
+        pop_cap   = POP_CAP,
+        biome_max = BIOME_MAX,
+        event_log = event_log,
+    )
+
+
+def _execute_plugin_command(cmd: PluginCommand, t: int) -> None:
+    """Validate and apply a single PluginCommand from a plugin.
+
+    All mutations go through the same helpers used by the rest of the engine
+    so the spatial grid, POP_CAP, and resource caps are always respected.
+    """
+    if isinstance(cmd, SpawnInhabitants):
+        _plugin_spawn_inhabitants(cmd, t)
+
+    elif isinstance(cmd, AdjustResource):
+        _plugin_adjust_resource(cmd, t)
+
+    else:
+        print(f"[Plugin] Tick {t:04d}: Unknown command type {type(cmd).__name__} — ignored.")
+
+
+def _plugin_spawn_inhabitants(cmd: SpawnInhabitants, t: int) -> None:
+    """Safety-checked inhabitant spawn on behalf of a plugin command."""
+    # Clamp requested count
+    count = max(1, min(cmd.count, 20))
+
+    # Resolve spawn tile — use requested location if habitable, else nearest
+    g   = len(world)
+    r0, c0 = cmd.location
+    r0 = max(0, min(r0, g - 1))
+    c0 = max(0, min(c0, g - 1))
+
+    if not world[r0][c0]['habitable']:
+        # Fall back to nearest habitable tile (Manhattan distance)
+        hab = [(r, c) for r in range(g) for c in range(g) if world[r][c]['habitable']]
+        if not hab:
+            event_log.append(
+                f"Tick {t:04d}: [PLUGIN EVENT] SpawnInhabitants skipped — no habitable tiles")
+            return
+        r0, c0 = min(hab, key=lambda rc: abs(rc[0] - r0) + abs(rc[1] - c0))
+
+    used_names = {p.name for p in people} | {p.name for p in all_dead}
+    spawned: list = []
+
+    for _ in range(count):
+        if len(people) >= POP_CAP:
+            break
+        nm = _make_traveler_name(used_names)
+        if not nm:
+            break
+        used_names.add(nm)
+        inh                   = Inhabitant(nm, r0, c0)
+        inh.faction           = None
+        inh.inventory['food'] = 20
+        belief = _BIOME_BELIEF.get(world[r0][c0]['biome'])
+        if belief:
+            add_belief(inh, belief)
+        _spawn(inh)
+        spawned.append(nm)
+
+    if spawned:
+        msg = (f"Tick {t:04d}: 🔮 PLUGIN EVENT — SpawnInhabitants "
+               f"({len(spawned)} spawned at ({r0},{c0}): {', '.join(spawned)})")
+        event_log.append(msg)
+        print(msg)
+
+
+def _plugin_adjust_resource(cmd: AdjustResource, t: int) -> None:
+    """Safety-checked resource adjustment on behalf of a plugin command."""
+    VALID_RESOURCES = {'food', 'wood', 'ore', 'stone', 'water'}
+    if cmd.resource not in VALID_RESOURCES:
+        event_log.append(
+            f"Tick {t:04d}: [PLUGIN EVENT] AdjustResource ignored — "
+            f"unknown resource {cmd.resource!r}")
+        return
+
+    g      = len(world)
+    target = cmd.target
+
+    # Build list of (r, c) tiles to mutate
+    if isinstance(target, str):
+        # Biome name — apply to every matching tile
+        tiles = [
+            (r, c)
+            for r in range(g) for c in range(g)
+            if world[r][c]['biome'] == target
+        ]
+    elif (isinstance(target, (tuple, list)) and len(target) == 2
+          and all(isinstance(v, int) for v in target)):
+        r, c = int(target[0]), int(target[1])
+        if 0 <= r < g and 0 <= c < g:
+            tiles = [(r, c)]
+        else:
+            event_log.append(
+                f"Tick {t:04d}: [PLUGIN EVENT] AdjustResource ignored — "
+                f"tile {target} out of bounds")
+            return
+    else:
+        event_log.append(
+            f"Tick {t:04d}: [PLUGIN EVENT] AdjustResource ignored — "
+            f"invalid target {target!r}")
+        return
+
+    adjusted = 0
+    for r, c in tiles:
+        biome = world[r][c]['biome']
+        cap   = BIOME_MAX[biome].get(cmd.resource, 0)
+        old   = world[r][c]['resources'].get(cmd.resource, 0)
+        new   = max(0.0, min(float(cap), old + cmd.amount))
+        world[r][c]['resources'][cmd.resource] = new
+        # Re-evaluate habitability if food or water changed
+        if cmd.resource in ('food', 'water'):
+            world[r][c]['habitable'] = (
+                world[r][c]['resources']['water'] > 0
+                and world[r][c]['resources']['food'] > 0
+            )
+        adjusted += 1
+
+    msg = (f"Tick {t:04d}: 🔮 PLUGIN EVENT — AdjustResource "
+           f"({cmd.resource} {'+' if cmd.amount >= 0 else ''}{cmd.amount:.1f} "
+           f"on {adjusted} tile(s) [{target!r}])")
+    event_log.append(msg)
+    print(msg)
+
+
+def plugin_layer(t: int) -> None:
+    """Evaluate and execute every loaded plugin whose tick_interval divides *t*.
+
+    For each plugin:
+      1. Check ``t % plugin.tick_interval == 0``; skip if not due.
+      2. Call ``plugin.on_trigger(bridge)``; skip if False.
+      3. Call ``plugin.execute(bridge)`` and validate + apply each command.
+
+    Any exception raised by a plugin is caught so a bad plugin cannot crash
+    the simulation.  The error is written to the event log and printed.
+    """
+    if not _loaded_plugins:
+        return
+
+    bridge = _make_bridge(t)
+
+    for plugin in _loaded_plugins:
+        interval = max(1, plugin.tick_interval)
+        if t % interval != 0:
+            continue
+        try:
+            if not plugin.on_trigger(bridge):
+                continue
+            commands = plugin.execute(bridge)
+        except Exception as exc:
+            err = (f"Tick {t:04d}: [PLUGIN ERROR] {plugin.name!r} raised "
+                   f"{type(exc).__name__}: {exc}")
+            event_log.append(err)
+            print(err)
+            continue
+
+        if not commands:
+            continue
+
+        for cmd in commands:
+            if not isinstance(cmd, PluginCommand):
+                print(f"[Plugin] {plugin.name!r} returned a non-PluginCommand object — ignored.")
+                continue
+            try:
+                _execute_plugin_command(cmd, t)
+            except Exception as exc:
+                err = (f"Tick {t:04d}: [PLUGIN ERROR] {plugin.name!r} "
+                       f"command {cmd.describe()} raised {type(exc).__name__}: {exc}")
+                event_log.append(err)
+                print(err)
 
 
 POP_CAP = config.POP_CAP   # defined in config.py — hard population ceiling
@@ -933,6 +1207,7 @@ def run() -> None:
 
     habitable = init_world()
     init_inhabitants(habitable)
+    load_plugins()
 
     # ── Per-run tracking ────────────────────────────────────────────────────
     _tick_times:        list = []
@@ -1014,6 +1289,9 @@ def run() -> None:
             # ── World event every 200 ticks ─────────────────────────────────
             if t % 200 == 0:
                 world_event_layer(t)
+
+            # ── Plugin layer (after world events) ───────────────────────────
+            plugin_layer(t)
 
             # ── Era shift every 500 ticks ───────────────────────────────────
             if t % 500 == 0:
