@@ -1,4 +1,8 @@
 # Emergent AI Civilization Simulator
+[![PyPI version](https://badge.fury.io/py/thalren-vale-simulation.svg)](https://badge.fury.io/py/thalren-vale-simulation)
+[![License: Polyform Noncommercial](https://img.shields.io/badge/License-Polyform%20Noncommercial-blue.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+
 
 > **Watch factions form, trade, war, betray, and mythologize —
 > all from simple survival rules. No scripted behavior. Pure emergence.**
@@ -263,7 +267,16 @@ The terminal output is selectively filtered: only notable events (war declaratio
 
 ### Setup
 
-```bash
+### Option A: Install via PyPI (Recommended for Play)
+The fastest way to run the simulation.
+
+```
+pip install thalren-vale-simulation
+thalren-sim
+```
+
+### Option B: By Source
+```
 # 1. Clone the repo
 git clone https://github.com/Kriaetour/ai-sim-emergent-agents
 cd ai-civilization-sim
