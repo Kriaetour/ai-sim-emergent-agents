@@ -267,7 +267,16 @@ The terminal output is selectively filtered: only notable events (war declaratio
 
 ### Setup
 
-```bash
+### Option A: Install via PyPI (Recommended for Play)
+The fastest way to run the simulation.
+
+```
+pip install thalren-vale-simulation
+thalren-sim
+```
+
+### Option B: By Source
+```
 # 1. Clone the repo
 git clone https://github.com/Kriaetour/ai-sim-emergent-agents
 cd ai-civilization-sim
