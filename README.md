@@ -394,6 +394,159 @@ DASHBOARD_WRITE_EVERY = 25   # ticks between dashboard snapshots (increase to re
 
 ---
 
+## Writing Your Own Plugin
+
+Plugins let you inject custom events into the simulation without touching the engine. Drop a `.py` file into the `plugins/` directory at the project root and the simulation will discover, validate, and run it automatically.
+
+### How it works
+
+1. The engine calls `load_plugins()` once at startup and imports every `.py` file in `plugins/` (except `__init__.py`).
+2. Any class that inherits from `ThalrenPlugin` is instantiated and registered.
+3. Each registered plugin is evaluated on every tick that is a multiple of its `tick_interval`.
+4. If `on_trigger()` returns `True`, `execute()` is called and its returned commands are validated and applied.
+5. Plugins **cannot** write directly to simulation state — they return `PluginCommand` objects and the engine applies them after safety checks.
+
+### Minimal plugin skeleton
+
+```python
+# plugins/my_plugin.py
+from thalren_vale.plugin_api import ThalrenPlugin, SimulationBridge, PluginCommand
+from typing import List
+
+class MyPlugin(ThalrenPlugin):
+    name          = "my_plugin"   # shown in log messages
+    tick_interval = 50            # evaluated every 50 ticks
+
+    def on_trigger(self, bridge: SimulationBridge) -> bool:
+        """Return True when your event should fire."""
+        return True               # always fires (when the interval hits)
+
+    def execute(self, bridge: SimulationBridge) -> List[PluginCommand]:
+        """Return the list of changes you want to make."""
+        return []                 # return commands here
+```
+
+### Available commands
+
+#### `SpawnInhabitants(count, location)`
+
+Inject new inhabitants onto the map.
+
+```python
+from thalren_vale.plugin_api import SpawnInhabitants
+
+SpawnInhabitants(
+    count    = 5,       # how many to spawn (clamped to 1–20; POP_CAP is always respected)
+    location = (3, 4),  # (row, col) tile to spawn on; falls back to nearest habitable tile
+)
+```
+
+#### `AdjustResource(target, resource, amount)`
+
+Add or remove a resource on a single tile or across an entire biome.
+
+```python
+from thalren_vale.plugin_api import AdjustResource
+
+# On one specific tile
+AdjustResource(target=(2, 5), resource='food',  amount=10)
+
+# Across every tile of a biome (positive or negative)
+AdjustResource(target='forest', resource='food', amount=-8)
+```
+
+| `resource` | valid values |
+|---|---|
+| Food | `'food'` |
+| Wood | `'wood'` |
+| Ore | `'ore'` |
+| Stone | `'stone'` |
+| Water | `'water'` |
+
+`amount` is clamped to `[0, BIOME_MAX[biome][resource]]` per tile — you cannot over-fill or drain to negative.
+
+### `SimulationBridge` reference
+
+The `bridge` object passed to `on_trigger` and `execute` is a **read-only snapshot** of the current tick's state.  Do not mutate anything you receive from it.
+
+| Property / Method | Type | Description |
+|---|---|---|
+| `bridge.current_tick` | `int` | Current tick number |
+| `bridge.total_population` | `int` | Number of living inhabitants |
+| `bridge.population_cap` | `int` | Hard ceiling from `config.POP_CAP` |
+| `bridge.active_factions` | `list[Faction]` | Factions with at least one member |
+| `bridge.faction_names` | `list[str]` | Names of all active factions |
+| `bridge.biome_map` | `list[list[dict]]` | Raw world grid — `biome_map[r][c]` is a tile dict |
+| `bridge.grid_size` | `int` | Current grid side-length |
+| `bridge.habitable_tiles` | `list[(int,int)]` | All `(r, c)` coordinates that are habitable |
+| `bridge.recent_events` | `list[str]` | Last 20 event log entries |
+| `bridge.tile_biome(r, c)` | `str` | Biome name at tile `(r, c)` |
+| `bridge.tile_resources(r, c)` | `dict` | **Copy** of resource dict at tile `(r, c)` |
+| `bridge.faction_by_name(name)` | `Faction \| None` | Look up a faction by name |
+
+### Optional lifecycle hooks
+
+```python
+def on_load(self) -> None:
+    """Called once when the plugin is registered at simulation start."""
+
+def on_unload(self) -> None:
+    """Called once when the simulation ends."""
+```
+
+### Full working example
+
+```python
+# plugins/drought_plugin.py
+"""
+Drought plugin — periodically drains water from desert tiles.
+Fires only when at least 2 factions are active and the world is past tick 200.
+"""
+from thalren_vale.plugin_api import (
+    ThalrenPlugin, SimulationBridge, PluginCommand, AdjustResource, SpawnInhabitants
+)
+from typing import List
+
+class Drought(ThalrenPlugin):
+    name          = "drought"
+    tick_interval = 150   # fires every 150 ticks
+
+    def on_trigger(self, bridge: SimulationBridge) -> bool:
+        return (
+            bridge.current_tick >= 200
+            and len(bridge.active_factions) >= 2
+        )
+
+    def execute(self, bridge: SimulationBridge) -> List[PluginCommand]:
+        commands = [
+            # Strip water from all desert tiles
+            AdjustResource(target='desert', resource='water', amount=-4),
+            # Compensate with a small coastal food bonus (fishing boom)
+            AdjustResource(target='coast',  resource='food',  amount=6),
+        ]
+
+        # If the world is close to collapse, bring in refugees
+        if bridge.total_population < 15:
+            hab = bridge.habitable_tiles
+            if hab:
+                import random
+                commands.append(
+                    SpawnInhabitants(count=4, location=random.choice(hab))
+                )
+
+        return commands
+```
+
+### Safety rules
+
+- **`count` is clamped** — `SpawnInhabitants.count` is silently clamped to `[1, 20]`. If `POP_CAP` is already reached, no inhabitants are spawned and a log entry is written instead.
+- **Resources are clamped** — `AdjustResource` never sets a resource above its biome maximum or below zero.
+- **Invalid targets are silently rejected** — unknown resource keys and out-of-bounds tile coordinates are logged and skipped; the simulation continues.
+- **Exceptions are caught** — any unhandled exception inside `on_trigger` or `execute` is written to the event log and the simulation continues uninterrupted.
+- **Commands are the only write path** — plugins receive a read-only bridge. Directly mutating `bridge.biome_map` or `bridge.active_factions` is undefined behaviour and will not produce logged events.
+
+---
+
 ## Roadmap
 
 - [x] **Generational agents** — children inherit beliefs and faction membership from parents
