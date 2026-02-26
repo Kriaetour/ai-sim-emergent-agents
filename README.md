@@ -10,6 +10,8 @@
 ---
 
 ## What Is This?
+![Live Dashboard showing World Map and Reputation Graph](docs/dashboard.png)
+*Figure 1: The Streamlit dashboard visualizing a 1,000-tick run on an Intel N95.*
 
 Thirty nameless inhabitants are dropped onto a Perlin-noise-generated world. They eat, migrate, and slowly build trust with their neighbors. From that trust come shared beliefs. From those beliefs come factions. From faction rivalry comes trade — and war. Tech trees create asymmetric advantages. Diplomacy builds fragile alliances. Inhabitants form families, bear children, and pass their beliefs to the next generation. When enough time passes, the old world shatters and a new era dawns.
 
