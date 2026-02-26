@@ -1,3 +1,5 @@
+# (c) 2026 Gemini (KriaetvAspie)
+# Licensed under the Polyform Noncommercial License 1.0.0
 """
 combat.py — Layer 5: war declarations, multi-tick battles, alliances,
             war resolution, tribute, and legends.

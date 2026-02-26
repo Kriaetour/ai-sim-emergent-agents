@@ -393,7 +393,16 @@ DASHBOARD_WRITE_EVERY = 25   # ticks between dashboard snapshots (increase to re
 
 ## License
 
-MIT — do whatever you want with it.
+This project is licensed under the **Polyform Noncommercial License 1.0.0**.
+Commercial use is not permitted without explicit written consent from the author.
+See the `LICENSE` file for the full terms.
+
+---
+
+## Legal
+
+Copyright (c) 2026 Gemini. All rights reserved.
+This engine and its emergent logic layers are proprietary intellectual property.
 
 ---
 

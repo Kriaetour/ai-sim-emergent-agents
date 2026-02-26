@@ -1,3 +1,5 @@
+# (c) 2026 Gemini (KriaetvAspie)
+# Licensed under the Polyform Noncommercial License 1.0.0
 """religion.py
 Layer 9 – Religion System
 
@@ -56,6 +58,7 @@ TEMPLE_TRUST_BONUS     = 1      # trust points added per qualifying tick
 PRIEST_CONVERT_SAME    = 0.70   # conversion chance within same faction
 PRIEST_CONVERT_CROSS   = 0.25   # conversion chance across faction lines
 HOLY_WAR_REP_THRESHOLD = -5     # bilateral reputation ≤ this triggers holy war
+HOLY_WAR_PROXIMITY     = 25     # max Chebyshev COG distance for holy war eligibility
 BIRTH_INHERIT_CHANCE   = 0.95   # probability child inherits religion when temple nearby
 
 # ---------------------------------------------------------------------------
@@ -184,27 +187,65 @@ def try_found_religion(faction, t: int, event_log: list) -> Religion | None:
 # Holy war management
 # ---------------------------------------------------------------------------
 
+def _faction_cog(faction) -> tuple:
+    """Return (r, c) centre-of-gravity for a faction, or (-9999, -9999) if empty."""
+    members = faction.members
+    if not members:
+        return (-9999, -9999)
+    return (sum(m.r for m in members) / len(members),
+            sum(m.c for m in members) / len(members))
+
+
 def _check_holy_wars(factions: list, t: int, event_log: list) -> None:
-    """Detect new holy wars between factions with conflicting religions."""
+    """Detect new holy wars between factions with conflicting religions.
+
+    Spatial pre-filter: only faction pairs whose COG Chebyshev distance is
+    within HOLY_WAR_PROXIMITY tiles are candidates.  This reduces the inner
+    loop from true O(N²) to O(N * local_neighbours), which is ~O(N) in
+    practice because most faction COGs cluster near territory boundaries.
+
+    Reputation is a flat per-faction scalar (``diplomacy._reputation``);
+    the check is type-guarded so code is safe even if the store changes.
+    A holy war triggers when *either* party’s global reputation is already
+    at or below HOLY_WAR_REP_THRESHOLD (Reviled range).
+    """
     import diplomacy as _dip   # local import avoids circular dependency
-    for i, fa in enumerate(factions):
-        rel_a = get_faction_religion(fa)
-        if rel_a is None:
-            continue
-        for fb in factions[i + 1:]:
-            rel_b = get_faction_religion(fb)
-            if rel_b is None or rel_b is rel_a:
+    rep = _dip._reputation     # flat {name: int}
+
+    # Narrow to factions that actually have a religion — usually a small set
+    rel_factions = []
+    for f in factions:
+        r = get_faction_religion(f)
+        if r is not None:
+            cog = _faction_cog(f)
+            rel_factions.append((f, r, cog))
+
+    for i, (fa, rel_a, cog_a) in enumerate(rel_factions):
+        for fb, rel_b, cog_b in rel_factions[i + 1:]:
+            # --- Spatial pre-filter (cheap) ---
+            if (max(abs(cog_a[0] - cog_b[0]),
+                    abs(cog_a[1] - cog_b[1])) > HOLY_WAR_PROXIMITY):
                 continue
+
+            if rel_b is rel_a:
+                continue
+
             pair = frozenset({fa.name, fb.name})
             if pair in _HOLY_WARS:
                 continue
-            rep_ab = _dip._reputation.get(fa.name, {}).get(fb.name, 0)
-            rep_ba = _dip._reputation.get(fb.name, {}).get(fa.name, 0)
-            if rep_ab <= HOLY_WAR_REP_THRESHOLD or rep_ba <= HOLY_WAR_REP_THRESHOLD:
+
+            # --- Type-safe flat reputation lookup ---
+            raw_a = rep.get(fa.name, 0)
+            raw_b = rep.get(fb.name, 0)
+            rep_a = raw_a if isinstance(raw_a, (int, float)) else 0
+            rep_b = raw_b if isinstance(raw_b, (int, float)) else 0
+
+            if rep_a <= HOLY_WAR_REP_THRESHOLD or rep_b <= HOLY_WAR_REP_THRESHOLD:
                 _HOLY_WARS.add(pair)
                 event_log.append(
                     f"[t={t}] HOLY WAR declared: {fa.name} ({rel_a.name}) "
-                    f"vs {fb.name} ({rel_b.name})"
+                    f"vs {fb.name} ({rel_b.name}) "
+                    f"[rep {rep_a}/{rep_b}]"
                 )
 
 

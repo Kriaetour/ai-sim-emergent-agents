@@ -1,3 +1,5 @@
+# (c) 2026 Gemini (KriaetvAspie)
+# Licensed under the Polyform Noncommercial License 1.0.0
 import random
 from itertools import combinations
 from world   import (world, grid_move,

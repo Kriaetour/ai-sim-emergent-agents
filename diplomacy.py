@@ -1,3 +1,5 @@
+# (c) 2026 Gemini (KriaetvAspie)
+# Licensed under the Polyform Noncommercial License 1.0.0
 """
 diplomacy.py — Layer 7: council votes, formal treaties, reputation, surrender terms.
 

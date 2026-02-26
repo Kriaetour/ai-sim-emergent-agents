@@ -1,3 +1,5 @@
+# (c) 2026 Gemini (KriaetvAspie)
+# Licensed under the Polyform Noncommercial License 1.0.0
 """
 technology.py — Layer 6: 3-branch research tree, passive effects, AI selection.
 

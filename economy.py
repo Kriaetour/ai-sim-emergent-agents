@@ -1,3 +1,5 @@
+# (c) 2026 Gemini (KriaetvAspie)
+# Licensed under the Polyform Noncommercial License 1.0.0
 """
 economy.py — Layer 4: currency, dynamic pricing, trade, raids, wealth.
 
