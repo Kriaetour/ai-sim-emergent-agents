@@ -1,4 +1,4 @@
-# (c) 2026 Gemini (KriaetvAspie)
+# (c) 2026 (KriaetvAspie / AspieTheBard)
 # Licensed under the Polyform Noncommercial License 1.0.0
 """
 technology.py — Layer 6: 3-branch research tree, passive effects, AI selection.
@@ -21,8 +21,8 @@ Branches
 import random, sys
 sys.stdout.reconfigure(encoding='utf-8')
 
-from world   import world, BIOME_MAX, coast_score
-from beliefs import add_belief, core_of, inh_cores, MAX_BELIEFS
+from .world   import world, BIOME_MAX, coast_score
+from .beliefs import add_belief, core_of, inh_cores, MAX_BELIEFS
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -321,8 +321,8 @@ def _complete_research(faction, tech: str, t: int, event_log: list) -> None:
 
 def technology_tick(factions: list, t: int, event_log: list) -> None:
     """Advance research and apply passive tech effects for every faction."""
-    import combat  as _cbt   # lazy — avoids circular import at module load
-    import economy as _eco
+    from . import combat  as _cbt   # lazy — avoids circular import at module load
+    from . import economy as _eco
 
     at_war_names: set = {
         f.name
@@ -502,7 +502,7 @@ def technology_tick(factions: list, t: int, event_log: list) -> None:
                     m.inventory['food'] = m.inventory.get('food', 0) + 1
         # ── CODE OF LAWS: boost internal trust; one-time reputation bonus ──
         if 'code_of_laws' in techs and t % 5 == 0:
-            import religion as _rel
+            from . import religion as _rel
             # Holy wars fracture social cohesion — suppress the trust bonus
             if not _rel.is_holy_war_member(faction.name):
                 members = faction.members
@@ -513,7 +513,7 @@ def technology_tick(factions: list, t: int, event_log: list) -> None:
                         a.trust[b.name] = min(100, a.trust.get(b.name, 50) + 2)
             if not getattr(faction, '_laws_rep_applied', False):
                 try:
-                    import diplomacy as _dip
+                    from . import diplomacy as _dip
                     _dip._reputation[faction.name] = (
                         _dip._reputation.get(faction.name, 0) + 5
                     )

@@ -1,4 +1,4 @@
-# (c) 2026 Gemini (KriaetvAspie)
+﻿# (c) 2026 (KriaetvAspie / AspieTheBard)
 # Licensed under the Polyform Noncommercial License 1.0.0
 """
 diplomacy.py — Layer 7: council votes, formal treaties, reputation, surrender terms.
@@ -20,8 +20,8 @@ Public API used by other modules:
 import random, sys
 sys.stdout.reconfigure(encoding='utf-8')
 
-from beliefs  import inh_cores, LABELS
-from factions import RIVALRIES
+from .beliefs  import inh_cores, LABELS
+from .factions import RIVALRIES
 
 # ══════════════════════════════════════════════════════════════════════════
 # Module-level state
@@ -324,11 +324,11 @@ def _should_propose(fa, fb, t: int) -> tuple | None:
     if has_treaty(fa.name, fb.name):
         return None
 
-    import combat as _cbt
+    from . import combat as _cbt
     if _cbt.is_at_war(fa.name, fb.name):
         return None
 
-    import economy as _eco
+    from . import economy as _eco
     route_key       = frozenset([fa.name, fb.name])
     has_trade_route = _eco.trade_routes.get(route_key, {}).get('active', False)
 
@@ -472,7 +472,7 @@ def resolve_surrender(winner_factions: list, loser_factions: list,
 
     elif term == 'EXILE':
         try:
-            from world import world, GRID
+            from .world import world, GRID
             relocated = 0
             for m in primary_loser.members:
                 candidates = [
@@ -538,7 +538,7 @@ def diplomacy_tick(factions: list, t: int, event_log: list) -> None:
                     adjust_rep(f.name, 1, 'rep_recovery')
 
     # ── 3. Check for treaty violations (war declared against a signatory) ─
-    import combat as _cbt
+    from . import combat as _cbt
     for w in _cbt.active_wars:
         for fa in w.all_attackers():
             for fd in w.all_defenders():

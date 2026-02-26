@@ -1,9 +1,9 @@
-# (c) 2026 Gemini (KriaetvAspie)
+# (c) 2026 (KriaetvAspie / AspieTheBard)
 # Licensed under the Polyform Noncommercial License 1.0.0
 import random, time, os, sys, threading
 sys.stdout.reconfigure(encoding='utf-8')
 from collections import defaultdict
-from world import world, tick, BIOME_MAX, grid_move, grid_neighbors, get_settlement_at, SETTLEMENT_MOVE_PENALTY, tile_is_sea, BIOME_MOVE_COST, _SEA_ID
+from .world import world, tick, BIOME_MAX, grid_move, grid_neighbors, get_settlement_at, SETTLEMENT_MOVE_PENALTY, tile_is_sea, BIOME_MOVE_COST, _SEA_ID
 
 NAMES = [
     # ── Original pool ─────────────────────────────────────────────────────

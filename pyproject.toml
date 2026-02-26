@@ -1,0 +1,26 @@
+[build-system]
+requires      = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name        = "thalren-vale-simulation"
+version     = "1.0.0"
+description = "Emergent AI Civilization Simulator"
+readme      = "README.md"
+license     = { file = "LICENSE" }
+requires-python = ">=3.10"
+
+dependencies = [
+    "noise",
+    "streamlit",
+    "streamlit-autorefresh",
+    "pandas",
+    "plotly",
+    "numpy",
+]
+
+[project.scripts]
+thalren-vale = "thalren_vale.sim:run"
+
+[tool.setuptools.packages.find]
+where = ["src"]

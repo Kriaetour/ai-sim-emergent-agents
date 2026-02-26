@@ -1,5 +1,5 @@
 import random
-from world import world
+from .world import world
 
 # ── Belief catalogue ───────────────────────────────────────────────────────
 LABELS = {

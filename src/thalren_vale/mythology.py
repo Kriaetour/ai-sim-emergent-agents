@@ -1,4 +1,4 @@
-# (c) 2026 Gemini (KriaetvAspie)
+﻿# (c) 2026 (KriaetvAspie / AspieTheBard)
 # Licensed under the Polyform Noncommercial License 1.0.0
 """
 mythology.py — Layer 8 (narrative): LLM-driven chronicle, myths, and epitaphs.
@@ -27,8 +27,8 @@ import urllib.request, urllib.error
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-import config
-from beliefs import LABELS, inh_cores
+from . import config
+from .beliefs import LABELS, inh_cores
 
 # ══════════════════════════════════════════════════════════════════════════
 # I/O bridge — set by sim.py so mythology bypasses the keyword filter
@@ -247,7 +247,7 @@ def _rep_label(rep: int) -> str:
 
 def _faction_block(factions: list) -> str:
     try:
-        import diplomacy as _dip
+        from . import diplomacy as _dip
     except ImportError:
         _dip = None
     lines = []
@@ -269,7 +269,7 @@ def _faction_block(factions: list) -> str:
 
 def _war_block(start_t: int, end_t: int) -> str:
     try:
-        import combat as _cbt
+        from . import combat as _cbt
     except ImportError:
         return '(none)'
     lines = []
@@ -296,7 +296,7 @@ def _war_block(start_t: int, end_t: int) -> str:
 
 def _treaty_block(start_t: int, end_t: int) -> str:
     try:
-        import diplomacy as _dip
+        from . import diplomacy as _dip
     except ImportError:
         return '(none)'
     lines = []
@@ -321,7 +321,7 @@ def _tech_block(event_log: list, start_t: int, end_t: int) -> str:
 
 def _legend_block(factions: list, start_t: int, end_t: int) -> str:
     try:
-        import diplomacy as _dip
+        from . import diplomacy as _dip
     except ImportError:
         _dip = None
     lines = []
@@ -342,11 +342,11 @@ def _legend_block(factions: list, start_t: int, end_t: int) -> str:
 def _build_event_summary(start_t: int, end_t: int, event_log: list) -> str:
     """Compile a named, structured summary of all notable events in [start_t, end_t]."""
     try:
-        import combat as _cbt
+        from . import combat as _cbt
     except ImportError:
         _cbt = None
     try:
-        import diplomacy as _dip
+        from . import diplomacy as _dip
     except ImportError:
         _dip = None
 
@@ -458,15 +458,15 @@ def _top_events(start_t: int, end_t: int, event_log: list, n: int = 5) -> str:
 def _build_faction_history(f, event_log: list) -> str:
     """Build a named, specific history of one faction for myth generation."""
     try:
-        import combat as _cbt
+        from . import combat as _cbt
     except ImportError:
         _cbt = None
     try:
-        import diplomacy as _dip
+        from . import diplomacy as _dip
     except ImportError:
         _dip = None
     try:
-        from world import world as _world
+        from .world import world as _world
     except ImportError:
         _world = None
 
@@ -593,12 +593,12 @@ def _generate_chronicle(factions: list, t: int, event_log: list) -> None:
 
 def _generate_faction_myths(factions: list, t: int, event_log: list) -> None:
     try:
-        from world import world as _world
+        from .world import world as _world
     except ImportError:
         _world = None
 
     try:
-        import diplomacy as _dip
+        from . import diplomacy as _dip
     except ImportError:
         _dip = None
 
@@ -652,7 +652,7 @@ def _generate_faction_myths(factions: list, t: int, event_log: list) -> None:
         # Writing tech: myths spread to trade-route partners
         if 'writing' in getattr(f, 'techs', set()):
             try:
-                import economy as _eco
+                from . import economy as _eco
                 for rk in _eco.trade_routes:
                     if f.name not in rk:
                         continue
@@ -686,7 +686,7 @@ def _generate_epitaphs(factions: list, all_dead: list,
         return
 
     try:
-        import diplomacy as _dip
+        from . import diplomacy as _dip
     except ImportError:
         _dip = None
 
@@ -768,7 +768,7 @@ def _build_structured_summary(event_log: list, ticks: int,
     Never passes raw event_log; extracts named, specific facts per era.
     """
     try:
-        import combat as _cbt
+        from . import combat as _cbt
     except ImportError:
         _cbt = None
 
@@ -869,7 +869,7 @@ def mythology_final_summary(factions: list, all_dead: list,
         era_summaries = []
 
     try:
-        import combat as _cbt
+        from . import combat as _cbt
         war_count = len(_cbt.war_history)
     except Exception:
         _cbt = None

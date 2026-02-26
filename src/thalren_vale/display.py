@@ -4,13 +4,13 @@ Called each tick by sim.py.
 """
 import os
 from collections import Counter
-from beliefs  import inh_cores, LABELS, core_of
-from factions import print_faction_summary, RIVALRIES
-import economy
-import combat
-import diplomacy
+from .beliefs  import inh_cores, LABELS, core_of
+from .factions import print_faction_summary, RIVALRIES
+from . import economy
+from . import combat
+from . import diplomacy
 
-from config import TICKS
+from .config import TICKS
 W     = 72
 LOG_MODE = False  # set True by sim.py to suppress cls and route output to file
 

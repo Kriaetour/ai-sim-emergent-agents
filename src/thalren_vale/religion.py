@@ -1,4 +1,4 @@
-# (c) 2026 Gemini (KriaetvAspie)
+# (c) 2026 (KriaetvAspie / AspieTheBard)
 # Licensed under the Polyform Noncommercial License 1.0.0
 """religion.py
 Layer 9 – Religion System
@@ -18,8 +18,8 @@ import random
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-    from inhabitants import Inhabitant
-    from factions import Faction
+    from .inhabitants import Inhabitant
+    from .factions import Faction
 
 # ---------------------------------------------------------------------------
 # Religion class
@@ -209,7 +209,7 @@ def _check_holy_wars(factions: list, t: int, event_log: list) -> None:
     A holy war triggers when *either* party’s global reputation is already
     at or below HOLY_WAR_REP_THRESHOLD (Reviled range).
     """
-    import diplomacy as _dip   # local import avoids circular dependency
+    from . import diplomacy as _dip   # local import avoids circular dependency
     rep = _dip._reputation     # flat {name: int}
 
     # Narrow to factions that actually have a religion — usually a small set
@@ -365,8 +365,8 @@ def _priest_food_tick(factions: list) -> None:
 def _priest_conversion_tick(people: list, factions: list,
                              t: int, event_log: list) -> None:
     """Priests move toward low-trust faction members and attempt conversions."""
-    from inhabitants import grid_neighbors   # local import
-    from world import grid_move              # local import
+    from .inhabitants import grid_neighbors   # local import
+    from .world import grid_move              # local import
 
     faction_map: dict[int, object] = {}
     for f in factions:

@@ -1,4 +1,4 @@
-# (c) 2026 Gemini (KriaetvAspie)
+# (c) 2026 (KriaetvAspie / AspieTheBard)
 # Licensed under the Polyform Noncommercial License 1.0.0
 """
 sim.py — Single entry point for the emergent civilization simulation.
@@ -21,27 +21,27 @@ Layer architecture
 
 import sys, time, re, random, pathlib, gc, threading
 from datetime import datetime
-import config
+from . import config
 sys.stdout.reconfigure(encoding='utf-8')
 
 # ── Layer imports ──────────────────────────────────────────────────────────
-from world       import (world, tick as _world_tick, GRID, BIOME_MAX,
-                         grid_add, grid_remove, update_map_bounds,
-                         grid_occupants, get_settlement_at)
-from inhabitants import (Inhabitant, do_tick, do_tick_preamble, do_tick_body,
-                         is_winter, regen_rate,
-                         NAMES, WINTER_START, CYCLE_LEN, make_child,
-                         procreation_lock)
-from beliefs     import assign_beliefs, share_beliefs, add_belief
-from factions    import check_faction_formation, faction_tick, Faction, _faction_name as _gen_faction_name
-import economy
-import combat
-import technology
-import diplomacy
-import mythology
-import display
-import dashboard_bridge
-import religion
+from .world       import (world, tick as _world_tick, GRID, BIOME_MAX,
+                          grid_add, grid_remove, update_map_bounds,
+                          grid_occupants, get_settlement_at)
+from .inhabitants import (Inhabitant, do_tick, do_tick_preamble, do_tick_body,
+                          is_winter, regen_rate,
+                          NAMES, WINTER_START, CYCLE_LEN, make_child,
+                          procreation_lock)
+from .beliefs     import assign_beliefs, share_beliefs, add_belief
+from .factions    import check_faction_formation, faction_tick, Faction, _faction_name as _gen_faction_name
+from . import economy
+from . import combat
+from . import technology
+from . import diplomacy
+from . import mythology
+from . import display
+from . import dashboard_bridge
+from . import religion
 
 TICKS = config.TICKS
 

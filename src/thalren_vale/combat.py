@@ -1,4 +1,4 @@
-# (c) 2026 Gemini (KriaetvAspie)
+﻿# (c) 2026 (KriaetvAspie / AspieTheBard)
 # Licensed under the Polyform Noncommercial License 1.0.0
 """
 combat.py — Layer 5: war declarations, multi-tick battles, alliances,
@@ -13,12 +13,12 @@ End of run:
 import sys, random
 sys.stdout.reconfigure(encoding='utf-8')
 
-from world    import grid_remove, get_settlement_at
-from beliefs  import add_belief, inh_cores
-from factions import RIVALRIES
-import technology
-import diplomacy
-import religion
+from .world    import grid_remove, get_settlement_at
+from .beliefs  import add_belief, inh_cores
+from .factions import RIVALRIES
+from . import technology
+from . import diplomacy
+from . import religion
 
 # ══════════════════════════════════════════════════════════════════════════
 # Module-level state
@@ -227,7 +227,7 @@ def _war_cause(fa, fb, key) -> str:
 
 def _request_alliances(war: War, active: list, t: int, event_log: list) -> None:
     """Recruit allies for BOTH sides at the moment of war declaration."""
-    import economy as _eco   # lazy import — avoids circular dependency
+    from . import economy as _eco   # lazy import — avoids circular dependency
 
     engaged = set(f.name for f in war.all_attackers() + war.all_defenders())
 

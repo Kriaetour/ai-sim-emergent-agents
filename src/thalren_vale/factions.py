@@ -1,14 +1,14 @@
-# (c) 2026 Gemini (KriaetvAspie)
+﻿# (c) 2026 (KriaetvAspie / AspieTheBard)
 # Licensed under the Polyform Noncommercial License 1.0.0
 import random
 from itertools import combinations
-from world   import (world, grid_move,
-                     Settlement, settlement_register, settlement_unregister,
-                     get_settlement_at,
-                     SETTLEMENT_POP_MIN, SETTLEMENT_TICKS_STABLE,
-                     SETTLEMENT_STORAGE_CAP,
-                     coast_score, tile_is_sea)
-from beliefs import core_of, inh_cores, LABELS, add_belief
+from .world   import (world, grid_move,
+                      Settlement, settlement_register, settlement_unregister,
+                      get_settlement_at,
+                      SETTLEMENT_POP_MIN, SETTLEMENT_TICKS_STABLE,
+                      SETTLEMENT_STORAGE_CAP,
+                      coast_score, tile_is_sea)
+from .beliefs import core_of, inh_cores, LABELS, add_belief
 
 # module-level rivalry scores: {(name_a, name_b): int}  (names always sorted)
 RIVALRIES: dict = {}
@@ -748,7 +748,7 @@ def check_for_merger(factions, t, event_log):
         simulating a gradual diplomatic handshake rather than instant bonding.
       • The merged faction's name honours any prestige lineage (see _merger_name).
     """
-    import diplomacy as _dip
+    from . import diplomacy as _dip
 
     active = [f for f in factions if f.members]
     merged = set()
@@ -857,7 +857,7 @@ def print_faction_summary(factions, t):
         print(f"    Techs    : {tech_str}")
         print(f"    Territory: {t_str}")
         print(f"    Reserve  : {f.food_reserve:.1f} food")
-        import diplomacy as _dip
+        from . import diplomacy as _dip
         rep     = _dip.get_rep(f.name)
         rep_lbl = _dip.rep_label(rep)
         print(f"    Reputation: {rep:+d} ({rep_lbl})")

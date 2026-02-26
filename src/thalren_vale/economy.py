@@ -1,4 +1,4 @@
-# (c) 2026 Gemini (KriaetvAspie)
+﻿# (c) 2026 (KriaetvAspie / AspieTheBard)
 # Licensed under the Polyform Noncommercial License 1.0.0
 """
 economy.py — Layer 4: currency, dynamic pricing, trade, raids, wealth.
@@ -14,10 +14,10 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 from collections  import defaultdict
 from itertools    import combinations
-from world        import world, GRID
-from beliefs      import inh_cores, add_belief
-from factions     import RIVALRIES
-import combat
+from .world        import world, GRID
+from .beliefs      import inh_cores, add_belief
+from .factions     import RIVALRIES
+from . import combat
 
 # ── Module-level state ─────────────────────────────────────────────────────
 faction_currencies: dict  = {}           # faction_name → {'name': str}
@@ -124,7 +124,7 @@ def _do_trade(giver, receiver, res, amount, t, event_log, key):
     donor = max(donors, key=lambda m: m.inventory.get(res, 0))
     taker = random.choice(receiver.members)
 
-    import diplomacy as _dip
+    from . import diplomacy as _dip
     _trade_bonus = _dip.trade_bonus(giver.name, receiver.name)
     donor.inventory[res] -= amount
     taker.inventory[res] += int(amount * _trade_bonus)
@@ -237,7 +237,7 @@ def _faction_raids(active, t, event_log):
         target_pos  = random.choice(victim.territory)
         chunk       = world[target_pos[0]][target_pos[1]]
         haul        = {}
-        import technology as _tech
+        from . import technology as _tech
         raid_mult   = _tech.raid_multiplier(raider)
         for res in RES_TRADE:
             steal = int(chunk['resources'][res] * 0.20) * raid_mult
@@ -260,7 +260,7 @@ def _faction_raids(active, t, event_log):
                f"{victim.name}'s territory — seized {haul_str} (+10 tension)")
         event_log.append(msg)
         print(msg)
-        import diplomacy as _dip
+        from . import diplomacy as _dip
         _dip.adjust_rep(raider.name, -1, 'raid', t)
         # Break any existing treaty if a faction raids its signatory
         if _dip.has_treaty(raider.name, victim.name):

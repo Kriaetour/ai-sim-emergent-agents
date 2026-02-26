@@ -1,4 +1,4 @@
-# (c) 2026 Gemini (KriaetvAspie)
+# (c) 2026 (KriaetvAspie / AspieTheBard)
 # Licensed under the Polyform Noncommercial License 1.0.0
 import random, time, os, threading, math
 from noise import pnoise2

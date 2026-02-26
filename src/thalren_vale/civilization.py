@@ -1,10 +1,10 @@
-import random, time, os, sys
+﻿import random, time, os, sys
 sys.stdout.reconfigure(encoding='utf-8')
-from world  import world, tick, GRID, BIOME_MAX
-from inhabitants import (Inhabitant, do_tick, is_winter, regen_rate,
+from .world  import world, tick, GRID, BIOME_MAX
+from .inhabitants import (Inhabitant, do_tick, is_winter, regen_rate,
                           RES_KEYS, NAMES, WINTER_START)
-from beliefs import assign_beliefs, share_beliefs, LABELS, inh_cores
-from factions import (Faction, check_faction_formation,
+from .beliefs import assign_beliefs, share_beliefs, LABELS, inh_cores
+from .factions import (Faction, check_faction_formation,
                        faction_tick, print_faction_summary)
 
 TICKS = 100

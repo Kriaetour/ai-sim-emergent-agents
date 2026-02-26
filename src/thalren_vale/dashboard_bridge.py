@@ -12,8 +12,8 @@ import os
 import collections
 import pathlib
 
-from world     import world, BIOME_ID
-from diplomacy import _reputation as _rep_store
+from .world     import world, BIOME_ID
+from .diplomacy import _reputation as _rep_store
 
 # ── Configuration ─────────────────────────────────────────────────────────
 DASHBOARD_WRITE_EVERY: int    = 25                          # write interval (ticks)
