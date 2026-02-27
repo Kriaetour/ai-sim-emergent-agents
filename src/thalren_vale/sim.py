@@ -19,7 +19,7 @@ Layer architecture
   Display               — per-tick render + periodic summaries
 """
 
-import sys, time, re, random, pathlib, gc, threading, importlib, importlib.util
+import sys, time, re, random, pathlib, gc, threading, importlib, importlib.util, argparse
 from datetime import datetime
 from . import config
 from .plugin_api import (
@@ -31,7 +31,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 # ── Layer imports ──────────────────────────────────────────────────────────
 from .world       import (world, tick as _world_tick, GRID, BIOME_MAX,
                           grid_add, grid_remove, update_map_bounds,
-                          grid_occupants, get_settlement_at)
+                          grid_occupants, get_settlement_at, reseed_world)
 from .inhabitants import (Inhabitant, do_tick, do_tick_preamble, do_tick_body,
                           is_winter, regen_rate,
                           NAMES, WINTER_START, CYCLE_LEN, make_child,
@@ -56,9 +56,11 @@ all_dead:        list   = []
 event_log:       list   = []
 _loaded_plugins: list   = []   # ThalrenPlugin instances registered by load_plugins()
 era_summaries:   list   = []   # {'start_t', 'end_t', 'name', 'text'} — archived 100-tick windows
+_key_events_archive: list = []  # important events kept forever (never pruned), used by final_report
 _dead_factions:  list   = []   # defunct factions kept for reference
 _last_dynamic_t: int    = 0    # last tick with war / schism / faction-formation
 _event_log_fh:   object = None  # file handle used to flush pruned log lines to disk
+_disabled_layers: set   = set() # layers to skip (set from --disable-layer CLI arg)
 
 # ── Threading locks (Layer 1) ──────────────────────────────────────────────
 # _world_lock  : guards read-modify-write on world[r][c]['resources']
@@ -1121,7 +1123,9 @@ def _force_spawn_factions(t: int) -> None:
                 add_belief(inh, bel)
             _spawn(inh)
             members.append(inh)
-        if len(members) >= 2:
+        # Only create factions if beliefs were actually added (i.e., beliefs layer is enabled)
+        # When beliefs are disabled, add_belief() silently fails, leaving .beliefs empty
+        if len(members) >= 2 and any(inh.beliefs for inh in members):
             new_name = _gen_faction_name(set(bels), existing_names)
             territory = list({(m.r, m.c) for m in members})
             new_f = Faction(new_name, list(members), list(bels), territory, t)
@@ -1134,10 +1138,11 @@ def _force_spawn_factions(t: int) -> None:
     if len(new_fac_names) == 2:
         _k = tuple(sorted(new_fac_names))
         combat.RIVALRIES[_k] = min(combat.RIVALRIES.get(_k, 0) + 140, 195)
-    msg = (f'Tick {t:04d}: ══ FROM THE WILDERNESS, new peoples emerge ══'
-           f' ({chr(44).join(new_fac_names)})')
-    event_log.append(msg)
-    print(msg)
+    if new_fac_names:  # only log if factions were actually created
+        msg = (f'Tick {t:04d}: ══ FROM THE WILDERNESS, new peoples emerge ══'
+               f' ({chr(44).join(new_fac_names)})')
+        event_log.append(msg)
+        print(msg)
 
 
 def init_world() -> list:
@@ -1156,19 +1161,32 @@ def init_world() -> list:
 
 
 def init_inhabitants(habitable: list) -> None:
-    """Spawn 30 inhabitants with ideological seeding: 30% individualist, 30% collectivist."""
-    names = random.sample(NAMES, 30)
+    """Spawn inhabitants with ideological seeding: 30% individualist, 30% collectivist.
+    
+    Skips belief initialization when 'beliefs' layer is disabled.
+    """
+    n_start = min(config.STARTING_INHABITANTS, len(NAMES))
+    names = random.sample(NAMES, n_start)
     n     = len(names)
-    # Build ideology list: 30% self_reliance, 30% community_sustains, 40% none
-    n_each    = n * 3 // 10
-    ideologies = (['self_reliance']      * n_each +
-                  ['community_sustains'] * n_each +
-                  [None]                 * (n - 2 * n_each))
-    random.shuffle(ideologies)
+    
+    # Skip belief seeding if beliefs layer is disabled
+    beliefs_enabled = 'beliefs' not in _disabled_layers
+    
+    if beliefs_enabled:
+        # Build ideology list: 30% self_reliance, 30% community_sustains, 40% none
+        n_each    = n * 3 // 10
+        ideologies = (['self_reliance']      * n_each +
+                      ['community_sustains'] * n_each +
+                      [None]                 * (n - 2 * n_each))
+        random.shuffle(ideologies)
+    else:
+        # No beliefs: all inhabitants start with empty belief sets
+        ideologies = [None] * n
+    
     for name, ideology in zip(names, ideologies):
         inh = Inhabitant(name, *random.choice(habitable))
         inh.faction = None
-        if ideology:
+        if ideology and beliefs_enabled:
             add_belief(inh, ideology)
         _spawn(inh)
 
@@ -1187,8 +1205,227 @@ _BIOME_BELIEF: dict[str, str] = {
 }
 
 
+def _classify_and_record_events(logger, t, new_entries):
+    """Scan new event_log entries and record them as typed metrics events.
+
+    Also appends every recognised event to _key_events_archive so final_report
+    always has a full history regardless of _prune_event_log.
+
+    For each recognised event the actor and target fields are parsed from the
+    detail string so the CSV contains queryable faction/person names.
+    """
+    for entry in new_entries:
+        try:
+            actor = ""
+            target = ""
+            _event_type = None
+
+            if 'WAR DECLARED' in entry:
+                m = re.search(r'WAR DECLARED\s*[—–-]+\s*(.+?)\s+vs\s+(.+?)(?:\s+\[|$)', entry)
+                if m:
+                    actor, target = m.group(1).strip(), m.group(2).strip()
+                logger.record_event(t, 'war_declared', actor=actor, target=target, detail=entry)
+                _event_type = 'war_declared'
+
+            elif 'WAR ENDS' in entry:
+                m = re.search(r'WAR ENDS\s*[—–-]+\s*(.+?)\s+vs\s+(.+?)(?:\s+\[|$)', entry)
+                if m:
+                    actor, target = m.group(1).strip(), m.group(2).strip()
+                logger.record_event(t, 'war_ended', actor=actor, target=target, detail=entry)
+                _event_type = 'war_ended'
+
+            elif 'FACTION —' in entry or 'FACTION FORMED' in entry:
+                m = re.search(r'FACTION\s*[—–-]+\s*(.+?)\s+formed', entry)
+                if m:
+                    actor = m.group(1).strip()
+                logger.record_event(t, 'faction_formed', actor=actor, detail=entry)
+                _event_type = 'faction_formed'
+
+            elif 'DIPLOMATIC MERGE' in entry:
+                # "DIPLOMATIC MERGE — A unites with B (members)" or "A absorbed into B"
+                m = re.search(
+                    r'DIPLOMATIC MERGE.{1,5}(.+?)\s+(?:unites with|absorbed into)\s+(The\s+\S.+?)(?:\s+\(|$)',
+                    entry,
+                )
+                if m:
+                    actor, target = m.group(1).strip(), m.group(2).strip()
+                logger.record_event(t, 'merger', actor=actor, target=target, detail=entry)
+                _event_type = 'merger'
+
+            elif 'FACTION MERGE' in entry or 'MERGER —' in entry:
+                # "FACTION MERGE — Name (OldFaction) joins NewFaction"
+                m = re.search(r'FACTION MERGE\s*[—–-]+\s*.+?\((.+?)\)\s+joins\s+(.+)', entry)
+                if m:
+                    actor, target = m.group(1).strip(), m.group(2).strip()
+                else:
+                    # "MERGER — OldFaction → NewFaction"
+                    m = re.search(r'MERGER\s*[—–-]+\s*(.+?)\s*[→>]\s*(.+)', entry)
+                    if m:
+                        actor, target = m.group(1).strip(), m.group(2).strip()
+                logger.record_event(t, 'merger', actor=actor, target=target, detail=entry)
+                _event_type = 'merger'
+
+            elif 'SCHISM' in entry:
+                # "SCHISM — New breaks from Old (belief vs belief)"
+                m = re.search(r'SCHISM\s*[—–-]+\s*(.+?)\s+breaks from\s+(.+?)(?:\s+\(|$)', entry)
+                if m:
+                    actor, target = m.group(1).strip(), m.group(2).strip()
+                logger.record_event(t, 'schism', actor=actor, target=target, detail=entry)
+                _event_type = 'schism'
+
+            elif 'TREATY:' in entry or 'TREATY SIGNED' in entry:
+                # "TREATY: A and B sign …"
+                m = re.search(r'TREATY[:\s]+(.+?)\s+and\s+(.+?)\s+sign\s', entry)
+                if m:
+                    actor, target = m.group(1).strip(), m.group(2).strip()
+                logger.record_event(t, 'treaty_signed', actor=actor, target=target, detail=entry)
+                _event_type = 'treaty_signed'
+
+            elif 'broke treaty' in entry:
+                # "Tick NNN: 💔 FactionA broke treaty with FactionB — …"
+                m = re.search(r'(The\s+\S.+?)\s+broke treaty with\s+(The\s+\S.+?)(?:\s+[—–\-]|$)', entry)
+                if m:
+                    actor, target = m.group(1).strip(), m.group(2).strip()
+                logger.record_event(t, 'treaty_broken', actor=actor, target=target, detail=entry)
+                _event_type = 'treaty_broken'
+
+            elif 'treaty expired' in entry:
+                m = re.search(r'treaty.*?between\s+(.+?)\s+and\s+(.+?)(?:\s+expired|$)', entry, re.I)
+                if m:
+                    actor, target = m.group(1).strip(), m.group(2).strip()
+                logger.record_event(t, 'treaty_broken', actor=actor, target=target, detail=entry)
+                _event_type = 'treaty_broken'
+
+            elif 'TECH DISCOVERED' in entry:
+                # "TECH DISCOVERED: Faction → TECH_NAME"
+                m = re.search(r'TECH DISCOVERED[:\s]+(.+?)\s*[→>]\s*(\S+)', entry)
+                if m:
+                    actor, target = m.group(1).strip(), m.group(2).strip()
+                logger.record_event(t, 'tech_researched', actor=actor, target=target, detail=entry)
+                _event_type = 'tech_researched'
+
+            elif 'SETTLEMENT FOUNDED' in entry:
+                m = re.search(r'SETTLEMENT FOUNDED\s+by\s+(.+?)(?:\s+at|\s*$)', entry)
+                if m:
+                    actor = m.group(1).strip()
+                logger.record_event(t, 'settlement_founded', actor=actor, detail=entry)
+                _event_type = 'settlement_founded'
+
+            elif 'BIRTH:' in entry:
+                # "BIRTH: Child born to ParentA and ParentB"
+                m = re.search(r'BIRTH:\s+(\S+)\s+born to\s+(\S+)\s+and\s+(\S+)', entry)
+                if m:
+                    actor  = m.group(2).strip()   # parent A
+                    target = m.group(3).strip()   # parent B
+                logger.record_event(t, 'birth', actor=actor, target=target, detail=entry)
+
+            elif any(kw in entry for kw in ('starved', 'fell in battle',
+                                             'succumbed', 'wasted away', '\U0001f480')):
+                # Strip leading emoji / "Tick NNN:" prefix then grab the name
+                m = re.search(
+                    r'(?:Tick\s+\d+[:\s]+)?(?:[\U00010000-\U0010ffff\u2600-\u27BF]\s*)*'
+                    r'([A-Z][A-Za-z0-9_]+(?:\d+)?)\s+(?:starved|fell|succumbed|wasted)',
+                    entry,
+                )
+                if m:
+                    actor = m.group(1).strip()
+                logger.record_event(t, 'death', actor=actor, detail=entry)
+                _event_type = 'death'
+
+            elif 'NEW ERA DAWNS' in entry:
+                logger.record_event(t, 'era_shift', detail=entry)
+                _event_type = 'era_shift'
+
+            elif any(kw in entry for kw in (
+                    'GREAT MIGRATION', 'PLAGUE SWEEPS', 'CIVIL WAR',
+                    'PROMISED LAND', 'PROPHET', 'WILDERNESS')):
+                logger.record_event(t, 'stagnation_trigger', detail=entry)
+                _event_type = 'stagnation_trigger'
+
+            elif 'RAID' in entry and 'plundered' in entry:
+                # "RAID: A plundered B's territory"
+                m = re.search(r'RAID:\s+(.+?)\s+plundered\s+(.+?)(?:\'s territory|$)', entry)
+                if m:
+                    actor, target = m.group(1).strip(), m.group(2).strip()
+                logger.record_event(t, 'raid', actor=actor, target=target, detail=entry)
+                _event_type = 'raid'
+
+            elif 'WORLD EVENT' in entry:
+                logger.record_event(t, 'world_event', detail=entry)
+                _event_type = 'world_event'
+
+            if _event_type is not None:
+                _key_events_archive.append(entry)
+
+        except Exception:
+            pass
+
+
 def run() -> None:
-    global _event_log_fh
+    global _event_log_fh, TICKS, POP_CAP, _serial_mode, _disabled_layers
+
+    # ── CLI argument parsing ────────────────────────────────────────────────
+    _parser = argparse.ArgumentParser(
+        description='Thalren Vale civilisation simulation')
+    _parser.add_argument('--seed', type=int, default=None,
+                         help='Random seed for reproducibility')
+    _parser.add_argument('--condition', type=str, default='baseline',
+                         help='Experiment label (e.g. baseline, no_antistag)')
+    _parser.add_argument('--ticks', type=int, default=None,
+                         help='Override config.TICKS')
+    _parser.add_argument('--disable-antistag', action='store_true',
+                         help='Turn off all anti-stagnation mechanisms')
+    _parser.add_argument('--disable-layer', type=str, default='',
+                         help='Comma-separated layers to skip '
+                              '(beliefs,factions,economy,combat,technology,diplomacy)')
+    _parser.add_argument('--faction-trust-threshold', type=int, default=None,
+                         help='Override FACTION_TRUST_THRESHOLD')
+    _parser.add_argument('--war-tension-threshold', type=int, default=None,
+                         help='Override WAR_TENSION_THRESHOLD')
+    _parser.add_argument('--belief-sharing-prob', type=float, default=None,
+                         help='Override BELIEF_SHARING_PROBABILITY')
+    _parser.add_argument('--pop-cap', type=int, default=None,
+                         help='Override POP_CAP')
+    _parser.add_argument('--starting-pop', type=int, default=None,
+                         help='Override STARTING_INHABITANTS')
+    _args, _extra = _parser.parse_known_args()
+
+    # ── Apply parameter overrides ───────────────────────────────────────────
+    if _args.ticks is not None:
+        TICKS = _args.ticks
+        config.TICKS = _args.ticks
+    if _args.pop_cap is not None:
+        POP_CAP = _args.pop_cap
+        config.POP_CAP = _args.pop_cap
+    if _args.starting_pop is not None:
+        config.STARTING_INHABITANTS = _args.starting_pop
+    if _args.faction_trust_threshold is not None:
+        config.FACTION_TRUST_THRESHOLD = _args.faction_trust_threshold
+    if _args.war_tension_threshold is not None:
+        config.WAR_TENSION_THRESHOLD = _args.war_tension_threshold
+    if _args.belief_sharing_prob is not None:
+        config.BELIEF_SHARING_PROBABILITY = _args.belief_sharing_prob
+
+    if _args.disable_layer:
+        _disabled_layers = {s.strip() for s in _args.disable_layer.split(',')}
+    else:
+        _disabled_layers = set()
+    _disable_antistag = _args.disable_antistag
+
+    # ── Seed control ────────────────────────────────────────────────────────
+    _seed_value = _args.seed if _args.seed is not None else random.randint(0, 999_999)
+    random.seed(_seed_value)
+    # Serial mode: guarantees reproducibility by eliminating thread PRNG interleaving
+    _serial_mode = (_args.seed is not None)
+    # Regenerate the Perlin-noise world after seeding for reproducibility
+    reseed_world()
+    # Reset per-run module-level state so reruns start clean
+    _key_events_archive.clear()
+
+    # ── MetricsLogger initialisation ────────────────────────────────────────
+    from .metrics import MetricsLogger
+    _logger = MetricsLogger(seed=_seed_value, condition=_args.condition)
+
     # ── Set up file logging ────────────────────────────────────────────────
     pathlib.Path('logs').mkdir(exist_ok=True)
     _ts       = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -1202,6 +1439,7 @@ def run() -> None:
     display.LOG_MODE = True
 
     _real.write(f"Log → {_log_path}\n")
+    _real.write(f"Seed: {_seed_value}  Condition: {_args.condition}\n")
     _real.write(f"Running {TICKS}-tick simulation  "
                 f"(wars / schisms / deaths show below)\n\n")
 
@@ -1224,22 +1462,71 @@ def run() -> None:
             prev_winter       = is_winter(t - 1) if t > 1 else False
             winter_just_ended = prev_winter and not winter
 
+            # ── Layer 0: World ──────────────────────────────────────────────
+            _t_world_start = time.perf_counter()
+            world_layer(t, winter_just_ended)
+            _t_world = (time.perf_counter() - _t_world_start) * 1000
+
+            # ── Layer 1: Inhabitants ────────────────────────────────────────
+            _t_inh_start = time.perf_counter()
             deaths, prev_positions = inhabitants_layer(t)
-            dead_names             = beliefs_layer(t, deaths, winter_just_ended,
+            _t_inh = (time.perf_counter() - _t_inh_start) * 1000
+
+            # ── Layer 2: Beliefs ────────────────────────────────────────────
+            _t_bel_start = time.perf_counter()
+            if 'beliefs' not in _disabled_layers:
+                dead_names         = beliefs_layer(t, deaths, winter_just_ended,
                                                    prev_positions)
-            factions_layer(t, dead_names)
+            else:
+                dead_names = {d.name for d in deaths}
+            _t_bel = (time.perf_counter() - _t_bel_start) * 1000
+
+            # ── Layer 3: Factions ───────────────────────────────────────────
+            _t_fac_start = time.perf_counter()
+            if 'factions' not in _disabled_layers:
+                factions_layer(t, dead_names)
+            _t_fac = (time.perf_counter() - _t_fac_start) * 1000
+
+            # ── Procreation ─────────────────────────────────────────────────
+            _t_proc_start = time.perf_counter()
             procreation_layer(t)
-            economy_layer(t)
-            combat_layer(t)
-            technology_layer(t)
-            diplomacy_layer(t)
+            _t_proc = (time.perf_counter() - _t_proc_start) * 1000
+
+            # ── Layer 4: Economy ────────────────────────────────────────────
+            _t_eco_start = time.perf_counter()
+            if 'economy' not in _disabled_layers:
+                economy_layer(t)
+            _t_eco = (time.perf_counter() - _t_eco_start) * 1000
+
+            # ── Layer 5: Combat ─────────────────────────────────────────────
+            _t_comb_start = time.perf_counter()
+            if 'combat' not in _disabled_layers:
+                combat_layer(t)
+            _t_comb = (time.perf_counter() - _t_comb_start) * 1000
+
+            # ── Layer 6: Technology ─────────────────────────────────────────
+            _t_tech_start = time.perf_counter()
+            if 'technology' not in _disabled_layers:
+                technology_layer(t)
+            _t_tech = (time.perf_counter() - _t_tech_start) * 1000
+
+            # ── Layer 7: Diplomacy ──────────────────────────────────────────
+            _t_dip_start = time.perf_counter()
+            if 'diplomacy' not in _disabled_layers:
+                diplomacy_layer(t)
+            _t_dip = (time.perf_counter() - _t_dip_start) * 1000
+
+            # ── Religion & Mythology ────────────────────────────────────────
+            _t_rel_start = time.perf_counter()
             religion_layer(t)
             if config.MYTHOLOGY_ENABLED:
                 mythology_layer(t)
             elif t % 50 == 0:
                 export_to_mythology_file(t)
+            _t_rel = (time.perf_counter() - _t_rel_start) * 1000
 
-            # ── Map expansion (every 25 ticks) ──────────────────────────────────────
+            # ── Map expansion (every 25 ticks) ───────────────────────────────────────
+            _t_map_start = time.perf_counter()
             if t % 25 == 0:
                 _expansion = update_map_bounds(len(people))
                 if _expansion:
@@ -1253,10 +1540,10 @@ def run() -> None:
                 if t % dashboard_bridge.DASHBOARD_WRITE_EVERY == 0:
                     dashboard_bridge.write_dashboard_snapshot(
                         t, people, factions, _tick_times, event_log)
-
-            world_layer(t, winter_just_ended)
+            _t_map = (time.perf_counter() - _t_map_start) * 1000
 
             # ── Track dynamic activity for stagnation detection ─────────────
+            _t_dyn_start = time.perf_counter()
             _new_entries = event_log[_log_len_before:]
             if any(kw in e for e in _new_entries
                    for kw in ('WAR DECLARED', 'SCHISM', 'FACTION FORMED',
@@ -1268,8 +1555,25 @@ def run() -> None:
                 _last_dynamic_t   = t
                 _peace_applied    = set()
                 _low_faction_since = 0
+            _t_dyn = (time.perf_counter() - _t_dyn_start) * 1000
+
+            # ── Metrics: classify events and record per-tick data ───────────
+            _t_met_start = time.perf_counter()
+            try:
+                _classify_and_record_events(_logger, t, _new_entries)
+                _logger.record_tick(
+                    tick=t, world=world, inhabitants=people,
+                    factions=factions, wars=combat.active_wars,
+                    treaties=diplomacy._treaties,
+                    peace_ticks=t - _last_dynamic_t)
+                if t % 100 == 0:
+                    _logger.record_beliefs(t, people, factions)
+            except Exception:
+                pass
+            _t_met = (time.perf_counter() - _t_met_start) * 1000
 
             # ── Solo-faction fragility: die in ~100 ticks of isolation ────────
+            _t_solo_start = time.perf_counter()
             _f_by_name = {f.name: f for f in factions}
             for _sp in list(people):
                 _sf = _f_by_name.get(_sp.faction) if _sp.faction else None
@@ -1285,19 +1589,27 @@ def run() -> None:
                                  f'wasted away alone')
                         event_log.append(_dmsg)
                         print(_dmsg)
+            _t_solo = (time.perf_counter() - _t_solo_start) * 1000
 
             # ── World event every 200 ticks ─────────────────────────────────
+            _t_we_start = time.perf_counter()
             if t % 200 == 0:
                 world_event_layer(t)
+            _t_we = (time.perf_counter() - _t_we_start) * 1000
 
             # ── Plugin layer (after world events) ───────────────────────────
+            _t_plug_start = time.perf_counter()
             plugin_layer(t)
+            _t_plug = (time.perf_counter() - _t_plug_start) * 1000
 
             # ── Era shift every 500 ticks ───────────────────────────────────
+            _t_era_start = time.perf_counter()
             if t % 500 == 0:
                 era_shift_layer(t)
+            _t_era = (time.perf_counter() - _t_era_start) * 1000
 
             # ── Memory housekeeping every 50 ticks ──────────────────────────
+            _t_house_start = time.perf_counter()
             if t % 50 == 0:
                 _prune_event_log(t)
                 _archive_dead_factions()
@@ -1305,42 +1617,43 @@ def run() -> None:
                 for p in people:
                     if len(p.memory) > 10:
                         p.memory = p.memory[-10:]
+            _t_house = (time.perf_counter() - _t_house_start) * 1000
 
-            # ── Population recovery: travelers every 40 ticks ───────────────
-            if t % 40 == 0:
-                _active_fac_n = sum(1 for f in factions if f.members)
-                _spawn_n      = 0
-                if len(people) < 20:
-                    _spawn_n = max(_spawn_n, 5)
-                if _active_fac_n < 3:
-                    _spawn_n = max(_spawn_n, 10)  # bigger wave when critically low
-                if _spawn_n:
-                    hab_now    = [(r, c) for r in range(GRID) for c in range(GRID)
-                                  if world[r][c]['habitable']]
-                    used_names = {p.name for p in people}
-                    spawned: list = []
-                    for _ in range(_spawn_n):
-                        nm = _make_traveler_name(used_names)
-                        if not nm or not hab_now:
-                            break
-                        used_names.add(nm)
-                        r, c = random.choice(hab_now)
-                        inh  = Inhabitant(nm, r, c)
-                        inh.faction           = None
-                        inh.inventory['food'] = 30
-                        belief = _BIOME_BELIEF.get(world[r][c]['biome'])
-                        if belief:
-                            add_belief(inh, belief)
-                        _spawn(inh)
-                        spawned.append(nm)
-                    if spawned:
-                        msg = (f"Tick {t:04d}: 🧳 Travelers from beyond the known "
-                               f"lands arrive ({', '.join(spawned)})")
-                        event_log.append(msg)
-                        print(msg)
+            # ── Anti-stagnation layer ───────────────────────────────────────
+            _t_antistag_start = time.perf_counter()
+            _active_fac_n = sum(1 for f in factions if f.members)
+            _spawn_n      = 0
+            if len(people) < 20:
+                _spawn_n = max(_spawn_n, 5)
+            if _active_fac_n < 3:
+                _spawn_n = max(_spawn_n, 10)  # bigger wave when critically low
+            if _spawn_n:
+                hab_now    = [(r, c) for r in range(GRID) for c in range(GRID)
+                              if world[r][c]['habitable']]
+                used_names = {p.name for p in people}
+                spawned: list = []
+                for _ in range(_spawn_n):
+                    nm = _make_traveler_name(used_names)
+                    if not nm or not hab_now:
+                        break
+                    used_names.add(nm)
+                    r, c = random.choice(hab_now)
+                    inh  = Inhabitant(nm, r, c)
+                    inh.faction           = None
+                    inh.inventory['food'] = 30
+                    belief = _BIOME_BELIEF.get(world[r][c]['biome'])
+                    if belief:
+                        add_belief(inh, belief)
+                    _spawn(inh)
+                    spawned.append(nm)
+                if spawned:
+                    msg = (f"Tick {t:04d}: 🧳 Travelers from beyond the known "
+                           f"lands arrive ({', '.join(spawned)})")
+                    event_log.append(msg)
+                    print(msg)
 
             # ── Faction-collapse prevention (every 25 ticks) ─────────────────
-            if t % 25 == 0:
+            if t % 25 == 0 and not _disable_antistag:
                 _active_now = sum(1 for f in factions if f.members)
 
                 # Track consecutive ticks below 3 factions
@@ -1417,6 +1730,38 @@ def run() -> None:
                     print(_im2)
                     _last_dynamic_t = t
                     _peace_applied  = set()
+            _t_antistag = (time.perf_counter() - _t_antistag_start) * 1000
+
+            # ── Per-layer timing summary (every 50 ticks) ────────────────────
+            if t % 50 == 0:
+                _t_total = (_t_world + _t_inh + _t_bel + _t_fac + _t_proc + 
+                           _t_eco + _t_comb + _t_tech + _t_dip + _t_rel + 
+                           _t_map + _t_dyn + _t_met + _t_solo + _t_we + 
+                           _t_plug + _t_era + _t_house + _t_antistag)
+                _pop = len([i for i in people if i.health > 0])
+                _real.write(f"\n=== Tick {t} timing (ms) | Pop: {_pop} ===\n")
+                _real.write(f"  World:         {_t_world:>8.1f}\n")
+                _real.write(f"  Inhabitants:   {_t_inh:>8.1f}\n")
+                _real.write(f"  Beliefs:       {_t_bel:>8.1f}\n")
+                _real.write(f"  Factions:      {_t_fac:>8.1f}\n")
+                _real.write(f"  Procreation:   {_t_proc:>8.1f}\n")
+                _real.write(f"  Economy:       {_t_eco:>8.1f}\n")
+                _real.write(f"  Combat:        {_t_comb:>8.1f}\n")
+                _real.write(f"  Technology:    {_t_tech:>8.1f}\n")
+                _real.write(f"  Diplomacy:     {_t_dip:>8.1f}\n")
+                _real.write(f"  Religion:      {_t_rel:>8.1f}\n")
+                _real.write(f"  Map:           {_t_map:>8.1f}\n")
+                _real.write(f"  Dynamic:       {_t_dyn:>8.1f}\n")
+                _real.write(f"  Metrics:       {_t_met:>8.1f}\n")
+                _real.write(f"  SoloFaction:   {_t_solo:>8.1f}\n")
+                _real.write(f"  WorldEvents:   {_t_we:>8.1f}\n")
+                _real.write(f"  Plugins:       {_t_plug:>8.1f}\n")
+                _real.write(f"  Era:           {_t_era:>8.1f}\n")
+                _real.write(f"  Housekeeping:  {_t_house:>8.1f}\n")
+                _real.write(f"  AntiStag:      {_t_antistag:>8.1f}\n")
+                _real.write(f"  ────────────────────────\n")
+                _real.write(f"  SUM (layers):  {_t_total:>8.1f}\n")
+                _real.flush()
 
             # ── Tick timing ─────────────────────────────────────────────────
             _elapsed = time.time() - _t0
@@ -1468,10 +1813,18 @@ def run() -> None:
         print("\n\n[Simulation interrupted by user]\n")
 
     finally:
+        # ── Metrics finalisation ────────────────────────────────────────────
+        try:
+            _logger.finalize(world, people, factions)
+            _logger.close()
+        except Exception:
+            pass
+
         # Final report: passthrough so everything shows on terminal AND in log
         _real.write('\n')
         _tee.passthrough = True
-        display.final_report(people, all_dead, factions, event_log, TICKS)
+        display.final_report(people, all_dead, factions, event_log, TICKS,
+                             key_archive=_key_events_archive)
         if config.MYTHOLOGY_ENABLED:
             mythology.mythology_final_summary(factions, all_dead, TICKS, event_log, era_summaries)
             time.sleep(2)   # flush iGPU shared memory after final narrative LLM job

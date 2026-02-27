@@ -2,6 +2,7 @@
 # Licensed under the Polyform Noncommercial License 1.0.0
 import random
 from itertools import combinations
+from . import config
 from .world   import (world, grid_move,
                       Settlement, settlement_register, settlement_unregister,
                       get_settlement_at,
@@ -166,7 +167,9 @@ class Faction:
 
 
 # ── Internal helpers ───────────────────────────────────────────────────────
-def _mutual_trust(a, b, threshold=5):
+def _mutual_trust(a, b, threshold=None):
+    if threshold is None:
+        threshold = config.FACTION_TRUST_THRESHOLD
     return (a.trust.get(b.name, 0) > threshold and
             b.trust.get(a.name, 0) > threshold)
 
@@ -337,7 +340,7 @@ def faction_tick(people, factions, t, event_log):
                     blocked = (bb, ba)
                     break
             if blocked:
-                if any(inh.trust.get(m.name, 0) > 5 for m in faction.members):
+                if any(inh.trust.get(m.name, 0) > config.FACTION_TRUST_THRESHOLD for m in faction.members):
                     inh.was_rejected = True
                     already_rejected = 'trust_no_group' in inh.beliefs
                     add_belief(inh, 'trust_no_group')
@@ -348,9 +351,9 @@ def faction_tick(people, factions, t, event_log):
                         print(msg)
                 continue
 
-            # Trust: >5 with at least 1 current member
+            # Trust: > threshold with at least 1 current member
             if sum(1 for m in faction.members
-                   if inh.trust.get(m.name, 0) > 5) < 1:
+                   if inh.trust.get(m.name, 0) > config.FACTION_TRUST_THRESHOLD) < 1:
                 continue
 
             # Beliefs: must share 2+ core beliefs with faction

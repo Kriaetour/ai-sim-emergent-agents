@@ -65,6 +65,8 @@ class Inhabitant:
         'religion', 'is_priest',
         # Role tag (e.g. 'priest') used by religion.py movement logic
         'role',
+        # Generational depth: 0 for initial population, +1 per birth
+        'generation',
     )
 
     def __init__(self, name, r, c):
@@ -90,6 +92,7 @@ class Inhabitant:
         self.religion       = None           # Religion object pointer (or None)
         self.is_priest      = False          # True when designated as faction priest
         self.role           = None           # e.g. 'priest' (set by religion.py)
+        self.generation     = 0              # 0 for initial pop; incremented at birth
 
     @property
     def total_trust(self):
@@ -159,6 +162,7 @@ def make_child(
     """
     unique_name = get_unique_name(name, living_people)
     child = Inhabitant(unique_name, parent_a.r, parent_a.c)
+    child.generation = max(parent_a.generation, parent_b.generation) + 1
 
     # 50% belief blend: union → random half
     belief_pool = list(dict.fromkeys(parent_a.beliefs + parent_b.beliefs))  # deduped, ordered

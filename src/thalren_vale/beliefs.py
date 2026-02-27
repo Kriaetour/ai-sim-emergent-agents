@@ -1,5 +1,6 @@
 import random
 from .world import world
+from . import config
 
 # ── Belief catalogue ───────────────────────────────────────────────────────
 LABELS = {
@@ -46,6 +47,10 @@ def inh_cores(inh):
     return {core_of(b) for b in inh.beliefs}
 
 def add_belief(inh, key):
+    # Skip all belief additions if beliefs layer is disabled
+    from . import sim
+    if 'beliefs' in sim._disabled_layers:
+        return
     if key in inh_cores(inh):
         return
     if len(inh.beliefs) >= MAX_BELIEFS:
@@ -153,7 +158,7 @@ def share_beliefs(people, t, event_log):
                 continue
             if not inh.beliefs:
                 continue
-            if random.random() >= 0.5:
+            if random.random() >= config.BELIEF_SHARING_PROBABILITY:
                 continue
             belief   = random.choice(inh.beliefs)
             core     = core_of(belief)

@@ -304,6 +304,26 @@ def update_map_bounds(current_pop: int):
 
 world = _generate_world()
 
+
+def reseed_world():
+    """Regenerate the world grid **in-place** using the current random state.
+
+    Call this after ``random.seed(n)`` inside ``run()`` so the Perlin noise
+    offsets, sea-threshold, biome layout, and initial resource rolls are all
+    reproducible.  Because the global ``world`` list is mutated (not
+    reassigned), every module that imported it by name keeps a valid reference.
+    """
+    global GRID
+    GRID = INITIAL_GRID
+    new = _generate_world()      # re-rolls _NOISE_OFFSETS & _SEA_THRESHOLD
+    world.clear()
+    world.extend(new)
+    with _grid_lock:
+        grid_occupants.clear()
+    with _settlement_lock:
+        _settlements_index.clear()
+
+
 # ── Spatial partition ──────────────────────────────────────────────────────
 # grid_occupants  maps (r, c) → [Inhabitant, ...]
 # All mutations go through grid_add / grid_remove / grid_move so no inhabitant

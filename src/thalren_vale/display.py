@@ -98,7 +98,7 @@ def render(t: int, people: list, deaths: list, event_log: list,
         ftag   = _faction_tag(inh)
         bshort = _belief_short(inh)
         print(f"\u2502  {inh.name:<8} ({inh.r},{inh.c})  [{hp_bar}]"
-              f"  {inh.hunger:3d}  {inh.inventory['food']:2d}  {ftag}  {bshort:<20}\u2502")
+              f"  {int(inh.hunger):3d}  {int(inh.inventory['food']):2d}  {ftag}  {bshort:<20}\u2502")
 
     if deaths:
         print(f"\u251c{bar}\u2524")
@@ -148,7 +148,8 @@ def faction_summary(factions: list, t: int) -> None:
 
 
 def final_report(people: list, all_dead: list, factions: list,
-                 event_log: list, ticks: int) -> None:
+                 event_log: list, ticks: int,
+                 key_archive: list | None = None) -> None:
     sep = '═' * W
     print(f"\n{sep}")
     print(f"CIVILIZATION SUMMARY — {ticks} ticks")
@@ -177,7 +178,10 @@ def final_report(people: list, all_dead: list, factions: list,
         'TREATY', 'SURRENDER TERMS', 'broke treaty', 'MUTUAL DEFENSE',
         'shares food',
     }
-    key_events = [e for e in event_log if any(k in e for k in _KEY)]
+    # Use the full unpruned archive if available, otherwise fall back to
+    # whatever is still in the in-memory event_log (last ~200 entries).
+    _source    = key_archive if key_archive else event_log
+    key_events = [e for e in _source if any(k in e for k in _KEY)]
     n_show     = min(10, len(key_events))
     print(f"\nTop {n_show} key events:")
     for e in key_events[:10]:

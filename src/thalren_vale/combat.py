@@ -19,6 +19,7 @@ from .factions import RIVALRIES
 from . import technology
 from . import diplomacy
 from . import religion
+from . import config
 
 # ══════════════════════════════════════════════════════════════════════════
 # Module-level state
@@ -30,7 +31,6 @@ war_history:  list = []   # resolved War objects
 # Alliances: frozenset({name_a, name_b}) → 'allied' | 'hostile'
 _alliances:   dict = {}
 
-WAR_THRESHOLD      = 200   # RIVALRIES tension required to declare war
 MAX_WAR_TICKS      = 40    # exhaustion after this many ticks without resolution
 MIN_WAR_TICKS      = 5     # no surrender/ceasefire before this many ticks
 TRIBUTE_TICKS      = 20    # how many post-war ticks the loser pays tribute
@@ -133,7 +133,7 @@ def _check_war_declarations(active: list, t: int, event_log: list) -> None:
             already_at_war.add(f.name)
 
     for key, tension in list(RIVALRIES.items()):
-        if tension < WAR_THRESHOLD:
+        if tension < config.WAR_TENSION_THRESHOLD:
             continue
         na, nb = key
         fa = next((f for f in active if f.name == na), None)
@@ -152,7 +152,7 @@ def _check_war_declarations(active: list, t: int, event_log: list) -> None:
             b_cores.update(inh_cores(m))
 
         # Pacifist beliefs raise effective threshold
-        effective = WAR_THRESHOLD
+        effective = config.WAR_TENSION_THRESHOLD
         if 'war_is_costly' in a_cores or 'never_again' in a_cores:
             effective += 50
         # Aggressive beliefs lower effective threshold for attacker

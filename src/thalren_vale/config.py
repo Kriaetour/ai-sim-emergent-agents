@@ -10,7 +10,7 @@ OLLAMA_TIMEOUT   = 150           # seconds per LLM call
 MYTHOLOGY_ENABLED = False       # set True to enable LLM chronicle layer
 
 # ── Simulation length ───────────────────────────────────────────────────
-TICKS = 10000    # total number of ticks to simulate
+TICKS = 5000    # total number of ticks to simulate
 
 # ── Population cap ──────────────────────────────────────────────────────
 POP_CAP = 1000   # hard ceiling; world food scales up as population grows
@@ -22,3 +22,12 @@ LLM_MAX_TOKENS   = 200   # default; overridden per-call          # num_predict p
 # ── Plugin system ────────────────────────────────────────────────────────
 PLUGINS_DIR          = 'plugins'      # directory scanned by load_plugins()
 PLUGIN_TICK_INTERVAL = 10             # default cadence; each plugin can override via tick_interval
+
+# ── Experimentally tuneable parameters ──────────────────────────────────
+# These are the **current** defaults extracted from the hardcoded values in
+# factions.py, combat.py, beliefs.py, and sim.py.  CLI arguments in run()
+# override them at runtime so the sim is identical when none are passed.
+FACTION_TRUST_THRESHOLD   = 5     # min mutual trust for faction formation (factions.py _mutual_trust)
+WAR_TENSION_THRESHOLD     = 200   # tension score that triggers war declaration (combat.py WAR_THRESHOLD)
+BELIEF_SHARING_PROBABILITY = 0.5  # per-pair chance of belief sharing each tick (beliefs.py share_beliefs)
+STARTING_INHABITANTS       = 30   # initial population count (sim.py init_inhabitants)

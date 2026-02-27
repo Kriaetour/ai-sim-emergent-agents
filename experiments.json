@@ -1,0 +1,51 @@
+{
+    "default_ticks": 10000,
+    "conditions": [
+        {
+            "name": "baseline",
+            "seeds": "1-100",
+            "extra_args": []
+        },
+        {
+            "name": "no_antistag",
+            "seeds": "1-20",
+            "extra_args": ["--disable-antistag"]
+        },
+        {
+            "name": "no_beliefs",
+            "seeds": "1-20",
+            "extra_args": ["--disable-layer", "beliefs"]
+        },
+        {
+            "name": "no_factions",
+            "seeds": "1-20",
+            "extra_args": ["--disable-layer", "factions"]
+        },
+        {
+            "name": "no_economy",
+            "seeds": "1-20",
+            "extra_args": ["--disable-layer", "economy"]
+        },
+        {
+            "name": "no_combat",
+            "seeds": "1-20",
+            "extra_args": ["--disable-layer", "combat"]
+        },
+        {
+            "name": "no_tech",
+            "seeds": "1-20",
+            "extra_args": ["--disable-layer", "technology"]
+        },
+        {
+            "name": "no_diplomacy",
+            "seeds": "1-20",
+            "extra_args": ["--disable-layer", "diplomacy"]
+        },
+        {
+            "name": "minimal",
+            "seeds": "1-20",
+            "ticks": 500,
+            "extra_args": ["--disable-antistag", "--starting-pop", "10"]
+        }
+    ]
+}

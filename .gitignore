@@ -7,3 +7,5 @@ logs/
 .DS_Store"*.txt" 
 *.txt
 *.json
+!experiments.json
+data/*.csv
