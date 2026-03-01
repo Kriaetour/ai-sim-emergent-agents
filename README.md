@@ -2,6 +2,7 @@
 [![PyPI version](https://badge.fury.io/py/thalren-vale-simulation.svg)](https://badge.fury.io/py/thalren-vale-simulation)
 [![License: Polyform Noncommercial](https://img.shields.io/badge/License-Polyform%20Noncommercial-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18828594.svg)](https://doi.org/10.5281/zenodo.18828594)
 
 
 > **Watch factions form, trade, war, betray, and mythologize —
