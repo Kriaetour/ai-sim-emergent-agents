@@ -29,7 +29,7 @@ Fully playable on a **$150 Intel N95 mini-PC with 16 GB RAM**. No GPU required.
 This engine is the subject of an academic paper available as a preprint:
 
 > **Thalren Vale: Civilizational-Scale Social Emergence from Survival-Scale Agent Heuristics**
-> Brandon Simms (2026). Preprint: [Preprints.org](https://www.preprints.org/manuscript/202503.0365)
+> Brandon Simms (2026). *Preprint forthcoming on Preprints.org.*
 
 The paper characterises 100 independent simulation runs, identifies three emergent mechanisms at distinct evidential tiers (cyclical population dynamics — confirmed; deliberative bypass — latent; reverse assimilation — falsified), and presents a composable ablation study isolating the causal contribution of individual layers.
 
