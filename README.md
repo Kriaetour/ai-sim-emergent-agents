@@ -26,7 +26,7 @@ Fully playable on a **$150 Intel N95 mini-PC with 16 GB RAM**. No GPU required.
 
 ## Research Paper
 
-This engine is the subject of an academic paper submitted to JASSS (Journal of Artificial Societies and Social Simulation):
+This engine is the subject of an academic paper available as a preprint:
 
 > **Thalren Vale: Civilizational-Scale Social Emergence from Survival-Scale Agent Heuristics**
 > Brandon Simms (2026). Preprint: [Preprints.org](https://www.preprints.org/manuscript/202503.0365)
