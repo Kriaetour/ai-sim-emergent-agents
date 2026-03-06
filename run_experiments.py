@@ -68,7 +68,7 @@ def run_single(seed: int, condition: str, ticks: int,
         text=True,
         encoding='utf-8',
         errors='replace',
-        timeout=max(600, ticks // 2),  # generous timeout
+        timeout=max(3600, ticks * 2),  # ~2s per tick on slow hardware
     )
 
     elapsed = round(time.time() - t0, 1)
@@ -168,7 +168,7 @@ def verify_outputs(plan_path: str, output_dir: str = 'data') -> bool:
     for cond in plan.get('conditions', []):
         seeds = parse_seed_range(cond.get('seeds', '1-5'))
         for seed in seeds:
-            csv_path = os.path.join(output_dir, f'metrics_seed_{seed}.csv')
+            csv_path = os.path.join(output_dir, f'metrics_{cond["name"]}_seed_{seed}.csv')
             if not os.path.isfile(csv_path):
                 missing.append((cond['name'], seed, csv_path))
 

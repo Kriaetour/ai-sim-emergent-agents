@@ -61,6 +61,8 @@ _dead_factions:  list   = []   # defunct factions kept for reference
 _last_dynamic_t: int    = 0    # last tick with war / schism / faction-formation
 _event_log_fh:   object = None  # file handle used to flush pruned log lines to disk
 _disabled_layers: set   = set() # layers to skip (set from --disable-layer CLI arg)
+_run_seed:       int    = 0     # seed for current run (set in run())
+_run_condition:  str    = 'baseline'  # condition label for current run (set in run())
 
 # ── Threading locks (Layer 1) ──────────────────────────────────────────────
 # _world_lock  : guards read-modify-write on world[r][c]['resources']
@@ -780,7 +782,8 @@ def export_era_data(t: int) -> None:
             if era.get('text'):
                 lines.append(f"    {era['text']}")
 
-    pathlib.Path("era_export.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    _era_path = f"era_export_{_run_condition}_seed_{_run_seed}.txt"
+    pathlib.Path(_era_path).write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def export_to_mythology_file(t: int) -> None:
@@ -814,7 +817,8 @@ def export_to_mythology_file(t: int) -> None:
     lines.append("Events:")
     lines.extend(f"  {e}" for e in era_entries) if era_entries else lines.append("  (none recorded)")
 
-    with open("manual_chronicle.txt", "a", encoding="utf-8") as _f:
+    _chronicle_path = f"manual_chronicle_{_run_condition}_seed_{_run_seed}.txt"
+    with open(_chronicle_path, "a", encoding="utf-8") as _f:
         _f.write("\n".join(lines) + "\n")
         _f.flush()
 
@@ -1362,7 +1366,7 @@ def _classify_and_record_events(logger, t, new_entries):
 
 
 def run() -> None:
-    global _event_log_fh, TICKS, POP_CAP, _serial_mode, _disabled_layers
+    global _event_log_fh, TICKS, POP_CAP, _serial_mode, _disabled_layers, _run_seed, _run_condition
 
     # ── CLI argument parsing ────────────────────────────────────────────────
     _parser = argparse.ArgumentParser(
@@ -1388,6 +1392,8 @@ def run() -> None:
                          help='Override POP_CAP')
     _parser.add_argument('--starting-pop', type=int, default=None,
                          help='Override STARTING_INHABITANTS')
+    _parser.add_argument('--enable-belief-tracking', action='store_true',
+                         help='Enable Reverse Assimilation belief-composition logging')
     _args, _extra = _parser.parse_known_args()
 
     # ── Apply parameter overrides ───────────────────────────────────────────
@@ -1414,6 +1420,8 @@ def run() -> None:
 
     # ── Seed control ────────────────────────────────────────────────────────
     _seed_value = _args.seed if _args.seed is not None else random.randint(0, 999_999)
+    _run_seed = _seed_value
+    _run_condition = _args.condition
     random.seed(_seed_value)
     # Serial mode: guarantees reproducibility by eliminating thread PRNG interleaving
     _serial_mode = (_args.seed is not None)
@@ -1426,10 +1434,21 @@ def run() -> None:
     from .metrics import MetricsLogger
     _logger = MetricsLogger(seed=_seed_value, condition=_args.condition)
 
+    # ── Reverse Assimilation tracker ────────────────────────────────────────
+    _ra_tracker = None
+    if _args.enable_belief_tracking:
+        config.BELIEF_TRACKING_ENABLED = True
+        from .ra_tracker import RATracker
+        _ra_tracker = RATracker(seed=_seed_value, condition=_args.condition)
+        # Wire tracker into diplomacy and factions modules
+        from . import diplomacy as _dip_mod, factions as _fac_mod
+        _dip_mod._ra_tracker = _ra_tracker
+        _fac_mod._ra_tracker = _ra_tracker
+
     # ── Set up file logging ────────────────────────────────────────────────
     pathlib.Path('logs').mkdir(exist_ok=True)
     _ts       = datetime.now().strftime('%Y%m%d_%H%M%S')
-    _log_path = f'logs/run_{_ts}.txt'
+    _log_path = f'logs/run_{_args.condition}_seed_{_seed_value}_{_ts}.txt'
     _log_fh   = open(_log_path, 'w', encoding='utf-8')
     _event_log_fh = _log_fh   # expose to _prune_event_log for direct flush
     _real     = sys.stdout
@@ -1571,6 +1590,14 @@ def run() -> None:
             except Exception:
                 pass
             _t_met = (time.perf_counter() - _t_met_start) * 1000
+
+            # ── Reverse Assimilation tracking ────────────────────────────────
+            if _ra_tracker is not None:
+                try:
+                    _ra_tracker.record_faction_compositions(t, factions)
+                    _ra_tracker.check_followups(t, factions)
+                except Exception:
+                    pass
 
             # ── Solo-faction fragility: die in ~100 ticks of isolation ────────
             _t_solo_start = time.perf_counter()
@@ -1819,6 +1846,12 @@ def run() -> None:
             _logger.close()
         except Exception:
             pass
+        # ── RA tracker finalisation ─────────────────────────────────────────
+        if _ra_tracker is not None:
+            try:
+                _ra_tracker.close()
+            except Exception:
+                pass
 
         # Final report: passthrough so everything shows on terminal AND in log
         _real.write('\n')
@@ -1832,7 +1865,8 @@ def run() -> None:
         else:
             # Write final chronicle entry and ensure the file is flushed and closed
             export_to_mythology_file(TICKS)
-            with open("manual_chronicle.txt", "a", encoding="utf-8") as _mcf:
+            _final_chronicle = f"manual_chronicle_{_run_condition}_seed_{_run_seed}.txt"
+            with open(_final_chronicle, "a", encoding="utf-8") as _mcf:
                 _mcf.write(f"\n{'=' * 60}\n  END OF SIMULATION — {TICKS} ticks total\n{'=' * 60}\n")
                 _mcf.flush()
         sys.stdout = _real

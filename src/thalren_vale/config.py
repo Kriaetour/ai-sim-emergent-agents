@@ -31,3 +31,6 @@ FACTION_TRUST_THRESHOLD   = 5     # min mutual trust for faction formation (fact
 WAR_TENSION_THRESHOLD     = 200   # tension score that triggers war declaration (combat.py WAR_THRESHOLD)
 BELIEF_SHARING_PROBABILITY = 0.5  # per-pair chance of belief sharing each tick (beliefs.py share_beliefs)
 STARTING_INHABITANTS       = 30   # initial population count (sim.py init_inhabitants)
+
+# ── Reverse Assimilation instrumentation ────────────────────────────────
+BELIEF_TRACKING_ENABLED = False   # --enable-belief-tracking turns this on

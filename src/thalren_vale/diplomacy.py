@@ -23,6 +23,9 @@ sys.stdout.reconfigure(encoding='utf-8')
 from .beliefs  import inh_cores, LABELS
 from .factions import RIVALRIES
 
+# Module-level RA tracker reference (set by sim.py when --enable-belief-tracking)
+_ra_tracker = None
+
 # ══════════════════════════════════════════════════════════════════════════
 # Module-level state
 # ══════════════════════════════════════════════════════════════════════════
@@ -456,6 +459,10 @@ def resolve_surrender(winner_factions: list, loser_factions: list,
 
     if term == 'ANNEX':
         absorbed = list(primary_loser.members)
+        # RA instrumentation: snapshot BEFORE members move
+        if _ra_tracker is not None:
+            _ra_tracker.record_annexation(
+                t, primary_winner, primary_loser, merge_type='annexation')
         for m in absorbed:
             m.faction = primary_winner
             primary_winner.members.append(m)

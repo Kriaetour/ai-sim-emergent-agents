@@ -14,6 +14,9 @@ from .beliefs import core_of, inh_cores, LABELS, add_belief
 # module-level rivalry scores: {(name_a, name_b): int}  (names always sorted)
 RIVALRIES: dict = {}
 
+# Module-level RA tracker reference (set by sim.py when --enable-belief-tracking)
+_ra_tracker = None
+
 # ── Belief pairs that create natural rivals ────────────────────────────────
 RIVAL_BELIEFS = [
     ('community_sustains',           'self_reliance'),
@@ -683,6 +686,10 @@ def _try_diplomatic_merge(factions, t, event_log):
         else:
             keeper, donor = (fa, fb) if fa.founded_tick <= fb.founded_tick else (fb, fa)
 
+        # RA instrumentation: snapshot BEFORE members move
+        if _ra_tracker is not None:
+            _ra_tracker.record_annexation(
+                t, keeper, donor, merge_type='voluntary_merge')
         donor_members = list(donor.members)
         donor.members = []
         for m in donor_members:
@@ -800,6 +807,10 @@ def check_for_merger(factions, t, event_log):
                 km.trust[dm.name] = max(km.trust.get(dm.name, 0), half_d)
                 dm.trust[km.name] = max(dm.trust.get(km.name, 0), half_k)
 
+        # RA instrumentation: snapshot BEFORE members move
+        if _ra_tracker is not None:
+            _ra_tracker.record_annexation(
+                t, keeper, donor, merge_type='voluntary_merge')
         # Transfer donor members
         donor_members = list(donor.members)
         donor.members = []

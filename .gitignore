@@ -9,3 +9,4 @@ logs/
 *.json
 !experiments.json
 data/*.csv
+!results.csv

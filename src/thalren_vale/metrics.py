@@ -35,9 +35,9 @@ class MetricsLogger:
         Path(output_dir).mkdir(parents=True, exist_ok=True)
 
         # Open CSV files
-        self._metrics_path = os.path.join(output_dir, f"metrics_seed_{seed}.csv")
-        self._events_path = os.path.join(output_dir, f"faction_events_seed_{seed}.csv")
-        self._beliefs_path = os.path.join(output_dir, f"beliefs_seed_{seed}.csv")
+        self._metrics_path = os.path.join(output_dir, f"metrics_{condition}_seed_{seed}.csv")
+        self._events_path = os.path.join(output_dir, f"faction_events_{condition}_seed_{seed}.csv")
+        self._beliefs_path = os.path.join(output_dir, f"beliefs_{condition}_seed_{seed}.csv")
 
         self._metrics_fh = open(self._metrics_path, 'w', newline='', encoding='utf-8')
         self._events_fh = open(self._events_path, 'w', newline='', encoding='utf-8')
